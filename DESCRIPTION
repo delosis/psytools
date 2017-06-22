@@ -1,7 +1,7 @@
 Package: Psytools
 Type: Package
 Version: 0.1
-Title: Derive Psytools task data 
+Title: Derive Psytools task data
 Description: Derive Psytools task data in CSV files
     exported from the Delosis server.
 Authors@R: c(
