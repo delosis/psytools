@@ -1,0 +1,14 @@
+# Generated manually until we switch to roxygen2
+
+export(deriveSST)
+export(deriveMID)
+export(deriveWCST)
+export(deriveDS)
+export(deriveCORSI)
+export(deriveTMT)
+export(deriveSOCRATIS)
+export(deriveBART)
+export(deriveERT)
+export(deriveKIRBY)
+export(rotateQuestionnaire)
+importFrom(reshape2,dcast)
