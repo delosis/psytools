@@ -1,0 +1,15 @@
+Package: Psytools
+Type: Package
+Version: 0.1
+Title: Derive Psytools task data 
+Description: Derive Psytools task data in CSV files
+    exported from the Delosis server
+Authors@R: c(
+    person("John", "Rogers", email = "github@delosis.com", role = c("cre", "aut")),
+    person("Dimitri", "Papadopoulos", email = "imagendatabase@cea.fr", role = "ctb"))
+URL: https://github.com/delosis/psytools
+License: GPL
+Imports:
+    car,
+    plyr,
+    reshape2
