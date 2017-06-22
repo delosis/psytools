@@ -8,7 +8,7 @@ Authors@R: c(
     person("John", "Rogers", email = "github@delosis.com", role = c("cre", "aut")),
     person("Dimitri", "Papadopoulos", email = "imagendatabase@cea.fr", role = "ctb"))
 URL: https://github.com/delosis/psytools
-License: GPL (>= 2)
+License: GPL-3
 Imports:
     car,
     plyr,
