@@ -29,7 +29,6 @@
 ## Happy to remove reliance on the Age group and row index if you prefer! Some additional flexibility can be worked in
 
 library(car)
-library(plyr)
 library(reshape2)
 
 
