@@ -14,5 +14,5 @@ URL: https://github.com/delosis/psytools
 License: GPL-3
 Imports:
     car,
-    plyr,
     reshape2
+RoxygenNote: 6.0.1

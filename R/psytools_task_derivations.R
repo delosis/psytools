@@ -351,6 +351,7 @@ deriveBART <- function(df) {
 #' @return Derived data frame with summaries.
 #'
 #' @noRd
+#' @importFrom car recode
 #' @export
 deriveERT <- function(df) {
     df <- subset(df, df$Block=='MAIN')
@@ -392,6 +393,7 @@ deriveERT <- function(df) {
 #' @return Derived data frame with summaries.
 #'
 #' @noRd
+#' @importFrom car recode
 #' @export
 deriveKIRBY <- function(df) {
     df <- subset(df, !grepl("FEEDBACK|js|KIRBY_PCDELAY", Block, ignore.case=TRUE) & df$Trial.result !='skip_back')
@@ -545,6 +547,7 @@ deriveKIRBY <- function(df) {
 #' @return Rotated data frame.
 #'
 #' @noRd
+#' @importFrom reshape2 dcast
 #' @export
 rotateQuestionnaire <- function(df) {
     # Remove the results generated when displaying the feedback from instruments such as the Mini
