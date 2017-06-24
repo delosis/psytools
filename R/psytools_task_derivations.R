@@ -15,18 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#NB These functions expect AgeGroup and rowIndex columns to be present in the supplied df
+#NB These functions expect rowIndex columns to be present in the supplied df
 ## The DFs supplied are expected to be as they come out of the csv PER TASK other than this I am not removing the extra columns (pause duration etc) which came from merging all tasks together into one DF
 ## However you do NOT need to have filtered to the correct iteration as iteration will be supplied back in the summary DF
 ## In short:
 ##        Load the csv using read.csv
-##        get age group off the User code
 ##        compute a row index
 ##        supply the DF to one of the derive functions.
 ##
 ##        repeat for each task seperately
 
-## Happy to remove reliance on the Age group and row index if you prefer! Some additional flexibility can be worked in
+## Happy to remove reliance on the row index if you prefer! Some additional flexibility can be worked in
 
 library(car)
 library(reshape2)
@@ -61,7 +60,7 @@ deriveSST <- function(df) {
     df$StopHitRate <- as.numeric(df$StopHitRate)
 
     # Summaries - not 100% sure what you need here?
-    dfsums <- do.call(data.frame, aggregate(cbind(TrialResult)~AgeGroup+User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp, function(x)
+    dfsums <- do.call(data.frame, aggregate(cbind(TrialResult)~User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp, function(x)
                       c(GO_SUCCESS = length(which(x == "GO_SUCCESS")),
                         GO_TOO_LATE = length(which(x == "GO_TOO_LATE")),
                         GO_WRONG_KEY_RESPONSE = length(which(x == "GO_WRONG_KEY_RESPONSE")),
@@ -109,7 +108,7 @@ deriveMID <- function(df) {
     df$TargetHitRate <- as.numeric(df$TargetHitRate)
 
     # Summaries - not 100% sure what you need here?
-    dfsums <- do.call(data.frame, aggregate(cbind(TrialResult)~AgeGroup+User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp, function(x)
+    dfsums <- do.call(data.frame, aggregate(cbind(TrialResult)~User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp, function(x)
                       c(NO_RESPONSE = length(which(x == "NO_RESPONSE")),
                         TOO_LATE = length(which(x == "TOO_LATE")),
                         TOO_EARLY = length(which(x == "TOO_EARLY")),
@@ -146,7 +145,7 @@ deriveWCST <- function(df) {
     df$Switches[df$SortCategory != c(df$SortCategory[-1], NA) & df$User.code == c(df$User.code[-1], NA) & df$Iteration == c(df$Iteration[-1], NA)] <- 1
 
     # Summaries
-    dfsums <- do.call(data.frame, aggregate(cbind(Corrects, Switches, Perseverations)~AgeGroup+User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp, FUN=sum, na.rm=TRUE, na.action=NULL, data=df))
+    dfsums <- do.call(data.frame, aggregate(cbind(Corrects, Switches, Perseverations)~User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp, FUN=sum, na.rm=TRUE, na.action=NULL, data=df))
     dfsums <- merge(dfsums, do.call(data.frame, aggregate(cbind(Response.time..ms.)~User.code+Iteration, function(x)
                     c(mean = mean(x), sd = sd(x)), data=df)), by=c("User.code", "Iteration"))
 
@@ -168,8 +167,8 @@ deriveDS <- function(df) {
     df$Corrects[df$Trial.result=="PASS"] <- 1
 
     # Summaries
-    dfsums<-do.call(data.frame, aggregate(cbind(Corrects)~AgeGroup+User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp+Block, FUN=sum, na.rm=TRUE, na.action=NULL, data=df))
-    dfsums<-reshape(dfsums, direction = "wide", idvar = c("AgeGroup", "User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "Block")
+    dfsums<-do.call(data.frame, aggregate(cbind(Corrects)~User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp+Block, FUN=sum, na.rm=TRUE, na.action=NULL, data=df))
+    dfsums<-reshape(dfsums, direction = "wide", idvar = c("User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "Block")
 
     dfsums$SpanF[dfsums$Corrects.F_2>1] <- 2
     dfsums$SpanF[dfsums$Corrects.F_3>1] <- 3
@@ -209,8 +208,8 @@ deriveCORSI <- function(df) {
     df$Corrects[df$Trial.result=="PASS"] <- 1
 
     # Summaries
-    dfsums <- do.call(data.frame, aggregate(cbind(Corrects)~AgeGroup+User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp+Block, FUN=sum, na.rm=TRUE, na.action=NULL, data=df))
-    dfsums <- reshape(dfsums, direction = "wide", idvar = c("AgeGroup", "User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "Block")
+    dfsums <- do.call(data.frame, aggregate(cbind(Corrects)~User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp+Block, FUN=sum, na.rm=TRUE, na.action=NULL, data=df))
+    dfsums <- reshape(dfsums, direction = "wide", idvar = c("User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "Block")
 
     dfsums$SpanF[dfsums$Corrects.F2>0] <- 2
     dfsums$SpanF[dfsums$Corrects.F3>0] <- 3
@@ -253,8 +252,8 @@ deriveTMT <- function(df) {
     df$Block <- gsub("_Test[1]?", "", df$Block)
 
     # Summaries
-    dfsums <- do.call(data.frame, aggregate(cbind(Response.time..ms., Incorrect.responses, Wild.responses)~AgeGroup+User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp+Block, FUN=sum, na.rm=TRUE, na.action=NULL, data=df))
-    dfsums <- reshape(dfsums, direction = "wide", idvar = c("AgeGroup", "User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "Block")
+    dfsums <- do.call(data.frame, aggregate(cbind(Response.time..ms., Incorrect.responses, Wild.responses)~User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp+Block, FUN=sum, na.rm=TRUE, na.action=NULL, data=df))
+    dfsums <- reshape(dfsums, direction = "wide", idvar = c("User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "Block")
 
     return (dfsums)
 }
@@ -274,14 +273,14 @@ deriveSOCRATIS <- function(df) {
     df <- subset(df, !grepl("FEEDBACK|js", Block, ignore.case=TRUE))
 
     # Remove unneeded columns and any skip back control markers
-    df <- subset(df, df$Response != 'skip_back', select=c(AgeGroup, User.code, Iteration,Language,Completed,Completed.Timestamp,Processed.Timestamp,Trial, Trial.result))
+    df <- subset(df, df$Response != 'skip_back', select=c(User.code, Iteration,Language,Completed,Completed.Timestamp,Processed.Timestamp,Trial, Trial.result))
 
     # Select just the LAST response on each question - note that this means repeating a task will update the results - but it also takes the most recent response if they navigate backwards and then change their mind
     df <- df[!duplicated(subset(df, select=c(User.code, Iteration, Trial)), fromLast=TRUE),]
 
     # Summaries - currently just showing those calculated in task - let me know if there are any other ones
     df <- subset(df, grepl("INDEX", Trial, ignore.case=TRUE))
-    df <- reshape(df, direction = "wide", idvar = c("AgeGroup", "User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "Trial")
+    df <- reshape(df, direction = "wide", idvar = c("User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "Trial")
     names(df) <- gsub("Trial.result.", "", names(df))
     df$SOCRATIS_TOM_1_INDEX <- as.numeric(df$SOCRATIS_TOM_1_INDEX)
     df$SOCRATIS_TOM_2_INDEX <- as.numeric(df$SOCRATIS_TOM_2_INDEX)
@@ -310,15 +309,15 @@ deriveBART <- function(df) {
     df$BalloonColour <- toupper(gsub("[0-9]", "", df$Trial))
 
     # Remove unneeded columns
-    df <- subset(df, select=c(AgeGroup, User.code, Iteration, Language, Completed, Completed.Timestamp, Processed.Timestamp, BalloonColour, TrialResult, PumpsMade))
+    df <- subset(df, select=c(User.code, Iteration, Language, Completed, Completed.Timestamp, Processed.Timestamp, BalloonColour, TrialResult, PumpsMade))
 
     # Summaries
-    dfsums <- do.call(data.frame, aggregate(cbind(PumpsMade)~AgeGroup+User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp+BalloonColour+TrialResult, FUN=sum, na.rm=TRUE, na.action=NULL, data=df))
-    dfsums <- reshape(dfsums, direction = "wide", idvar = c("AgeGroup", "User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp", "BalloonColour"), timevar = "TrialResult")
+    dfsums <- do.call(data.frame, aggregate(cbind(PumpsMade)~User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp+BalloonColour+TrialResult, FUN=sum, na.rm=TRUE, na.action=NULL, data=df))
+    dfsums <- reshape(dfsums, direction = "wide", idvar = c("User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp", "BalloonColour"), timevar = "TrialResult")
     dfsums <- merge(do.call(data.frame, aggregate(cbind(TrialResult)~User.code+Iteration+BalloonColour, function(x)
                             c(NumPopped = length(which(x == "POPPED"))), data=df)), dfsums, by=c("User.code", "Iteration", "BalloonColour"))
     names(dfsums)[names(dfsums) == 'TrialResult'] <- 'NumPopped'
-    dfsums <- reshape(dfsums, direction = "wide", idvar = c("AgeGroup", "User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "BalloonColour")
+    dfsums <- reshape(dfsums, direction = "wide", idvar = c("User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "BalloonColour")
 
     return (dfsums)
 }
@@ -350,14 +349,14 @@ deriveERT <- function(df) {
     df$RTincorrect[df$Correct==0] <- df$Response.time..ms.[df$Correct==0]
 
     # Remove unneeded columns
-    df <- subset(df, select=c(AgeGroup, User.code, Iteration, Language, Completed, Completed.Timestamp, Processed.Timestamp, Trial, Response, Response.time..ms., TrialEmotion, TrialEmotionIndex, Correct, RTcorrect, RTincorrect))
+    df <- subset(df, select=c(User.code, Iteration, Language, Completed, Completed.Timestamp, Processed.Timestamp, Trial, Response, Response.time..ms., TrialEmotion, TrialEmotionIndex, Correct, RTcorrect, RTincorrect))
 
     # Summaries
-    dfsums <- do.call(data.frame, aggregate(cbind(RTcorrect, RTincorrect)~AgeGroup+User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp+TrialEmotion, FUN=mean, na.rm=TRUE, na.action=NULL, data=df))
+    dfsums <- do.call(data.frame, aggregate(cbind(RTcorrect, RTincorrect)~User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp+TrialEmotion, FUN=mean, na.rm=TRUE, na.action=NULL, data=df))
     dfsums <- merge(do.call(data.frame, aggregate(cbind(Correct)~User.code+Iteration+TrialEmotion, FUN=sum, na.rm=TRUE, na.action=NULL, data=df)), dfsums, by=c("User.code", "Iteration", "TrialEmotion"))
     dfsums$RTcorrect <- recode(dfsums$RTcorrect, 'NaN=NA')
     dfsums$RTincorrect <- recode(dfsums$RTincorrect, 'NaN=NA')
-    dfsums<-reshape(dfsums, direction = "wide", idvar = c("AgeGroup", "User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "TrialEmotion")
+    dfsums<-reshape(dfsums, direction = "wide", idvar = c("User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"), timevar = "TrialEmotion")
 
     return (dfsums)
 }
@@ -505,7 +504,7 @@ deriveKIRBY <- function(df) {
     }
 
     # Finally make a geomean of all the max consistencies geomeans as their final outcome - Merge it into the Kest by LDRscale from earlier
-    dfsums <- merge(do.call(data.frame, aggregate(cbind(Kest)~AgeGroup+User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp, function(x)
+    dfsums <- merge(do.call(data.frame, aggregate(cbind(Kest)~User.code+Iteration+Language+Completed+Completed.Timestamp+Processed.Timestamp, function(x)
                     c(geomean=exp(mean(log(x)))), data=df)),
                     dfsums,
                     by=c("User.code", "Iteration"))
