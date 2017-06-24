@@ -76,6 +76,10 @@ deriveSST <- function(df) {
 
 #' Derive MID data.
 #'
+#' Applies to the
+#' \href{Monetary Incentive Delay}{https://doi.org/10.1006/nimg.2000.0593}
+#' task implemented in Psytools.
+#'
 #' @param df Data frame with MID data read from CSV file exported from Delosis server.
 #' @return Data frame with summaries.
 #'
@@ -122,6 +126,10 @@ deriveMID <- function(df) {
 
 
 #' Derive WCST data.
+#'
+#' Applies to the
+#' \href{Wisconsin Card Sorting Test}{https://doi.org/10.1080/00221309.1948.9918159}
+#' implemented in Psytools.
 #'
 #' @param df Data frame with WCST data read from CSV file exported from Delosis server.
 #' @return Data frame with summaries.
@@ -196,6 +204,10 @@ deriveDS <- function(df) {
 
 #' Derive CORSI data.
 #'
+#' Applies to the
+#' \href{CORSI block-tapping test}{https://doi.org/10.1207/S15324826AN0704_8}
+#' implemented in Psytools.
+#'
 #' @param df Data frame with CORSI data read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
@@ -237,7 +249,9 @@ deriveCORSI <- function(df) {
 
 #' Derive TMT data.
 #'
-#' Drop the practice
+#' Applies to the Trail Making Test implemented in Psytools.
+#'
+#' Drop the initial practice.
 #'
 #' @param df Data frame with TMT data read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
@@ -261,6 +275,10 @@ deriveTMT <- function(df) {
 
 #' Derive SOCRATES data.
 #'
+#' Applies to the
+#' \href{Stages of Change Readiness and Treatment Eagerness Scale}{https://dx.doi.org/10.1037/0893-164X.10.2.81}
+#' implemented in Psytools.
+
 #' This is essentially just a questionnaire - other questionnaires could
 #' be similarly processed!
 #'
@@ -291,6 +309,10 @@ deriveSOCRATIS <- function(df) {
 
 
 #' Derive BART data.
+#'
+#' Applies to the
+#' \href{Balloon Analogue Risk Task}{https://dx.doi.org/10.1037/1076-898X.8.2.75}
+#' implemented in Psytools.
 #'
 #' @param df Data frame with BART data read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
