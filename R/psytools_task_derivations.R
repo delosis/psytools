@@ -38,10 +38,9 @@ library(reshape2)
 #' go_success rate. They will probably need to be excluded. Really this should
 #' not be happening in a supervised admin situation?
 #'
-#' @param df Data frame with SST data read from CSV file exported from Delosis server.
+#' @param df Data frame with SST data, read from CSV file exported from Delosis server.
 #' @return Data frame with summaries.
 #'
-#' @noRd
 #' @export
 deriveSST <- function(df) {
     df <- subset(df, df$Block !='SST_Practice')
@@ -77,13 +76,12 @@ deriveSST <- function(df) {
 #' Derive MID data.
 #'
 #' Applies to the
-#' \href{Monetary Incentive Delay}{https://doi.org/10.1006/nimg.2000.0593}
+#' \href{https://doi.org/10.1006/nimg.2000.0593}{Monetary Incentive Delay}
 #' task implemented in Psytools.
 #'
-#' @param df Data frame with MID data read from CSV file exported from Delosis server.
+#' @param df Data frame with MID data, read from CSV file exported from Delosis server.
 #' @return Data frame with summaries.
 #'
-#' @noRd
 #' @export
 deriveMID <- function(df) {
     df <- subset(df, df$Block !='MID_PRACTICE' & df$Block !='midNRCHECK')
@@ -128,13 +126,12 @@ deriveMID <- function(df) {
 #' Derive WCST data.
 #'
 #' Applies to the
-#' \href{Wisconsin Card Sorting Test}{https://doi.org/10.1080/00221309.1948.9918159}
+#' \href{https://doi.org/10.1080/00221309.1948.9918159}{Wisconsin Card Sorting Test}
 #' implemented in Psytools.
 #'
-#' @param df Data frame with WCST data read from CSV file exported from Delosis server.
+#' @param df Data frame with WCST data, read from CSV file exported from Delosis server.
 #' @return Data frame with summaries.
 #'
-#' @noRd
 #' @export
 deriveWCST <- function(df) {
     df <- df
@@ -163,10 +160,9 @@ deriveWCST <- function(df) {
 
 #' Derive DS data.
 #'
-#' @param df Data frame with DS data read from CSV file exported from Delosis server.
+#' @param df Data frame with DS data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
-#' @noRd
 #' @export
 deriveDS <- function(df) {
     df <- subset(df, df$Block !='SST_Practice')
@@ -205,13 +201,12 @@ deriveDS <- function(df) {
 #' Derive CORSI data.
 #'
 #' Applies to the
-#' \href{CORSI block-tapping test}{https://doi.org/10.1207/S15324826AN0704_8}
+#' \href{https://doi.org/10.1207/S15324826AN0704_8}{CORSI block-tapping test}
 #' implemented in Psytools.
 #'
-#' @param df Data frame with CORSI data read from CSV file exported from Delosis server.
+#' @param df Data frame with CORSI data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
-#' @noRd
 #' @export
 deriveCORSI <- function(df) {
     df <- subset(df, df$Block !='P2')
@@ -253,10 +248,9 @@ deriveCORSI <- function(df) {
 #'
 #' Drop the initial practice.
 #'
-#' @param df Data frame with TMT data read from CSV file exported from Delosis server.
+#' @param df Data frame with TMT data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
-#' @noRd
 #' @export
 deriveTMT <- function(df) {
     df <- subset(df, !grepl("Practice", Block, ignore.case=TRUE))
@@ -276,16 +270,15 @@ deriveTMT <- function(df) {
 #' Derive SOCRATES data.
 #'
 #' Applies to the
-#' \href{Stages of Change Readiness and Treatment Eagerness Scale}{https://dx.doi.org/10.1037/0893-164X.10.2.81}
+#' \href{https://dx.doi.org/10.1037/0893-164X.10.2.81}{Stages of Change Readiness and Treatment Eagerness Scale}
 #' implemented in Psytools.
 
 #' This is essentially just a questionnaire - other questionnaires could
 #' be similarly processed!
 #'
-#' @param df Data frame with SOCRATES data read from CSV file exported from Delosis server.
+#' @param df Data frame with SOCRATES data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
-#' @noRd
 #' @export
 deriveSOCRATIS <- function(df) {
     df <- subset(df, !grepl("FEEDBACK|js", Block, ignore.case=TRUE))
@@ -311,13 +304,12 @@ deriveSOCRATIS <- function(df) {
 #' Derive BART data.
 #'
 #' Applies to the
-#' \href{Balloon Analogue Risk Task}{https://dx.doi.org/10.1037/1076-898X.8.2.75}
+#' \href{https://dx.doi.org/10.1037/1076-898X.8.2.75}{Balloon Analogue Risk Task}
 #' implemented in Psytools.
 #'
-#' @param df Data frame with BART data read from CSV file exported from Delosis server.
+#' @param df Data frame with BART data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
-#' @noRd
 #' @export
 deriveBART <- function(df) {
     # Split the result column
@@ -347,10 +339,9 @@ deriveBART <- function(df) {
 
 #' Derive ERT data.
 #'
-#' @param df Data frame with ERT data read from CSV file exported from Delosis server.
+#' @param df Data frame with ERT data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
-#' @noRd
 #' @importFrom car recode
 #' @export
 deriveERT <- function(df) {
@@ -389,10 +380,9 @@ deriveERT <- function(df) {
 #'
 #' Again just a questionnaire!
 #'
-#' @param df Data frame with MCQ / KIRBY data read from CSV file exported from Delosis server.
+#' @param df Data frame with MCQ / KIRBY data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
-#' @noRd
 #' @importFrom car recode
 #' @export
 deriveKIRBY <- function(df) {
@@ -539,14 +529,14 @@ deriveKIRBY <- function(df) {
 
 #' Rotate simple questionnaires from long to wide format.
 #'
-#' Requires User.code, Iteration, Trial and Trial.result columns in input df.
-#' Removes repeated Trial results caused by skipping back.
+#' Requires \code{User.code}, \code{Iteration}, \code{Trial} and \code{Trial.result}
+#' columns in input data frame.
+#' Removes repeated occurrences of \code{Trial.result} caused by skipping back.
 #' Should work for any questionnaire to rotate into a wide format, but may want some additional honing!
 #'
-#' @param df Data frame with simpel questionnaire read from CSV file exported from Delosis server.
+#' @param df Data frame with simple questionnaire, read from CSV file exported from Delosis server.
 #' @return Rotated data frame.
 #'
-#' @noRd
 #' @importFrom reshape2 dcast
 #' @export
 rotateQuestionnaire <- function(df) {
