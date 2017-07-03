@@ -33,6 +33,10 @@ library(reshape2)
 
 #' Derive SST data.
 #'
+#' Applies to the
+#' \href{http://dx.doi.org/10.1037/0033-295X.91.3.295}{Stop Signal Task}
+#' task implemented in Psytools.
+#'
 #' Clearly there are some people who are simply not responding for big chunks
 #' of this task in c-VEDA. This gives them a good stop hit rate but very bad
 #' go_success rate. They will probably need to be excluded. Really this should
@@ -125,8 +129,8 @@ deriveMID <- function(df) {
 
 #' Derive WCST data.
 #'
-#' Applies to the
-#' \href{https://doi.org/10.1080/00221309.1948.9918159}{Wisconsin Card Sorting Test}
+#' Applies to the Wisconsin Card Sorting Test
+#' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
 #' implemented in Psytools.
 #'
 #' @param df Data frame with WCST data, read from CSV file exported from Delosis server.
@@ -159,6 +163,10 @@ deriveWCST <- function(df) {
 
 
 #' Derive DS data.
+#'
+#' Applies to the Digit Span task
+#' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
+#' implemented in Psytools.
 #'
 #' @param df Data frame with DS data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
@@ -201,7 +209,8 @@ deriveDS <- function(df) {
 #' Derive CORSI data.
 #'
 #' Applies to the
-#' \href{https://doi.org/10.1207/S15324826AN0704_8}{CORSI block-tapping test}
+#' \href{http://digitool.library.mcgill.ca/R/?func=dbin-jump-full&object_id=93903}{CORSI block-tapping test}
+#' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
 #' implemented in Psytools.
 #'
 #' @param df Data frame with CORSI data, read from CSV file exported from Delosis server.
@@ -244,7 +253,9 @@ deriveCORSI <- function(df) {
 
 #' Derive TMT data.
 #'
-#' Applies to the Trail Making Test implemented in Psytools.
+#' Applies to the Trail Making Test
+#' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
+#' implemented in Psytools.
 #'
 #' Drop the initial practice.
 #'
@@ -267,16 +278,14 @@ deriveTMT <- function(df) {
 }
 
 
-#' Derive SOCRATES data.
+#' Derive SOCRATIS data.
 #'
 #' Applies to the
-#' \href{https://dx.doi.org/10.1037/0893-164X.10.2.81}{Stages of Change Readiness and Treatment Eagerness Scale}
-#' implemented in Psytools.
-
-#' This is essentially just a questionnaire - other questionnaires could
-#' be similarly processed!
+#' \href{https://doi.org/10.1016/j.ajp.2011.05.014}{Social Cognition RAting Tools in Indian Setting}
+#' implemented in Psytools. This is essentially just a questionnaire -
+#' other questionnaires could be similarly processed!
 #'
-#' @param df Data frame with SOCRATES data, read from CSV file exported from Delosis server.
+#' @param df Data frame with SOCRATIS data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
 #' @export
@@ -304,7 +313,7 @@ deriveSOCRATIS <- function(df) {
 #' Derive BART data.
 #'
 #' Applies to the
-#' \href{https://dx.doi.org/10.1037/1076-898X.8.2.75}{Balloon Analogue Risk Task}
+#' \href{https://www.ncbi.nlm.nih.gov/pubmed/12075692}{Balloon Analogue Risk Task}
 #' implemented in Psytools.
 #'
 #' @param df Data frame with BART data, read from CSV file exported from Delosis server.
@@ -338,6 +347,10 @@ deriveBART <- function(df) {
 
 
 #' Derive ERT data.
+#'
+#' Applies to the
+#' \href{https://dx.doi.org/10.2466/PMS.104.2.589-598}{Emotion Recognition Task}
+#' implemented in Psytools.
 #'
 #' @param df Data frame with ERT data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
@@ -376,11 +389,14 @@ deriveERT <- function(df) {
 }
 
 
-#' Derive MCQ / KIRBY data.
+#' Derive KIRBY data.
 #'
-#' Again just a questionnaire!
+#' Applies to the
+#' \href{https://www.ncbi.nlm.nih.gov/pubmed/10100392}{Now-or-later test}
+#' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
+#' implemented in Psytools. Again just a questionnaire!
 #'
-#' @param df Data frame with MCQ / KIRBY data, read from CSV file exported from Delosis server.
+#' @param df Data frame with KIRBY data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
 #' @importFrom car recode
