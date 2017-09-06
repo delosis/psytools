@@ -12,7 +12,7 @@ data from more complex questionnaires such as:
 - ERT
 - MCQ / KIRBY (Monetary Choice Questionnaire)
 - MID
-- SOCRATIS (SOCRATES Stages Of Change Readiness And Treatment Eagerness Scale)
+- SOCRATIS
 - SST (Social Skills Training)
 - TMT
 - WCST (Wisconsin Card Sorting Test)
