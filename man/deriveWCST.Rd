@@ -12,8 +12,3 @@ deriveWCST(df)
 \value{
 Data frame with summaries.
 }
-\description{
-Applies to the
-\href{https://doi.org/10.1080/00221309.1948.9918159}{Wisconsin Card Sorting Test}
-implemented in Psytools.
-}

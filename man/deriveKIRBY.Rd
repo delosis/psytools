@@ -2,16 +2,13 @@
 % Please edit documentation in R/psytools_task_derivations.R
 \name{deriveKIRBY}
 \alias{deriveKIRBY}
-\title{Derive MCQ / KIRBY data.}
+\title{Derive KIRBY data.}
 \usage{
 deriveKIRBY(df)
 }
 \arguments{
-\item{df}{Data frame with MCQ / KIRBY data, read from CSV file exported from Delosis server.}
+\item{df}{Data frame with KIRBY data, read from CSV file exported from Delosis server.}
 }
 \value{
 Derived data frame with summaries.
-}
-\description{
-Again just a questionnaire!
 }

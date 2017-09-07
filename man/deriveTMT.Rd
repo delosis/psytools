@@ -12,9 +12,6 @@ deriveTMT(df)
 \value{
 Derived data frame with summaries.
 }
-\description{
-Applies to the Trail Making Test implemented in Psytools.
-}
 \details{
 Drop the initial practice.
 }

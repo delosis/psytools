@@ -12,6 +12,3 @@ deriveDS(df)
 \value{
 Derived data frame with summaries.
 }
-\description{
-Derive DS data.
-}

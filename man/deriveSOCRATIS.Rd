@@ -2,20 +2,19 @@
 % Please edit documentation in R/psytools_task_derivations.R
 \name{deriveSOCRATIS}
 \alias{deriveSOCRATIS}
-\title{Derive SOCRATES data.}
+\title{Derive SOCRATIS data.}
 \usage{
 deriveSOCRATIS(df)
 }
 \arguments{
-\item{df}{Data frame with SOCRATES data, read from CSV file exported from Delosis server.}
+\item{df}{Data frame with SOCRATIS data, read from CSV file exported from Delosis server.}
 }
 \value{
 Derived data frame with summaries.
 }
 \description{
 Applies to the
-\href{https://dx.doi.org/10.1037/0893-164X.10.2.81}{Stages of Change Readiness and Treatment Eagerness Scale}
-implemented in Psytools.
-This is essentially just a questionnaire - other questionnaires could
-be similarly processed!
+\href{https://doi.org/10.1016/j.ajp.2011.05.014}{Social Cognition RAting Tools in Indian Setting}
+implemented in Psytools. This is essentially just a questionnaire -
+other questionnaires could be similarly processed!
 }

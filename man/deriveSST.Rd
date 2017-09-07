@@ -13,6 +13,11 @@ deriveSST(df)
 Data frame with summaries.
 }
 \description{
+Applies to the
+\href{http://dx.doi.org/10.1037/0033-295X.91.3.295}{Stop Signal Task}
+task implemented in Psytools.
+}
+\details{
 Clearly there are some people who are simply not responding for big chunks
 of this task in c-VEDA. This gives them a good stop hit rate but very bad
 go_success rate. They will probably need to be excluded. Really this should

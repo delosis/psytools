@@ -13,5 +13,7 @@ deriveERT(df)
 Derived data frame with summaries.
 }
 \description{
-Derive ERT data.
+Applies to the
+\href{https://dx.doi.org/10.2466/PMS.104.2.589-598}{Emotion Recognition Task}
+implemented in Psytools.
 }

@@ -12,8 +12,3 @@ deriveCORSI(df)
 \value{
 Derived data frame with summaries.
 }
-\description{
-Applies to the
-\href{https://doi.org/10.1207/S15324826AN0704_8}{CORSI block-tapping test}
-implemented in Psytools.
-}
