@@ -12,7 +12,7 @@ data from more complex questionnaires such as:
 - ERT
 - MCQ / KIRBY (Monetary Choice Questionnaire)
 - MID
-- SOCRATIS
+- SOCRATIS (Social Cognition Rating Tools in Indian Setting)
 - SST (Social Skills Training)
 - TMT
 - WCST (Wisconsin Card Sorting Test)
