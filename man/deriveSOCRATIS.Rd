@@ -14,7 +14,7 @@ Derived data frame with summaries.
 }
 \description{
 Applies to the
-\href{https://doi.org/10.1016/j.ajp.2011.05.014}{Social Cognition RAting Tools in Indian Setting}
+\href{https://doi.org/10.1016/j.ajp.2011.05.014}{Social Cognition Rating Tools in Indian Setting}
 implemented in Psytools. This is essentially just a questionnaire -
 other questionnaires could be similarly processed!
 }

@@ -14,6 +14,6 @@ Derived data frame with summaries.
 }
 \description{
 Applies to the
-\href{https://www.ncbi.nlm.nih.gov/pubmed/12075692}{Balloon Analogue Risk Task}
+\href{https://dx.doi.org/10.1037/1076-898X.8.2.75}{Balloon Analogue Risk Task}
 implemented in Psytools.
 }
