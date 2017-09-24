@@ -281,7 +281,7 @@ deriveTMT <- function(df) {
 #' Derive SOCRATIS data.
 #'
 #' Applies to the
-#' \href{https://doi.org/10.1016/j.ajp.2011.05.014}{Social Cognition RAting Tools in Indian Setting}
+#' \href{https://doi.org/10.1016/j.ajp.2011.05.014}{Social Cognition Rating Tools in Indian Setting}
 #' implemented in Psytools. This is essentially just a questionnaire -
 #' other questionnaires could be similarly processed!
 #'
@@ -313,7 +313,7 @@ deriveSOCRATIS <- function(df) {
 #' Derive BART data.
 #'
 #' Applies to the
-#' \href{https://www.ncbi.nlm.nih.gov/pubmed/12075692}{Balloon Analogue Risk Task}
+#' \href{https://dx.doi.org/10.1037/1076-898X.8.2.75}{Balloon Analogue Risk Task}
 #' implemented in Psytools.
 #'
 #' @param df Data frame with BART data, read from CSV file exported from Delosis server.
