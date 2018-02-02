@@ -566,6 +566,7 @@ rotateQuestionnaire <- function(df) {
     return (df)
 }
 
+
 #' Rotate simple questionnaires from long to wide format.
 #' Preserving Block as well as trial for the output
 #'
