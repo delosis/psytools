@@ -265,8 +265,6 @@ deriveDS <- function(df) {
     stop("df does not meet requirements as passed")
   }
   
-  df <- subset(df, df$Block != 'SST_Practice')
-  
   #Create a numerical score to sum later
   df$Corrects[df$Trial.result == "PASS"] <- 1
   
@@ -408,7 +406,7 @@ deriveCORSI <- function(df) {
 #'
 #' @export
 deriveTMT <- function(df) {
-  if (sanityCheck(df,c("Incorrect.responses", "Wild.responses", "Pause.duration..ms.")) == FALSE) {
+  if (sanityCheck(df,c("Incorrect.responses", "Wild.responses", "Pause.duration..ms."), c("Trial.result")) == FALSE) {
     stop("df does not meet requirements as passed")
   }
   
