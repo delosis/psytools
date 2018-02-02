@@ -491,7 +491,7 @@ deriveSOCRATIS <- function(df) {
     df[!duplicated(subset(df, select = c(User.code, Iteration, Trial)), fromLast =
                      TRUE), ]
   
-  if (sanityCheck(df) == FALSE) {
+  if (sanityCheck(df, , c("Block")) == FALSE) {
     stop("df does not meet requirements once filtered")
   }
   
@@ -1075,7 +1075,9 @@ rotateQuestionnairePreserveBlock <- function(df) {
 
 #' Check a df meets minimum specs for processing
 #' @param df Data frame to be checked.
-#' @param reqVar Columns that must be present in the df
+#' @param additionalVars extra columns that must be present in the df
+#' @param nonRequiredVars standard columns do not need to be present in the df
+#' 
 #' @return boolean
 #'
 #' @export
