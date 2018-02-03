@@ -50,11 +50,11 @@ deriveSST <- function(df) {
   if (sanityCheck(df, c("rowIndex")) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   df <- subset(df, df$Block != 'SST_Practice')
   df <-
     df[order(df$User.code, df$Iteration, df$rowIndex, df$Trial), ]
-  
+
   # Split the result column
   options(stringsAsFactors = FALSE)
   df <-
@@ -69,7 +69,7 @@ deriveSST <- function(df) {
   names(df)[names(df) == 'X6'] <- 'TrialDuration'
   df$StopDelay <- as.numeric(df$StopDelay)
   df$StopHitRate <- as.numeric(df$StopHitRate)
-  
+
   # Summaries - not 100% sure what you need here?
   dfsums <-
     do.call(
@@ -97,7 +97,7 @@ deriveSST <- function(df) {
               ), data = subset(df, df$TrialType == 'STOP_VAR'))
           ),
           by = c("User.code", "Iteration"))
-  
+
   return (dfsums)
 }
 
@@ -116,12 +116,12 @@ deriveMID <- function(df) {
   if (sanityCheck(df, c("rowIndex")) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   df <-
     subset(df, df$Block != 'MID_PRACTICE' & df$Block != 'midNRCHECK')
   df <-
     df[order(df$User.code, df$Iteration, df$rowIndex, df$Trial), ]
-  
+
   # Split the result column
   options(stringsAsFactors = FALSE)
   df <-
@@ -140,7 +140,7 @@ deriveMID <- function(df) {
   df$TrialType <- paste(df$X2, df$X3)
   df$TrialNum <- as.numeric(df$TrialNum)
   df <- subset(df, select = -c(X2, X3))
-  
+
   # Fix for coding bug with Failure trials (hit rate and target duration
   # not output in early version of task)
   df$TargetDuration[df$TrialResult == "'FAILURE"] <-
@@ -153,10 +153,10 @@ deriveMID <- function(df) {
       digits = 2
     )
   df$TrialResult[df$TrialResult == "'FAILURE"] <- "FAILURE"
-  
+
   df$TargetDuration <- as.numeric(df$TargetDuration)
   df$TargetHitRate <- as.numeric(df$TargetHitRate)
-  
+
   # Summaries - not 100% sure what you need here?
   dfsums <-
     do.call(
@@ -183,7 +183,7 @@ deriveMID <- function(df) {
               ), data = df)
           ),
           by = c("User.code", "Iteration"))
-  
+
   return (dfsums)
 }
 
@@ -202,9 +202,9 @@ deriveWCST <- function(df) {
   if (sanityCheck(df, c("rowIndex")) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   df <- df
-  
+
   # Split the result column
   options(stringsAsFactors = FALSE)
   df <-
@@ -216,13 +216,13 @@ deriveWCST <- function(df) {
   df$Corrects[df$X1 == 'PASS'] <- 1
   df <- subset(df, select = -c(X1, X3))
   df <- df[order(df$User.code, df$Iteration, df$rowIndex), ]
-  
+
   # Flag each switch for summing
   df$Switches <- 0
   df$Switches[df$SortCategory != c(df$SortCategory[-1], NA) &
                 df$User.code == c(df$User.code[-1], NA) &
                 df$Iteration == c(df$Iteration[-1], NA)] <- 1
-  
+
   # Summaries
   dfsums <-
     do.call(
@@ -244,7 +244,7 @@ deriveWCST <- function(df) {
               c(mean = mean(x), sd = sd(x)), data = df)
           ),
           by = c("User.code", "Iteration"))
-  
+
   return (dfsums)
 }
 
@@ -260,14 +260,14 @@ deriveWCST <- function(df) {
 #'
 #' @export
 deriveDS <- function(df) {
-  
+
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   #Create a numerical score to sum later
   df$Corrects[df$Trial.result == "PASS"] <- 1
-  
+
   # Summaries
   dfsums <-
     do.call(
@@ -295,7 +295,7 @@ deriveDS <- function(df) {
       ),
       timevar = "Block"
     )
-  
+
   dfsums$SpanF[dfsums$Corrects.F_2 > 1] <- 2
   dfsums$SpanF[dfsums$Corrects.F_3 > 1] <- 3
   dfsums$SpanF[dfsums$Corrects.F_4 > 1] <- 4
@@ -305,7 +305,7 @@ deriveDS <- function(df) {
   dfsums$SpanF[dfsums$Corrects.F_8 > 1] <- 8
   dfsums$SpanF[dfsums$Corrects.F_9 > 1] <- 9
   dfsums$SpanF[dfsums$Corrects.F_10 > 1] <- 10
-  
+
   dfsums$SpanB[dfsums$Corrects.B_2 > 1] <- 2
   dfsums$SpanB[dfsums$Corrects.B_3 > 1] <- 3
   dfsums$SpanB[dfsums$Corrects.B_4 > 1] <- 4
@@ -315,7 +315,7 @@ deriveDS <- function(df) {
   dfsums$SpanB[dfsums$Corrects.B_8 > 1] <- 8
   dfsums$SpanB[dfsums$Corrects.B_9 > 1] <- 9
   dfsums$SpanB[dfsums$Corrects.B_10 > 1] <- 10
-  
+
   return (dfsums)
 }
 
@@ -335,12 +335,12 @@ deriveCORSI <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   df <- subset(df, df$Block != 'P2')
-  
+
   #Create a numerical score to sum later
   df$Corrects[df$Trial.result == "PASS"] <- 1
-  
+
   # Summaries
   dfsums <-
     do.call(
@@ -368,7 +368,7 @@ deriveCORSI <- function(df) {
       ),
       timevar = "Block"
     )
-  
+
   dfsums$SpanF[dfsums$Corrects.F2 > 0] <- 2
   dfsums$SpanF[dfsums$Corrects.F3 > 0] <- 3
   dfsums$SpanF[dfsums$Corrects.F4 > 0] <- 4
@@ -378,7 +378,7 @@ deriveCORSI <- function(df) {
   dfsums$SpanF[dfsums$Corrects.F8 > 0] <- 8
   dfsums$SpanF[dfsums$Corrects.F9 > 0] <- 9
   dfsums$SpanF[dfsums$Corrects.F10 > 0] <- 10
-  
+
   dfsums$SpanB[dfsums$Corrects.B2 > 0] <- 2
   dfsums$SpanB[dfsums$Corrects.B3 > 0] <- 3
   dfsums$SpanB[dfsums$Corrects.B4 > 0] <- 4
@@ -388,7 +388,7 @@ deriveCORSI <- function(df) {
   dfsums$SpanB[dfsums$Corrects.B8 > 0] <- 8
   dfsums$SpanB[dfsums$Corrects.B9 > 0] <- 9
   dfsums$SpanB[dfsums$Corrects.B10 > 0] <- 10
-  
+
   return (dfsums)
 }
 
@@ -409,13 +409,13 @@ deriveTMT <- function(df) {
   if (sanityCheck(df,c("Incorrect.responses", "Wild.responses", "Pause.duration..ms."), c("Trial.result")) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   df <- subset(df,!grepl("Practice", Block, ignore.case = TRUE))
-  
+
   # Simplify the block names
   df$Block <- gsub("TMT_", "", df$Block)
   df$Block <- gsub("_Test[1]?", "", df$Block)
-  
+
   # Summaries
   dfsums <-
     do.call(
@@ -444,7 +444,7 @@ deriveTMT <- function(df) {
       ),
       timevar = "Block"
     )
-  
+
   return (dfsums)
 }
 
@@ -464,9 +464,9 @@ deriveSOCRATIS <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   df <- subset(df,!grepl("FEEDBACK|js", Block, ignore.case = TRUE))
-  
+
   # Remove unneeded columns and any skip back control markers
   df <-
     subset(
@@ -483,17 +483,16 @@ deriveSOCRATIS <- function(df) {
         Trial.result
       )
     )
-  
+
   # Select just the LAST response on each question - note that this means repeating a task will update the results - but it also takes the most recent response if they navigate backwards and then change their mind
   df <-
     df[!duplicated(subset(df, select = c(User.code, Iteration, Trial)), fromLast =
                      TRUE), ]
-  
+
   if (sanityCheck(df, , c("Block")) == FALSE) {
     stop("df does not meet requirements once filtered")
   }
-  
-  
+
   # Summaries - currently just showing those calculated in task - let me know if there are any other ones
   df <- subset(df, grepl("INDEX", Trial, ignore.case = TRUE))
   df <-
@@ -515,7 +514,7 @@ deriveSOCRATIS <- function(df) {
   df$SOCRATIS_TOM_2_INDEX <- as.numeric(df$SOCRATIS_TOM_2_INDEX)
   df$SOCRATIS_FAUS_PAS_INDEX <-
     as.numeric(df$SOCRATIS_FAUS_PAS_INDEX)
-  
+
   return (df)
 }
 
@@ -534,7 +533,7 @@ deriveBART <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   # Split the result column
   options(stringsAsFactors = FALSE)
   df <-
@@ -544,10 +543,10 @@ deriveBART <- function(df) {
   names(df)[names(df) == 'X1'] <- 'TrialResult'
   names(df)[names(df) == 'X2'] <- 'PumpsMade'
   df$PumpsMade <- as.numeric(df$PumpsMade)
-  
+
   # Remove the index from the trial column so it can serve as the Colour factor
   df$BalloonColour <- toupper(gsub("[0-9]", "", df$Trial))
-  
+
   # Remove unneeded columns
   df <-
     subset(
@@ -564,7 +563,7 @@ deriveBART <- function(df) {
         PumpsMade
       )
     )
-  
+
   # Summaries
   dfsums <-
     do.call(
@@ -619,7 +618,7 @@ deriveBART <- function(df) {
       ),
       timevar = "BalloonColour"
     )
-  
+
   return (dfsums)
 }
 
@@ -639,8 +638,9 @@ deriveERT <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
+
   df <- subset(df, df$Block == 'MAIN')
-  
+
   # Split the Trial column
   options(stringsAsFactors = FALSE)
   df <-
@@ -650,17 +650,17 @@ deriveERT <- function(df) {
   names(df)[names(df) == 'X1'] <- 'TrialEmotion'
   names(df)[names(df) == 'X2'] <- 'TrialEmotionIndex'
   df$TrialEmotionIndex <- as.numeric(df$TrialEmotionIndex)
-  
+
   # Mark the response
   df$Correct <- 0
   df$Correct[df$TrialEmotion == df$Response] <- 1
-  
+
   # Make an RTC and RTI (correct / Incorrect)
   df$RTcorrect[df$Correct == 1] <-
     df$Response.time..ms.[df$Correct == 1]
   df$RTincorrect[df$Correct == 0] <-
     df$Response.time..ms.[df$Correct == 0]
-  
+
   # Remove unneeded columns
   df <-
     subset(
@@ -682,7 +682,7 @@ deriveERT <- function(df) {
         RTincorrect
       )
     )
-  
+
   # Summaries
   dfsums <-
     do.call(
@@ -727,7 +727,7 @@ deriveERT <- function(df) {
       ),
       timevar = "TrialEmotion"
     )
-  
+
   return (dfsums)
 }
 
@@ -748,14 +748,14 @@ deriveKIRBY <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   df <-
     subset(
       df,
       !grepl("FEEDBACK|js|KIRBY_PCDELAY", Block, ignore.case = TRUE) &
         df$Trial.result != 'skip_back'
     )
-  
+
   # Select just the LAST response on each question - note that this means repeating a task will update the results - but it also takes the most recent response if they navigate backwards and then change their mind
   df <-
     df[!duplicated(subset(df, select = c(User.code, Iteration, Trial)), fromLast =
@@ -776,7 +776,7 @@ deriveKIRBY <- function(df) {
   ) == FALSE) {
     stop("df does not meet requirements once filtered")
   }
-  
+
   # Add the computed Kind values
   df$Kind[df$Block == 'KIRBY01'] <- 0.000158277936055715
   df$Kind[df$Block == 'KIRBY02'] <- 0.00596125186289121
@@ -805,7 +805,7 @@ deriveKIRBY <- function(df) {
   df$Kind[df$Block == 'KIRBY25'] <- 0.0160493827160494
   df$Kind[df$Block == 'KIRBY26'] <- 0.00100267379679144
   df$Kind[df$Block == 'KIRBY27'] <- 0.25
-  
+
   # Add the LDR scale
   df$LDRscale[df$Block == 'KIRBY01'] <- 2
   df$LDRscale[df$Block == 'KIRBY02'] <- 3
@@ -834,15 +834,15 @@ deriveKIRBY <- function(df) {
   df$LDRscale[df$Block == 'KIRBY25'] <- 3
   df$LDRscale[df$Block == 'KIRBY26'] <- 1
   df$LDRscale[df$Block == 'KIRBY27'] <- 2
-  
+
   # This analysis only works for completed attempts - remove any early teminations
   df <-
     df[order(df$User.code, df$Iteration, df$LDRscale, df$Kind), ]
   df <- subset(df, df$Completed == "t")
-  
+
   ####RECODE refuse to 0 - the calculations will fail otherwise - this is a slight biasing move but hard to see how else to avoid removing them completely?
   df$Trial.result <- recode(df$Trial.result, '\'refuse\'=0')
-  
+
   ## First work out Kest by LDRscale
   df$TrialOrderIdx <- 1
   for (i in 1:nrow(df)) {
@@ -884,7 +884,7 @@ deriveKIRBY <- function(df) {
       ))))
     }
   }
-  
+
   # Finally make a geomean of all the max consistencies geomeans as their final outcome
   dfsums <-
     do.call(
@@ -901,7 +901,7 @@ deriveKIRBY <- function(df) {
       idvar = c("User.code", "Iteration"),
       timevar = "LDRscale"
     )
-  
+
   ## Next overall
   df <- df[order(df$User.code, df$Iteration, df$Kind), ]
   df <-
@@ -945,7 +945,7 @@ deriveKIRBY <- function(df) {
       ))))
     }
   }
-  
+
   # Finally make a geomean of all the max consistencies geomeans as their final outcome - Merge it into the Kest by LDRscale from earlier
   dfsums <-
     merge(do.call(
@@ -958,7 +958,7 @@ deriveKIRBY <- function(df) {
     ),
     dfsums,
     by = c("User.code", "Iteration"))
-  
+
   return (dfsums)
 }
 
@@ -979,22 +979,22 @@ rotateQuestionnaire <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   # Remove the results generated when displaying the feedback from instruments such as the Mini
   df <-
     subset(df,
            !grepl("FEEDBACK", Block, ignore.case = T) &
              Trial.result != 'skip_back')
-  
+
   # Select only the last response for each question in cases of skipping back and revising.
   df <-
     df[!duplicated(subset(df, select = c(User.code, Iteration, Trial)), fromLast =
                      T), ]
-  
+
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements once filtered")
   }
-  
+
   df <-
     dcast(
       subset(
@@ -1013,6 +1013,7 @@ rotateQuestionnaire <- function(df) {
       User.code + Iteration + Language + Completed + Completed.Timestamp + Processed.Timestamp ~ Trial,
       value.var = "Trial.result"
     )
+
   return (df)
 }
 
@@ -1034,21 +1035,21 @@ rotateQuestionnairePreserveBlock <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   # Remove the results generated when displaying the feedback from instruments such as the Mini
   df <-
     subset(df,!grepl("FEEDBACK", Block, ignore.case = T) &
              Trial.result != 'skip_back')
-  
+
   # Select only the last response for each question in cases of skipping back and revising.
   df <-
     df[!duplicated(subset(df, select = c(User.code, Iteration, Block, Trial)), fromLast =
                      T),]
-  
+
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements once filtered")
   }
-  
+
   df <-
     dcast(
       subset(
@@ -1068,14 +1069,16 @@ rotateQuestionnairePreserveBlock <- function(df) {
       User.code + Iteration + Language + Completed + Completed.Timestamp + Processed.Timestamp ~ Block + Trial,
       value.var = "Trial.result"
     )
+
   return (df)
 }
+
 
 #' Check a df meets minimum specs for processing
 #' @param df Data frame to be checked.
 #' @param additionalVars extra columns that must be present in the df
 #' @param nonRequiredVars standard columns do not need to be present in the df
-#' 
+#'
 #' @return boolean
 #'
 #' @export
@@ -1092,7 +1095,7 @@ sanityCheck <-
       "Trial",
       "Trial.result"
     )
-    reqVar<- setdiff(c(reqVar, additionalVars), nonRequiredVars)
+    reqVar <- setdiff(c(reqVar, additionalVars), nonRequiredVars)
     sane <- TRUE
     # Currently just check the required variables are there and the df is not empty
     # TODO allow more fine grained testing
@@ -1106,4 +1109,3 @@ sanityCheck <-
     }
     return(sane)
   }
-
