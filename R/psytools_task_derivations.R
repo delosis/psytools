@@ -1038,13 +1038,13 @@ rotateQuestionnairePreserveBlock <- function(df) {
 
   # Remove the results generated when displaying the feedback from instruments such as the Mini
   df <-
-    subset(df,!grepl("FEEDBACK", Block, ignore.case = T) &
-             Trial.result != 'skip_back')
+    subset(df, !grepl("FEEDBACK", Block, ignore.case = T) &
+               Trial.result != 'skip_back')
 
   # Select only the last response for each question in cases of skipping back and revising.
   df <-
-    df[!duplicated(subset(df, select = c(User.code, Iteration, Block, Trial)), fromLast =
-                     T),]
+    df[!duplicated(subset(df, select = c(User.code, Iteration, Block, Trial)),
+                   fromLast = T),]
 
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements once filtered")
