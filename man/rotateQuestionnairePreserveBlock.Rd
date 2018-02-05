@@ -14,7 +14,7 @@ rotateQuestionnairePreserveBlock(df)
 Rotated data frame.
 }
 \description{
-Requires \code{User.code}, \code{Iteration}, \code{Trial} and \code{Trial.result}
+Requires \code{User.code}, \code{Iteration}, \code{Block},\code{Trial} and \code{Trial.result}
 columns in input data frame.
 Removes repeated occurrences of \code{Trial.result} caused by skipping back.
 Should work for any questionnaire to rotate into a wide format, but may want some additional honing!

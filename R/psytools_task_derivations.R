@@ -1,6 +1,6 @@
 # Derive Psytools CSV files exported from the Delosis server
 #
-#  Copyright (C) 2017 Delosis
+#  Copyright (C) 2017-2018 Delosis
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -191,7 +191,7 @@ deriveMID <- function(df) {
 #' Derive WCST data.
 #'
 #' Applies to the Wisconsin Card Sorting Test
-#' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
+#' (part of the \href{https://dx.doi.org/10.1016/j.jneumeth.2013.10.024}{PEBL} battery)
 #' implemented in Psytools.
 #'
 #' @param df Data frame with WCST data, read from CSV file exported from Delosis server.
@@ -252,7 +252,7 @@ deriveWCST <- function(df) {
 #' Derive DS data.
 #'
 #' Applies to the Digit Span task
-#' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
+#' (part of the \href{https://dx.doi.org/10.1016/j.jneumeth.2013.10.024}{PEBL} battery)
 #' implemented in Psytools.
 #'
 #' @param df Data frame with DS data, read from CSV file exported from Delosis server.
@@ -324,7 +324,7 @@ deriveDS <- function(df) {
 #'
 #' Applies to the
 #' \href{http://digitool.library.mcgill.ca/R/?func=dbin-jump-full&object_id=93903}{CORSI block-tapping test}
-#' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
+#' (part of the \href{https://dx.doi.org/10.1016/j.jneumeth.2013.10.024}{PEBL} battery)
 #' implemented in Psytools.
 #'
 #' @param df Data frame with CORSI data, read from CSV file exported from Delosis server.
@@ -396,7 +396,7 @@ deriveCORSI <- function(df) {
 #' Derive TMT data.
 #'
 #' Applies to the Trail Making Test
-#' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
+#' (part of the \href{https://dx.doi.org/10.1016/j.jneumeth.2013.10.024}{PEBL} battery)
 #' implemented in Psytools.
 #'
 #' Drop the initial practice.
@@ -736,7 +736,7 @@ deriveERT <- function(df) {
 #'
 #' Applies to the
 #' \href{https://www.ncbi.nlm.nih.gov/pubmed/10100392}{Now-or-later test}
-#' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
+#' (part of the \href{https://dx.doi.org/10.1016/j.jneumeth.2013.10.024}{PEBL} battery)
 #' implemented in Psytools. Again just a questionnaire!
 #'
 #' @param df Data frame with KIRBY data, read from CSV file exported from Delosis server.
