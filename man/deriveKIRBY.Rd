@@ -10,5 +10,9 @@ deriveKIRBY(df)
 \item{df}{Data frame with KIRBY data, read from CSV file exported from Delosis server.}
 }
 \value{
-Derived data frame with summaries.
+Derived data frame with summaries AND raw data.
+}
+\details{
+Note this does not select iterations, though it will only produce the Kests for 
+   Completed datasets
 }

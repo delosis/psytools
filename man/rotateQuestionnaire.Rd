@@ -4,7 +4,7 @@
 \alias{rotateQuestionnaire}
 \title{Rotate simple questionnaires from long to wide format.}
 \usage{
-rotateQuestionnaire(df)
+rotateQuestionnaire(df, BlockAsMeasureVar = FALSE)
 }
 \arguments{
 \item{df}{Data frame with simple questionnaire, read from CSV file exported from Delosis server.}
@@ -17,4 +17,7 @@ Requires \code{User.code}, \code{Iteration}, \code{Trial} and \code{Trial.result
 columns in input data frame.
 Removes repeated occurrences of \code{Trial.result} caused by skipping back.
 Should work for any questionnaire to rotate into a wide format, but may want some additional honing!
+}
+\details{
+Preserves the Valid column if it is included in the supplied DF
 }
