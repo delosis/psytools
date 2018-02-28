@@ -16,7 +16,12 @@ export(deriveWCST)
 export(rotateQuestionnaire)
 export(rotateQuestionnairePreserveBlock)
 export(sanityCheck)
+<<<<<<< HEAD
 export(selectIteration)
 importFrom(car,data.table)
 importFrom(data.table,)
 importFrom(data.table,dcast)
+=======
+importFrom(car,recode)
+importFrom(reshape2,dcast)
+>>>>>>> f7db30d1d2eb77f8abbe8141df6404071d75a0d1
