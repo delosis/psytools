@@ -27,9 +27,7 @@
 
 ## Happy to remove reliance on the row index if you prefer! Some additional flexibility can be worked in
 
-library(car)
 library(data.table)
-
 
 #' Derive SST data.
 #'
@@ -43,6 +41,7 @@ library(data.table)
 #' not be happening in a supervised admin situation?
 #'
 #' @param df Data frame with SST data, read from CSV file exported from Delosis server.
+#'
 #' @return Data frame with summaries.
 #'
 #' @export
@@ -53,7 +52,7 @@ deriveSST <- function(df) {
   
   df <- subset(df, df$Block != 'SST_Practice')
   df <-
-    df[order(df$User.code, df$Iteration, df$rowIndex, df$Trial),]
+    df[order(df$User.code, df$Iteration, df$rowIndex, df$Trial), ]
   
   # Split the result column
   options(stringsAsFactors = FALSE)
@@ -109,6 +108,7 @@ deriveSST <- function(df) {
 #' task implemented in Psytools.
 #'
 #' @param df Data frame with MID data, read from CSV file exported from Delosis server.
+#'
 #' @return Data frame with summaries.
 #'
 #' @export
@@ -121,7 +121,7 @@ deriveMID <- function(df) {
     subset(df, df$Block != 'MID_PRACTICE' &
              df$Block != 'midNRCHECK')
   df <-
-    df[order(df$User.code, df$Iteration, df$rowIndex, df$Trial),]
+    df[order(df$User.code, df$Iteration, df$rowIndex, df$Trial), ]
   
   # Split the result column
   options(stringsAsFactors = FALSE)
@@ -196,6 +196,7 @@ deriveMID <- function(df) {
 #' implemented in Psytools.
 #'
 #' @param df Data frame with WCST data, read from CSV file exported from Delosis server.
+#'
 #' @return Data frame with summaries.
 #'
 #' @export
@@ -216,7 +217,7 @@ deriveWCST <- function(df) {
   df$Perseverations[df$X3 == 'PERSEV'] <- 1
   df$Corrects[df$X1 == 'PASS'] <- 1
   df <- subset(df, select = -c(X1, X3))
-  df <- df[order(df$User.code, df$Iteration, df$rowIndex),]
+  df <- df[order(df$User.code, df$Iteration, df$rowIndex), ]
   
   # Flag each switch for summing
   df$Switches <- 0
@@ -257,6 +258,7 @@ deriveWCST <- function(df) {
 #' implemented in Psytools.
 #'
 #' @param df Data frame with DS data, read from CSV file exported from Delosis server.
+#'
 #' @return Derived data frame with summaries.
 #'
 #' @export
@@ -328,6 +330,7 @@ deriveDS <- function(df) {
 #' implemented in Psytools.
 #'
 #' @param df Data frame with CORSI data, read from CSV file exported from Delosis server.
+#'
 #' @return Derived data frame with summaries.
 #'
 #' @export
@@ -402,6 +405,7 @@ deriveCORSI <- function(df) {
 #' Drop the initial practice.
 #'
 #' @param df Data frame with TMT data, read from CSV file exported from Delosis server.
+#'
 #' @return Derived data frame with summaries.
 #'
 #' @export
@@ -418,7 +422,7 @@ deriveTMT <- function(df) {
     stop("df does not meet requirements as passed")
   }
   
-  df <- subset(df, !grepl("Practice", Block, ignore.case = TRUE))
+  df <- subset(df,!grepl("Practice", Block, ignore.case = TRUE))
   
   # Simplify the block names
   df$Block <- gsub("TMT_", "", df$Block)
@@ -465,6 +469,7 @@ deriveTMT <- function(df) {
 #' other questionnaires could be similarly processed!
 #'
 #' @param df Data frame with SOCRATIS data, read from CSV file exported from Delosis server.
+#'
 #' @return Derived data frame with summaries.
 #'
 #' @export
@@ -473,7 +478,7 @@ deriveSOCRATIS <- function(df) {
     stop("df does not meet requirements as passed")
   }
   
-  df <- subset(df, !grepl("FEEDBACK|js", Block, ignore.case = TRUE))
+  df <- subset(df,!grepl("FEEDBACK|js", Block, ignore.case = TRUE))
   
   # Remove unneeded columns and any skip back control markers
   df <-
@@ -495,7 +500,7 @@ deriveSOCRATIS <- function(df) {
   # Select just the LAST response on each question - note that this means repeating a task will update the results - but it also takes the most recent response if they navigate backwards and then change their mind
   df <-
     df[!duplicated(subset(df, select = c(User.code, Iteration, Trial)), fromLast =
-                     TRUE),]
+                     TRUE), ]
   
   if (sanityCheck(df, , c("Block")) == FALSE) {
     stop("df does not meet requirements once filtered")
@@ -535,6 +540,7 @@ deriveSOCRATIS <- function(df) {
 #' implemented in Psytools.
 #'
 #' @param df Data frame with BART data, read from CSV file exported from Delosis server.
+#'
 #' @return Derived data frame with summaries.
 #'
 #' @export
@@ -637,7 +643,6 @@ deriveBART <- function(df) {
 #' Applies to the
 #' \href{https://doi.org/10.1176/appi.ajp.2014.13111499}{PALP task}
 #' implemented in Psytools.
-
 #'
 #' @param df Data frame with PALP data, read from CSV file exported from Delosis server.
 #' If the PALP is adminstered with seperate conditions as seperate tasks then they should be merged into a single
@@ -646,8 +651,10 @@ deriveBART <- function(df) {
 #'
 #' @return Derived data frame with summaries.
 #'
-#' @importFrom data.table
-#'
+#' @importFrom data.table dcast
+#' @importFrom data.table setDT
+#' @importFrom data.table setDF
+#'  
 #' @export
 derivePALP <- function(df) {
   if (sanityCheck(df) == FALSE) {
@@ -655,7 +662,8 @@ derivePALP <- function(df) {
   }
   
   # remove the practice and pretreat trials, id_check and ts variables
-  df <- df[!grepl("practice|pretreat|id_check|ts_|intro", df$Block),]
+  df <-
+    df[!grepl("practice|pretreat|id_check|ts_|intro", df$Block), ]
   
   # convert the set trial result to a column stim_set
   stimSets <-
@@ -670,7 +678,7 @@ derivePALP <- function(df) {
       sort = FALSE
     )
   #remove the set rows
-  df <- df[df$Block != 'set', ]
+  df <- df[df$Block != 'set',]
   rm(stimSets)
   
   #Compute an Omission Flag
@@ -702,7 +710,7 @@ derivePALP <- function(df) {
           by = c("User.code", "Condition"),
           sort = FALSE)
   #remove the score rows
-  df <- df[!grepl("summary", df$Block), ]
+  df <- df[!grepl("summary", df$Block),]
   colnames(df)[grepl("Response.time..ms.", colnames(df))] <- "RT"
   
   #Compute a block variable
@@ -761,7 +769,6 @@ derivePALP <- function(df) {
 #' @param df Data frame with ERT data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
 #'
-#' @importFrom car data.table
 #' @export
 deriveERT <- function(df) {
   if (sanityCheck(df) == FALSE) {
@@ -839,8 +846,8 @@ deriveERT <- function(df) {
       dfsums,
       by = c("User.code", "Iteration", "TrialEmotion")
     )
-  dfsums$RTcorrect <- recode(dfsums$RTcorrect, 'NaN=NA')
-  dfsums$RTincorrect <- recode(dfsums$RTincorrect, 'NaN=NA')
+  dfsums$RTcorrect[dfsums$RTcorrect == 'NaN'] <- NA
+  dfsums$RTincorrect[dfsums$RTincorrect == 'NaN'] <- NA
   dfsums <-
     reshape(
       dfsums,
@@ -867,13 +874,14 @@ deriveERT <- function(df) {
 #' (part of the \href{https://dx.doi.org/10.1016%2Fj.jneumeth.2013.10.024}{PEBL} battery))
 #' implemented in Psytools. Again just a questionnaire!
 #'
-#' Note this does not select iterations, though it will only produce the Kests for 
-#'    Completed datasets 
+#' Note this does not select iterations, though it will only produce the Kests for
+#'    Completed datasets
 #'
 #' @param df Data frame with KIRBY data, read from CSV file exported from Delosis server.
+#'
 #' @return Derived data frame with summaries AND raw data.
 #'
-#' @importFrom car data.table
+#' 
 #' @export
 deriveKIRBY <- function(df) {
   if (sanityCheck(df) == FALSE) {
@@ -883,31 +891,33 @@ deriveKIRBY <- function(df) {
   # Remove the flags used in cVEDA
   df <-
     subset(
-      df,!grepl("FEEDBACK|js|KIRBY_PCDELAY", Block, ignore.case = TRUE) &
+      df,
+      !grepl("FEEDBACK|js|KIRBY_PCDELAY", Block, ignore.case = TRUE) &
         df$Trial.result != 'skip_back'
     )
   
   # Some task releases have the block names in lower case...
-  df$Block[substr(df$Block, 1,5) =="kirby"]<-toupper(df$Block[substr(df$Block, 1,5) =="kirby"])
+  df$Block[substr(df$Block, 1, 5) == "kirby"] <-
+    toupper(df$Block[substr(df$Block, 1, 5) == "kirby"])
   
   
   #Select out the raw data to go in the same file - including the Number of responses var if available ( some digests )
   dfraw <- df
   if ("Number.of.Responses" %in% colnames(df)) {
-    dfraw <- dfraw[substr(dfraw$Block, 1,5) =="KIRBY", ]
-    dfraw$Trial<-paste(dfraw$Trial, "Nresponses", sep="_")
-    dfraw$Trial.result<-dfraw$Number.of.Responses
-    dfraw<-rbind(df, dfraw)
+    dfraw <- dfraw[substr(dfraw$Block, 1, 5) == "KIRBY",]
+    dfraw$Trial <- paste(dfraw$Trial, "Nresponses", sep = "_")
+    dfraw$Trial.result <- dfraw$Number.of.Responses
+    dfraw <- rbind(df, dfraw)
   }
   dfraw <- rotateQuestionnaire(dfraw)
   
   # Remove anything that is not a Kirby block ( id check , ts in the case of imagen)
-  df<-df[substr(df$Block, 1,5) =="KIRBY", ]
+  df <- df[substr(df$Block, 1, 5) == "KIRBY",]
   
   # Select just the LAST response on each question - note that this means repeating a task will update the results - but it also takes the most recent response if they navigate backwards and then change their mind
   df <-
     df[!duplicated(subset(df, select = c(User.code, Iteration, Trial)), fromLast =
-                     TRUE),]
+                     TRUE), ]
   if (sanityCheck(
     df,
     c(
@@ -986,19 +996,19 @@ deriveKIRBY <- function(df) {
   
   # This analysis only works for completed attempts - remove any early teminations
   df <-
-    df[order(df$User.code, df$Iteration, df$LDRscale, df$Kind),]
+    df[order(df$User.code, df$Iteration, df$LDRscale, df$Kind), ]
   df <- subset(df, df$Completed == "t")
   
   ####RECODE refuse to 0 - the calculations will fail otherwise - this is a slight biasing move but hard to see how else to avoid removing them completely?
-  df$Trial.result <- recode(df$Trial.result, '\'refuse\'=0')
+  df$Trial.result[df$Trial.result == 'refuse'] <- 0
   
   ## First work out Kest by LDRscale
   df$TrialOrderIdx <- 1
   for (i in 1:nrow(df)) {
     if (i > 1) {
-      if (df[i,]$User.code == df[i - 1,]$User.code &
-          df[i,]$Iteration == df[i - 1,]$Iteration &
-          df[i,]$LDRscale == df[i - 1,]$LDRscale) {
+      if (df[i, ]$User.code == df[i - 1, ]$User.code &
+          df[i, ]$Iteration == df[i - 1, ]$Iteration &
+          df[i, ]$LDRscale == df[i - 1, ]$LDRscale) {
         df$TrialOrderIdx[i] <- df$TrialOrderIdx[i - 1] + 1
       } else {
         df$TrialOrderIdx[i] <- 1
@@ -1052,14 +1062,14 @@ deriveKIRBY <- function(df) {
     )
   
   ## Next overall
-  df <- df[order(df$User.code, df$Iteration, df$Kind),]
+  df <- df[order(df$User.code, df$Iteration, df$Kind), ]
   df <-
     subset(df, select = -c(TrialOrderIdx, Consistency, Consistency.max))
   df$TrialOrderIdx <- 1
   for (i in 1:nrow(df)) {
     if (i > 1) {
-      if (df[i,]$User.code == df[i - 1,]$User.code &
-          df[i,]$Iteration == df[i - 1,]$Iteration) {
+      if (df[i, ]$User.code == df[i - 1, ]$User.code &
+          df[i, ]$Iteration == df[i - 1, ]$Iteration) {
         df$TrialOrderIdx[i] <- df$TrialOrderIdx[i - 1] + 1
       } else {
         df$TrialOrderIdx[i] <- 1
@@ -1107,9 +1117,16 @@ deriveKIRBY <- function(df) {
     ),
     dfsums,
     by = c("User.code", "Iteration"))
-
+  
   #Merge the raw data into the summary
-  dfsums<-merge(dfraw, dfsums[,grepl("User.code|Iteration|Kest", colnames(dfsums))], by=c("User.code", "Iteration"), sort=FALSE, all.x=TRUE)
+  dfsums <-
+    merge(
+      dfraw,
+      dfsums[, grepl("User.code|Iteration|Kest", colnames(dfsums))],
+      by = c("User.code", "Iteration"),
+      sort = FALSE,
+      all.x = TRUE
+    )
   return (dfsums)
 }
 
@@ -1123,10 +1140,14 @@ deriveKIRBY <- function(df) {
 #'
 #' Preserves the Valid column if it is included in the supplied DF
 #'
+#' @param BlockAsMeasureVar 
 #' @param df Data frame with simple questionnaire, read from CSV file exported from Delosis server.
+#'
 #' @return Rotated data frame.
 #'
 #' @importFrom data.table dcast
+#' @importFrom data.table setDT
+#' @importFrom data.table setDF
 #' @export
 rotateQuestionnaire <- function(df, BlockAsMeasureVar = FALSE) {
   if (sanityCheck(df) == FALSE) {
@@ -1156,12 +1177,12 @@ rotateQuestionnaire <- function(df, BlockAsMeasureVar = FALSE) {
   # Remove the results generated when displaying the feedback from instruments such as the Mini
   df <-
     df[!grepl("FEEDBACK", df$Block, ignore.case = T) &
-         df$Trial.result != 'skip_back', ]
+         df$Trial.result != 'skip_back',]
   
   # Select only the last response for each question in cases of skipping back and revising.
   df <-
     df[!duplicated(subset(df, select = c("User.code", "Iteration", measureVar)), fromLast =
-                     T), ]
+                     T),]
   
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements once filtered")
@@ -1192,51 +1213,14 @@ rotateQuestionnaire <- function(df, BlockAsMeasureVar = FALSE) {
 #' Should work for any questionnaire to rotate into a wide format, but may want some additional honing!
 #'
 #' @param df Data frame with simple questionnaire, read from CSV file exported from Delosis server.
+#' 
 #' @return Rotated data frame.
-#'
-#' @importFrom data.table dcast
+#' 
 #' @export
 rotateQuestionnairePreserveBlock <- function(df) {
   return (rotateQuestionnaire(df, TRUE))
 }
 
-#' Check a df meets minimum specs for processing
-#' @param df Data frame to be checked.
-#' @param additionalVars extra columns that must be present in the df
-#' @param nonRequiredVars standard columns do not need to be present in the df
-#'
-#' @return boolean
-#'
-#' @export
-sanityCheck <-
-  function(df,
-           additionalVars = c(),
-           nonRequiredVars = c()) {
-    reqVar = c(
-      "User.code",
-      "Iteration",
-      "Language",
-      "Completed",
-      "Completed.Timestamp",
-      "Processed.Timestamp",
-      "Block",
-      "Trial",
-      "Trial.result"
-    )
-    reqVar <- setdiff(c(reqVar, additionalVars), nonRequiredVars)
-    sane <- TRUE
-    # Currently just check the required variables are there and the df is not empty
-    # TODO allow more fine grained testing
-    if (min(reqVar %in% colnames(df)) == 0) {
-      sane <- FALSE
-      warning("Columns do not meet requirements")
-    }
-    if (nrow(df) == 0) {
-      sane <- FALSE
-      warning("Data frame has no rows")
-    }
-    return(sane)
-  }
 
 #' Select Iteration from dataset
 #'
@@ -1270,7 +1254,7 @@ selectIteration <-
     df$rowIndex <- seq_len(nrow(df))
     
     if (completed) {
-      df <- df[df$Completed == 't', ]
+      df <- df[df$Completed == 't',]
     }
     if (valid) {
       # limit to Valid Iterations only if the User.code is ever valid
@@ -1284,8 +1268,8 @@ selectIteration <-
                ),
                by = c("User.code"),
                sort = FALSE)
-      df <- df[df$Valid == 't' | df$everValid == 'f', ]
-      df <- df[order(df$rowIndex), ]
+      df <- df[df$Valid == 't' | df$everValid == 'f',]
+      df <- df[order(df$rowIndex),]
       df$everValid <- NULL
     }
     
@@ -1298,7 +1282,7 @@ selectIteration <-
         by = c("User.code", "Iteration"),
         sort = FALSE
       )
-    df <- df[order(df$rowIndex), ]
+    df <- df[order(df$rowIndex),]
     df$rowIndex <- NULL
     return(df)
   }
@@ -1310,7 +1294,9 @@ selectIteration <-
 #' The FU / FU2 and FU3 files use a slightly different structure - this is homogneised here
 #'
 #' @param df data frame containing long form CTS data
+#'
 #' @return wide form of Reliability data with summary vars
+#' @export
 deriveImgnCTS <- function(df) {
   df$Trial[as.numeric(df$Trial) < 10] <-
     paste(0, df$Trial[as.numeric(df$Trial) < 10], sep = "")
@@ -1423,6 +1409,7 @@ deriveImgnCTS <- function(df) {
 #'
 #' @param df data frame containing long form Reliability data
 #' @return wide form of Reliability data with summary vars
+#' @export
 deriveImgnReliability <- function(df) {
   # homogenise the variable naming/coding for FU FU2 FU3
   df$Trial <- gsub("comment", "_specify", df$Trial)
@@ -1443,6 +1430,7 @@ deriveImgnReliability <- function(df) {
 #'
 #' @param df data frame containing long form ADRS data
 #' @return wide form of ADRS data with summary vars
+#' @export
 deriveImgnADRS <- function(df) {
   #Recode
   df$Trial.result[df$Trial.result == "2" &
@@ -1461,6 +1449,7 @@ deriveImgnADRS <- function(df) {
 #'
 #' @param df data frame containing long form CIS data
 #' @return wide form of CIS data with summary vars
+#' @export
 deriveImgnCIS <- function(df) {
   #Recode
   df$Trial.result[df$Trial.result == "3" &
@@ -1484,18 +1473,23 @@ deriveImgnCIS <- function(df) {
 #'
 #' @param df data frame containing long form IRI data
 #' @return wide form of IRI data with summary vars
+#' @export
 deriveImgnIRI <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   #Summary
   df$IRI_perspective <-
-    rowSums(df[, grepl("I03|I08|I11|I15|I21|I25", colnames(df))], na.rm=TRUE) + df$IRI25
+    rowSums(df[, grepl("I03|I08|I11|I15|I21|I25", colnames(df))], na.rm =
+              TRUE) + df$IRI25
   df$IRI_fantasy <-
-    rowSums(df[, grepl("I01|I05|I07|I12|I16|I23|I26", colnames(df))], na.rm=TRUE)
+    rowSums(df[, grepl("I01|I05|I07|I12|I16|I23|I26", colnames(df))], na.rm =
+              TRUE)
   df$IRI_empathic <-
-    rowSums(df[, grepl("I02|I04|I09|I14|I18|I20|I22", colnames(df))], na.rm=TRUE)
+    rowSums(df[, grepl("I02|I04|I09|I14|I18|I20|I22", colnames(df))], na.rm =
+              TRUE)
   df$IRI_personal <-
-    rowSums(df[, grepl("I06|I10|I13|I17|I19|I24|I27", colnames(df))], na.rm=TRUE)
+    rowSums(df[, grepl("I06|I10|I13|I17|I19|I24|I27", colnames(df))], na.rm =
+              TRUE)
   return(df)
 }
 
@@ -1505,6 +1499,7 @@ deriveImgnIRI <- function(df) {
 #'
 #' @param df data frame containing long form PDS data
 #' @return wide form of PDS data with summary vars
+#' @export
 deriveImgnPDS <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
@@ -1519,12 +1514,13 @@ deriveImgnPDS <- function(df) {
                    !is.na(df$height_inches) &
                    df$height_inches > 0] <-
       2.54 * df$height_inches[is.na(df$height_cm) &
-                                !is.na(df$height_inches) & df$height_inches > 0]
+                                !is.na(df$height_inches) &
+                                df$height_inches > 0]
   }
   #Summary cannot be calculated at FU2 - these items not adminstered
   if ("a8" %in% colnames(df)) {
     df$PDS_mean <-
-      rowMeans(df[ , grepl("a8|a9|a10|a11|a12a_f|a12_m", colnames(df))], na.rm = TRUE)
+      rowMeans(df[, grepl("a8|a9|a10|a11|a12a_f|a12_m", colnames(df))], na.rm = TRUE)
   }
   return(df)
 }
@@ -1538,15 +1534,20 @@ deriveImgnPDS <- function(df) {
 #'
 #' @param df data frame containing long form AUDIT data
 #' @return wide form of AUDIT data with summary vars
+#' @export
 deriveImgnAUDIT <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   
   #Summary Vars
-  df$audit_freq<- rowSums(cbind(df$audit1,df$audit2,df$audit3 ), na.rm=TRUE)
-  df$audit_symp<- rowSums(cbind(df$audit4,df$audit6,df$audit8 ), na.rm=TRUE)
-  df$audit_prob<- rowSums(cbind(df$audit5,df$audit7,df$audit9,df$audit10 ), na.rm=TRUE)
-  df$audit_total<- rowSums(cbind(df$audit_freq,df$audit_symp,df$audit_prob ), na.rm=TRUE)
+  df$audit_freq <-
+    rowSums(cbind(df$audit1, df$audit2, df$audit3), na.rm = TRUE)
+  df$audit_symp <-
+    rowSums(cbind(df$audit4, df$audit6, df$audit8), na.rm = TRUE)
+  df$audit_prob <-
+    rowSums(cbind(df$audit5, df$audit7, df$audit9, df$audit10), na.rm = TRUE)
+  df$audit_total <-
+    rowSums(cbind(df$audit_freq, df$audit_symp, df$audit_prob), na.rm = TRUE)
   return(df)
 }
 
@@ -1559,39 +1560,43 @@ deriveImgnAUDIT <- function(df) {
 #'
 #' @param df data frame containing long form MAST data
 #' @return wide form of MAST data with summary vars
+#' @export
 deriveImgnMAST <- function(df) {
   #The Parent version does not have "mast" in the trial names
-  df$Trial[grepl("^[1-9]", df$Trial)]<-paste("mast",df$Trial[grepl("^[1-9]", df$Trial)], sep="")
+  df$Trial[grepl("^[1-9]", df$Trial)] <-
+    paste("mast", df$Trial[grepl("^[1-9]", df$Trial)], sep = "")
   
   #Rotate
   df <- rotateQuestionnaire(df)
   
   #Recodes - Some items are weighted according to the SPSS script
-  df$mast8<-5*df$mast8
-  df$mast20<-5*df$mast20
-  df$mast21a<-5*df$mast21a
-  df$mast1<-2*df$mast1
-  df$mast2<-2*df$mast2
-  df$mast4<-2*df$mast4
-  df$mast6<-2*df$mast6
-  df$mast7<-2*df$mast7
-  df$mast10<-2*df$mast10
-  df$mast11<-2*df$mast11
-  df$mast12<-2*df$mast12
-  df$mast13<-2*df$mast13
-  df$mast14<-2*df$mast14
-  df$mast15<-2*df$mast15
-  df$mast17<-2*df$mast17
-  df$mast24<-2*df$mast24
-  df$mast25<-2*df$mast25
+  df$mast8 <- 5 * df$mast8
+  df$mast20 <- 5 * df$mast20
+  df$mast21a <- 5 * df$mast21a
+  df$mast1 <- 2 * df$mast1
+  df$mast2 <- 2 * df$mast2
+  df$mast4 <- 2 * df$mast4
+  df$mast6 <- 2 * df$mast6
+  df$mast7 <- 2 * df$mast7
+  df$mast10 <- 2 * df$mast10
+  df$mast11 <- 2 * df$mast11
+  df$mast12 <- 2 * df$mast12
+  df$mast13 <- 2 * df$mast13
+  df$mast14 <- 2 * df$mast14
+  df$mast15 <- 2 * df$mast15
+  df$mast17 <- 2 * df$mast17
+  df$mast24 <- 2 * df$mast24
+  df$mast25 <- 2 * df$mast25
   
   #Summaries
   df$mast_total <-
-    rowSums(df[, grepl("mast", colnames(df))], na.rm=TRUE)
-  df$mast_total[df$mast1==-2 & !is.na(df$mast1)]<-df$mast_total[df$mast1==-2 & !is.na(df$mast1)] + 2
+    rowSums(df[, grepl("mast", colnames(df))], na.rm = TRUE)
+  df$mast_total[df$mast1 == -2 &
+                  !is.na(df$mast1)] <-
+    df$mast_total[df$mast1 == -2 & !is.na(df$mast1)] + 2
   df$mast_dsm <-
-    rowSums(df[, grepl("26|27|28|29|30|31", colnames(df))], na.rm=TRUE)
-  df$mast_sum<-df$mast_total-df$mast_dsm
+    rowSums(df[, grepl("26|27|28|29|30|31", colnames(df))], na.rm = TRUE)
+  df$mast_sum <- df$mast_total - df$mast_dsm
   return(df)
 }
 
@@ -1604,6 +1609,7 @@ deriveImgnMAST <- function(df) {
 #'
 #' @param df data frame containing long form NEO FFI data
 #' @return wide form of NEO FFI data with summary vars
+#' @export
 deriveImgnNEO <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
@@ -1631,6 +1637,7 @@ deriveImgnNEO <- function(df) {
 #'
 #' @param df data frame containing long form SURPS data
 #' @return wide form of SURPS data with summary vars
+#' @export
 deriveImgnSURPS <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
@@ -1656,6 +1663,7 @@ deriveImgnSURPS <- function(df) {
 #'
 #' @param df data frame containing long form TCI data
 #' @return wide form of TCI data with summary vars
+#' @export
 deriveImgnTCI <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
@@ -1681,6 +1689,7 @@ deriveImgnTCI <- function(df) {
 #'
 #' @param df data frame containing long form ESPAD data
 #' @return wide form of ESPAD data with summary vars
+#' @export
 deriveImgnESPAD <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
@@ -1721,34 +1730,69 @@ deriveImgnESPAD <- function(df) {
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling funciton
 #'
-#'
 #' @param df data frame containing long form GEN data
+#'
 #' @return wide form of GEN data with summary vars
+#' 
+#' @importFrom data.table dcast
+#' @importFrom data.table setDT
+#' @importFrom data.table setDF
+#' 
+#' @export
 deriveImgnGEN <- function(df) {
   #long format processing
-  df$Trial[df$Block=="Psych_History_Knowledge"]<-"Psych_History"
+  df$Trial[df$Block == "Psych_History_Knowledge"] <- "Psych_History"
   #remove the relation on which they exit
-  df<-df[df$Response!='exit_button',]
+  df <- df[df$Response != 'exit_button', ]
   #Convert the relation / sure / disorder rows into variables
-  df<-merge(df, setnames(df[df$Trial=='relation', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c("User.code", "Iteration", "Block", "Relation")), by=c("User.code", "Iteration", "Block"), all.x=TRUE, sort=FALSE)
-  df<-merge(df, setnames(df[df$Trial=='sure', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c("User.code", "Iteration", "Block", "Sure")), by=c("User.code", "Iteration", "Block"), all.x=TRUE, sort=FALSE)
-  df<-merge(df, setnames(df[df$Trial=='disorder', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c("User.code", "Iteration", "Block", "Disorder")), by=c("User.code", "Iteration", "Block"), all.x=TRUE, sort=FALSE)
+  df <-
+    merge(
+      df,
+      setnames(df[df$Trial == 'relation', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c(
+        "User.code", "Iteration", "Block", "Relation"
+      )),
+      by = c("User.code", "Iteration", "Block"),
+      all.x = TRUE,
+      sort = FALSE
+    )
+  df <-
+    merge(
+      df,
+      setnames(df[df$Trial == 'sure', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c(
+        "User.code", "Iteration", "Block", "Sure"
+      )),
+      by = c("User.code", "Iteration", "Block"),
+      all.x = TRUE,
+      sort = FALSE
+    )
+  df <-
+    merge(
+      df,
+      setnames(df[df$Trial == 'disorder', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c(
+        "User.code", "Iteration", "Block", "Disorder"
+      )),
+      by = c("User.code", "Iteration", "Block"),
+      all.x = TRUE,
+      sort = FALSE
+    )
   # Rotate out the non-relation questions into a wide df
-  dfEth<-rotateQuestionnaire(df[substr(df$Block, 1,8) != "Relation",  ])
+  dfEth <-
+    rotateQuestionnaire(df[substr(df$Block, 1, 8) != "Relation",])
   #remove undefined relations ( there will always be one at the end )
   #Also remove the disgnosis and sure rows - not needed now we have the variables
-  df<-df[df$Relation!="" & df$Trial != "sure" & df$Trial !="disorder",]
-  df<-df[!is.na(df$User.code),]
+  df <-
+    df[df$Relation != "" & df$Trial != "sure" & df$Trial != "disorder", ]
+  df <- df[!is.na(df$User.code), ]
   
   #Order by relation within iteration
-  df<-df[order(df$User.code, df$Iteration, df$Relation),]
+  df <- df[order(df$User.code, df$Iteration, df$Relation), ]
   ## Iterate through and subscript the relation with an index so multiple diagnoses per relation can be supported
   df$RelationOrderIdx <- 1
   for (i in 1:nrow(df)) {
     if (i > 1) {
-      if (df[i,]$User.code == df[i - 1,]$User.code &
-          df[i,]$Iteration == df[i - 1,]$Iteration &
-          df[i,]$Relation == df[i - 1,]$Relation) {
+      if (df[i, ]$User.code == df[i - 1, ]$User.code &
+          df[i, ]$Iteration == df[i - 1, ]$Iteration &
+          df[i, ]$Relation == df[i - 1, ]$Relation) {
         df$RelationOrderIdx[i] <- df$RelationOrderIdx[i - 1] + 1
       } else {
         df$RelationOrderIdx[i] <- 1
@@ -1756,7 +1800,7 @@ deriveImgnGEN <- function(df) {
     }
   }
   
-  df$Relation<-paste(df$Relation, df$RelationOrderIdx, sep="_")
+  df$Relation <- paste(df$Relation, df$RelationOrderIdx, sep = "_")
   
   df <-
     dcast(
@@ -1767,7 +1811,10 @@ deriveImgnGEN <- function(df) {
     )
   setDF(df)
   
-  df<-merge(dfEth, df, by=c("User.code", "Iteration"), all.x=TRUE)
+  df <- merge(dfEth,
+              df,
+              by = c("User.code", "Iteration"),
+              all.x = TRUE)
   rm(dfEth)
   return(df)
 }
@@ -1778,7 +1825,7 @@ deriveImgnGEN <- function(df) {
 #' Applies to the
 #' Morphed Emotions Task implemented in Psytools for the Imagen Study .
 #' Will be applicable for other Morph type paradigms
-#' 
+#'
 #' Note this function processes all Iterations provided
 #' The calling function should first select the iteration required
 #'
@@ -1787,7 +1834,11 @@ deriveImgnGEN <- function(df) {
 #'
 #' @param df Data frame with IDENT data, read from CSV file exported from Delosis server.
 #' @return Derived data frame with summaries.
-#'
+#' 
+#' @importFrom data.table dcast
+#' @importFrom data.table setDT
+#' @importFrom data.table setDF
+#' 
 #' @export
 deriveImgnIDENT <- function(df) {
   if (sanityCheck(df) == FALSE) {
@@ -1795,15 +1846,20 @@ deriveImgnIDENT <- function(df) {
   }
   
   #Rotate out the id_check and ts variables if they exist to a seperate df to merge in later
-  withTSID<-FALSE
-  if (nrow(df[substr(df$Block,1,3)=='ts_' | substr(df$Block,1,3)=='id_',]) >0) {
-    withTSID<-TRUE
-    dfTsID<-rotateQuestionnaire(df[substr(df$Block,1,3)=='ts_' | substr(df$Block,1,3)=='id_',])
-    df<-df[!(substr(df$Block,1,3)=='ts_' | substr(df$Block,1,3)=='id_'),]
+  withTSID <- FALSE
+  if (nrow(df[substr(df$Block, 1, 3) == 'ts_' |
+              substr(df$Block, 1, 3) == 'id_', ]) > 0) {
+    withTSID <- TRUE
+    dfTsID <-
+      rotateQuestionnaire(df[substr(df$Block, 1, 3) == 'ts_' |
+                               substr(df$Block, 1, 3) == 'id_', ])
+    df <-
+      df[!(substr(df$Block, 1, 3) == 'ts_' |
+             substr(df$Block, 1, 3) == 'id_'), ]
   }
   
   #Select just the Main block
-  df<-df[df$Block == 'IDENT_MAIN',]
+  df <- df[df$Block == 'IDENT_MAIN', ]
   
   # Split the Trial and response columns
   options(stringsAsFactors = FALSE)
@@ -1821,12 +1877,12 @@ deriveImgnIDENT <- function(df) {
     )))
   names(df)[names(df) == 'X1'] <- 'Response_side'
   names(df)[names(df) == 'X2'] <- 'Response_emotion'
-  df$Morph <- 10*as.numeric(df$Morph)
+  df$Morph <- 10 * as.numeric(df$Morph)
   
   #Create a response var indicating if they chose the 0% or 100% end of the continuum
-  df$P[df$Response_emotion == df$ContA] <-0
-  df$P[df$Response_emotion == df$ContB] <-100
-  df$P<-as.numeric(df$P)
+  df$P[df$Response_emotion == df$ContA] <- 0
+  df$P[df$Response_emotion == df$ContB] <- 100
+  df$P <- as.numeric(df$P)
   names(df)[names(df) == 'Response.time..ms.'] <- 'RT'
   
   dfsums <-
@@ -1838,8 +1894,15 @@ deriveImgnIDENT <- function(df) {
       value.var = c("P", "RT")
     )
   setDF(dfsums)
-  if(withTSID){
-    dfsums<-merge(dfTsID, dfsums, by=c("User.code", "Iteration"), sort=FALSE, all.x=TRUE)
+  if (withTSID) {
+    dfsums <-
+      merge(
+        dfTsID,
+        dfsums,
+        by = c("User.code", "Iteration"),
+        sort = FALSE,
+        all.x = TRUE
+      )
   }
   return (dfsums)
 }
@@ -1849,12 +1912,18 @@ deriveImgnIDENT <- function(df) {
 #' Applies to the
 #' Dot Probe implemented in Psytools for the Imagen Study .
 #' Will be applicable for other dot_probe type paradigms
-#' 
+#'
 #' Note this function processes all Iterations provided
 #' The calling function should first select the iteration required
 #'
 #' @param df Data frame with DOT_PROBE data, read from CSV file exported from Delosis server.
+#'
 #' @return Derived data frame with summaries.
+#' 
+#' @importFrom data.table dcast
+#' @importFrom data.table setDT
+#' @importFrom data.table setDF
+#' 
 #'
 #' @export
 deriveImgnDOTPROBE <- function(df) {
@@ -1863,15 +1932,20 @@ deriveImgnDOTPROBE <- function(df) {
   }
   
   #Rotate out the id_check and ts variables if they exist to a seperate df to merge in later
-  withTSID<-FALSE
-  if (nrow(df[substr(df$Block,1,3)=='ts_' | substr(df$Block,1,3)=='id_',]) >0) {
-    withTSID<-TRUE
-    dfTsID<-rotateQuestionnaire(df[substr(df$Block,1,3)=='ts_' | substr(df$Block,1,3)=='id_',])
-    df<-df[!(substr(df$Block,1,3)=='ts_' | substr(df$Block,1,3)=='id_'),]
+  withTSID <- FALSE
+  if (nrow(df[substr(df$Block, 1, 3) == 'ts_' |
+              substr(df$Block, 1, 3) == 'id_', ]) > 0) {
+    withTSID <- TRUE
+    dfTsID <-
+      rotateQuestionnaire(df[substr(df$Block, 1, 3) == 'ts_' |
+                               substr(df$Block, 1, 3) == 'id_', ])
+    df <-
+      df[!(substr(df$Block, 1, 3) == 'ts_' |
+             substr(df$Block, 1, 3) == 'id_'), ]
   }
   
   #Select just the Main block
-  df<-df[df$Block == 'DOT_PROBE_MAIN',]
+  df <- df[df$Block == 'DOT_PROBE_MAIN', ]
   
   # Split the Trial column
   options(stringsAsFactors = FALSE)
@@ -1885,9 +1959,9 @@ deriveImgnDOTPROBE <- function(df) {
   names(df)[names(df) == 'X4'] <- 'faceID'
   
   #Create a response var indicating if they chose the 0% or 100% end of the continuum
-  df$SCORE[df$Trial.result == "PASS"] <-1
-  df$SCORE[df$Trial.result == "FAIL"] <-0
-  df$SCORE<-as.numeric(df$SCORE)
+  df$SCORE[df$Trial.result == "PASS"] <- 1
+  df$SCORE[df$Trial.result == "FAIL"] <- 0
+  df$SCORE <- as.numeric(df$SCORE)
   names(df)[names(df) == 'Response.time..ms.'] <- 'RT'
   
   dfsums <-
@@ -1901,19 +1975,25 @@ deriveImgnDOTPROBE <- function(df) {
   setDF(dfsums)
   
   # Remove the RT_sum and SCORE_mean variables
-  dfsums<-dfsums[,!grepl("RT_sum|SCORE_mean", colnames(dfsums))]
-  if(withTSID){
-    dfsums<-merge(dfTsID, dfsums, by=c("User.code", "Iteration"), sort=FALSE, all.x=TRUE)
+  dfsums <- dfsums[, !grepl("RT_sum|SCORE_mean", colnames(dfsums))]
+  if (withTSID) {
+    dfsums <-
+      merge(
+        dfTsID,
+        dfsums,
+        by = c("User.code", "Iteration"),
+        sort = FALSE,
+        all.x = TRUE
+      )
   }
   return (dfsums)
 }
 
 
-
-
-
 #' Coerce numeric vars encoded as character to numeric to facilitate derivations
+#'
 #' @param df data frame to be converted
+#'
 #' @return data frame with character encoded numeric variables coerced to numeric
 fixNumericVariables <- function(df) {
   df[] <-
@@ -1928,3 +2008,42 @@ fixNumericVariables <- function(df) {
     })
   return(df)
 }
+
+
+#' Check a df meets minimum specs for processing
+#' @param df Data frame to be checked.
+#' 
+#' @param additionalVars extra columns that must be present in the df
+#' 
+#' @param nonRequiredVars standard columns do not need to be present in the df
+#'
+#' @return boolean
+sanityCheck <-
+  function(df,
+           additionalVars = c(),
+           nonRequiredVars = c()) {
+    reqVar = c(
+      "User.code",
+      "Iteration",
+      "Language",
+      "Completed",
+      "Completed.Timestamp",
+      "Processed.Timestamp",
+      "Block",
+      "Trial",
+      "Trial.result"
+    )
+    reqVar <- setdiff(c(reqVar, additionalVars), nonRequiredVars)
+    sane <- TRUE
+    # Currently just check the required variables are there and the df is not empty
+    # TODO allow more fine grained testing
+    if (min(reqVar %in% colnames(df)) == 0) {
+      sane <- FALSE
+      warning("Columns do not meet requirements")
+    }
+    if (nrow(df) == 0) {
+      sane <- FALSE
+      warning("Data frame has no rows")
+    }
+    return(sane)
+  }

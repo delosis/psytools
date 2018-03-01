@@ -13,12 +13,6 @@ deriveKIRBY(df)
 Derived data frame with summaries AND raw data.
 }
 \details{
-Note this does not select iterations, though it will only produce the Kests for 
+Note this does not select iterations, though it will only produce the Kests for
    Completed datasets
-}
-\description{
-Applies to the
-\href{https://www.ncbi.nlm.nih.gov/pubmed/10100392}{Now-or-later test}
-(part of the \href{https://dx.doi.org/10.1016/j.jneumeth.2013.10.024}{PEBL} battery)
-implemented in Psytools. Again just a questionnaire!
 }

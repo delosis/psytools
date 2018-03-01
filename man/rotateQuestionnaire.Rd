@@ -8,6 +8,8 @@ rotateQuestionnaire(df, BlockAsMeasureVar = FALSE)
 }
 \arguments{
 \item{df}{Data frame with simple questionnaire, read from CSV file exported from Delosis server.}
+
+\item{BlockAsMeasureVar}{}
 }
 \value{
 Rotated data frame.

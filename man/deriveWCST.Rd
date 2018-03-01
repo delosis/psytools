@@ -12,8 +12,3 @@ deriveWCST(df)
 \value{
 Data frame with summaries.
 }
-\description{
-Applies to the Wisconsin Card Sorting Test
-(part of the \href{https://dx.doi.org/10.1016/j.jneumeth.2013.10.024}{PEBL} battery)
-implemented in Psytools.
-}

@@ -12,11 +12,6 @@ deriveTMT(df)
 \value{
 Derived data frame with summaries.
 }
-\description{
-Applies to the Trail Making Test
-(part of the \href{https://dx.doi.org/10.1016/j.jneumeth.2013.10.024}{PEBL} battery)
-implemented in Psytools.
-}
 \details{
 Drop the initial practice.
 }
