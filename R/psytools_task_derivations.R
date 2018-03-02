@@ -29,6 +29,7 @@
 
 library(data.table)
 
+
 #' Derive SST data.
 #'
 #' Applies to the
@@ -758,8 +759,6 @@ derivePALP <- function(df) {
 }
 
 
-
-
 #' Derive ERT data.
 #'
 #' Applies to the
@@ -1287,6 +1286,7 @@ selectIteration <-
     return(df)
   }
 
+
 #' Generate summary for CTS questionnaires (from all stages)
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
@@ -1424,6 +1424,7 @@ deriveImgnReliability <- function(df) {
   return(df)
 }
 
+
 #' Generate summary for ADRS questionnaire
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling funciton
@@ -1442,6 +1443,7 @@ deriveImgnADRS <- function(df) {
     rowSums(df[, grepl("adrs", colnames(df))])
   return(df)
 }
+
 
 #' Generate summary for CIS questionnaire
 #'
@@ -1463,6 +1465,7 @@ deriveImgnCIS <- function(df) {
     rowSums(df[, grepl("item", colnames(df))])
   return(df)
 }
+
 
 #' Generate summary for IRI questionnaire
 #'
@@ -1492,6 +1495,7 @@ deriveImgnIRI <- function(df) {
               TRUE)
   return(df)
 }
+
 
 #' Generate summary for PDS questionnaire
 #'
@@ -1551,6 +1555,7 @@ deriveImgnAUDIT <- function(df) {
   return(df)
 }
 
+
 #' Generate summary for MAST questionnaire
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling funciton
@@ -1600,6 +1605,7 @@ deriveImgnMAST <- function(df) {
   return(df)
 }
 
+
 #' Generate summary for NEO FFI questionnaire
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling funciton
@@ -1628,6 +1634,7 @@ deriveImgnNEO <- function(df) {
   return(df)
 }
 
+
 #' Generate summary for SURPS questionnaire
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling funciton
@@ -1653,6 +1660,7 @@ deriveImgnSURPS <- function(df) {
     rowMeans(df[, grepl("s3$|s6|s9|s12|s26|s19", colnames(df))])
   return(df)
 }
+
 
 #' Generate summary for TCI questionnaire
 #'
@@ -1725,6 +1733,7 @@ deriveImgnESPAD <- function(df) {
   
   return(df)
 }
+
 
 #' Generate summary for GENETIC History questionnaire
 #'
@@ -1906,6 +1915,7 @@ deriveImgnIDENT <- function(df) {
   }
   return (dfsums)
 }
+
 
 #' Derive DOT_PROBE (Morph) data.
 #'
