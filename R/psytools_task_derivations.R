@@ -1427,7 +1427,7 @@ deriveImgnReliability <- function(df) {
 
 #' Generate summary for ADRS questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' @param df data frame containing long form ADRS data
 #' @return wide form of ADRS data with summary vars
@@ -1447,7 +1447,7 @@ deriveImgnADRS <- function(df) {
 
 #' Generate summary for CIS questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' @param df data frame containing long form CIS data
 #' @return wide form of CIS data with summary vars
@@ -1469,7 +1469,7 @@ deriveImgnCIS <- function(df) {
 
 #' Generate summary for IRI questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' QUERY - in supplied docs Perspective sum contains IRI25 twice?
 #' I have followed this ( ie counting 25 twice) please check
@@ -1499,7 +1499,7 @@ deriveImgnIRI <- function(df) {
 
 #' Generate summary for PDS questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' @param df data frame containing long form PDS data
 #' @return wide form of PDS data with summary vars
@@ -1531,7 +1531,7 @@ deriveImgnPDS <- function(df) {
 
 #' Generate summary for AUDIT questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' Note that in the case of no alcohol consumption this returns 0 for the summaries
 #'   The original SPSS did not do this but it seems appropriate
@@ -1558,7 +1558,7 @@ deriveImgnAUDIT <- function(df) {
 
 #' Generate summary for MAST questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' Note that in the case of no alcohol consumption this returns 0 for the summaries
 #'   The original SPSS did not do this but it seems appropriate
@@ -1608,7 +1608,7 @@ deriveImgnMAST <- function(df) {
 
 #' Generate summary for NEO FFI questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' Note that in the case of no alcohol consumption this returns 0 for the summaries
 #'   The original SPSS did not do this but it seems appropriate
@@ -1637,7 +1637,7 @@ deriveImgnNEO <- function(df) {
 
 #' Generate summary for SURPS questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' Note that in the case of no alcohol consumption this returns 0 for the summaries
 #'   The original SPSS did not do this but it seems appropriate
@@ -1664,7 +1664,7 @@ deriveImgnSURPS <- function(df) {
 
 #' Generate summary for TCI questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' Note that in the case of no alcohol consumption this returns 0 for the summaries
 #'   The original SPSS did not do this but it seems appropriate
@@ -1693,7 +1693,7 @@ deriveImgnTCI <- function(df) {
 
 #' Generate summary for ESPAD questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' @param df data frame containing long form ESPAD data
 #' @return wide form of ESPAD data with summary vars
@@ -1737,7 +1737,7 @@ deriveImgnESPAD <- function(df) {
 
 #' Generate summary for GENETIC History questionnaire
 #'
-#' NB This does not select the appropriate attempt - this should be done by the calling funciton
+#' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' @param df data frame containing long form GEN data
 #'
