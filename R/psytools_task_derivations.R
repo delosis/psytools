@@ -1746,6 +1746,7 @@ deriveImgnESPAD <- function(df) {
 #' @importFrom data.table dcast
 #' @importFrom data.table setDT
 #' @importFrom data.table setDF
+#' @importFrom data.table setnames
 #' 
 #' @export
 deriveImgnGEN <- function(df) {
