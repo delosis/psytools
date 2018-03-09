@@ -1291,7 +1291,7 @@ selectIteration <-
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
-#' The FU / FU2 and FU3 files use a slightly different structure - this is homogneised here
+#' The FU / FU2 and FU3 files use a slightly different structure - this is homogenised here
 #'
 #' @param df data frame containing long form CTS data
 #'
@@ -1405,7 +1405,7 @@ deriveImgnCTS <- function(df) {
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
-#' The FU / FU2 and FU3 files use a slightly different structure - this is homogneised here
+#' The FU / FU2 and FU3 files use a slightly different structure - this is homogenised here
 #'
 #' @param df data frame containing long form Reliability data
 #' @return wide form of Reliability data with summary vars
