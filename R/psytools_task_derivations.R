@@ -654,7 +654,7 @@ deriveBART <- function(df) {
 #' @importFrom data.table dcast
 #' @importFrom data.table setDT
 #' @importFrom data.table setDF
-#'  
+#'
 #' @export
 derivePALP <- function(df) {
   if (sanityCheck(df) == FALSE) {
@@ -1231,7 +1231,7 @@ rotateQuestionnairePreserveBlock <- function(df) {
 #' @param df Data frame with simple questionnaire, read from CSV file exported from Delosis server.
 #' @param iterationFunction function to apply to Iteration - default min
 #' @param completed restrict to completed Iterations only - default TRUE
-#' @param valid restrict to Iterations marked as valid IF the user.code has any valid attempts  - default TRUE
+#' @param valid restrict to Iterations marked as valid IF the user.code has any valid attempts - default TRUE
 #'
 #' It is not clear how the XNAT selection was achieved and the inclusion of invalids should be examined
 #'
@@ -1301,7 +1301,7 @@ deriveImgnCTS <- function(df) {
   df$Trial[as.numeric(df$Trial) < 10] <-
     paste(0, df$Trial[as.numeric(df$Trial) < 10], sep = "")
   dfScore <- df
-  df$Trial <- paste("Response", df$Trial,  sep = ".")
+  df$Trial <- paste("Response", df$Trial, sep = ".")
   dfScore$Trial <- paste("Score", dfScore$Trial, sep = ".")
   df$Trial.result <- as.numeric(substr(df$Trial.result, 1, 1))
   dfScore$Response <- as.numeric(substr(dfScore$Trial.result, 1, 1))
@@ -1386,15 +1386,15 @@ deriveImgnCTS <- function(df) {
     rowMeans(cbind(df$Score.20, df$Score.48, df$Score.58, df$Score.76))
   df$ccssys <-
     rowMeans(cbind(df$Score.19, df$Score.47, df$Score.67, df$Score.75))
-  df$cts_assault  <-
+  df$cts_assault <-
     rowMeans(cbind(df$ccamyp, df$ccamys, df$ccasyp , df$ccasys))
-  df$cts_injury  <-
+  df$cts_injury <-
     rowMeans(cbind(df$ccimyp, df$ccimys, df$ccisyp , df$ccisys))
   df$cts_negotiation <-
     rowMeans(cbind(df$ccncyp, df$ccncys, df$ccneyp , df$ccneys))
-  df$cts_psychological_aggression  <-
+  df$cts_psychological_aggression <-
     rowMeans(cbind(df$ccpmyp, df$ccpmys, df$ccpsyp , df$ccpsys))
-  df$cts_sexual_coercion  <-
+  df$cts_sexual_coercion <-
     rowMeans(cbind(df$ccsmyp, df$ccsmys, df$ccssyp , df$ccssys))
   
   return(df)
@@ -1478,7 +1478,7 @@ deriveImgnCIS <- function(df) {
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' QUERY - in supplied docs Perspective sum contains IRI25 twice?
-#' I have followed this ( ie counting 25 twice) please check
+#' I have followed this (i.e. counting 25 twice) please check
 #'
 #' @param df data frame containing long form IRI data
 #'
@@ -1837,7 +1837,7 @@ deriveImgnGEN <- function(df) {
   df <-
     dcast(
       setDT(df),
-      User.code + Iteration  ~ Relation,
+      User.code + Iteration ~ Relation,
       na.rm = TRUE,
       value.var = c("Sure", "Disorder")
     )
@@ -1921,7 +1921,7 @@ deriveImgnIDENT <- function(df) {
   dfsums <-
     dcast(
       setDT(df),
-      User.code + Iteration  ~ ContA + ContB + Morph,
+      User.code + Iteration ~ ContA + ContB + Morph,
       fun.aggregate = mean,
       na.rm = TRUE,
       value.var = c("P", "RT")
@@ -2000,7 +2000,7 @@ deriveImgnDOTPROBE <- function(df) {
   dfsums <-
     dcast(
       setDT(df),
-      User.code + Iteration  ~ Emotion + Congruence,
+      User.code + Iteration ~ Emotion + Congruence,
       fun.aggregate = c(mean, sum),
       na.rm = TRUE,
       value.var = c("SCORE", "RT")
