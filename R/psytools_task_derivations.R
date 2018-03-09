@@ -754,7 +754,7 @@ derivePALP <- function(df) {
   
   #Data.table aggregation introduces NaN's instead of NA if there is nothing to compute - revert these to NA
   dfsums[dfsums == "NaN"] <- NA
-  return (dfsums)
+  return (setDF(dfsums))
 }
 
 
