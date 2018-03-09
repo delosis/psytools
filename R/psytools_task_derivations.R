@@ -878,7 +878,6 @@ deriveERT <- function(df) {
 #' @param df Data frame with KIRBY data, read from CSV file exported from Delosis server.
 #'
 #' @return Derived data frame with summaries AND raw data.
-#'
 #' 
 #' @export
 deriveKIRBY <- function(df) {
@@ -1146,6 +1145,7 @@ deriveKIRBY <- function(df) {
 #' @importFrom data.table dcast
 #' @importFrom data.table setDT
 #' @importFrom data.table setDF
+#'
 #' @export
 rotateQuestionnaire <- function(df, BlockAsMeasureVar = FALSE) {
   if (sanityCheck(df) == FALSE) {
@@ -1295,6 +1295,7 @@ selectIteration <-
 #' @param df data frame containing long form CTS data
 #'
 #' @return wide form of Reliability data with summary vars
+#'
 #' @export
 deriveImgnCTS <- function(df) {
   df$Trial[as.numeric(df$Trial) < 10] <-
@@ -1407,7 +1408,9 @@ deriveImgnCTS <- function(df) {
 #' The FU / FU2 and FU3 files use a slightly different structure - this is homogenised here
 #'
 #' @param df data frame containing long form Reliability data
+#'
 #' @return wide form of Reliability data with summary vars
+#'
 #' @export
 deriveImgnReliability <- function(df) {
   # homogenise the variable naming/coding for FU FU2 FU3
@@ -1429,7 +1432,9 @@ deriveImgnReliability <- function(df) {
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' @param df data frame containing long form ADRS data
+#'
 #' @return wide form of ADRS data with summary vars
+#'
 #' @export
 deriveImgnADRS <- function(df) {
   #Recode
@@ -1449,7 +1454,9 @@ deriveImgnADRS <- function(df) {
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' @param df data frame containing long form CIS data
+#'
 #' @return wide form of CIS data with summary vars
+#'
 #' @export
 deriveImgnCIS <- function(df) {
   #Recode
@@ -1474,7 +1481,9 @@ deriveImgnCIS <- function(df) {
 #' I have followed this ( ie counting 25 twice) please check
 #'
 #' @param df data frame containing long form IRI data
+#'
 #' @return wide form of IRI data with summary vars
+#'
 #' @export
 deriveImgnIRI <- function(df) {
   #Rotate
@@ -1501,7 +1510,9 @@ deriveImgnIRI <- function(df) {
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' @param df data frame containing long form PDS data
+#'
 #' @return wide form of PDS data with summary vars
+#'
 #' @export
 deriveImgnPDS <- function(df) {
   #Rotate
@@ -1536,7 +1547,9 @@ deriveImgnPDS <- function(df) {
 #'   The original SPSS did not do this but it seems appropriate
 #'
 #' @param df data frame containing long form AUDIT data
+#'
 #' @return wide form of AUDIT data with summary vars
+#'
 #' @export
 deriveImgnAUDIT <- function(df) {
   #Rotate
@@ -1563,7 +1576,9 @@ deriveImgnAUDIT <- function(df) {
 #'   The original SPSS did not do this but it seems appropriate
 #'
 #' @param df data frame containing long form MAST data
+#'
 #' @return wide form of MAST data with summary vars
+#'
 #' @export
 deriveImgnMAST <- function(df) {
   #The Parent version does not have "mast" in the trial names
@@ -1613,7 +1628,9 @@ deriveImgnMAST <- function(df) {
 #'   The original SPSS did not do this but it seems appropriate
 #'
 #' @param df data frame containing long form NEO FFI data
+#'
 #' @return wide form of NEO FFI data with summary vars
+#'
 #' @export
 deriveImgnNEO <- function(df) {
   #Rotate
@@ -1642,7 +1659,9 @@ deriveImgnNEO <- function(df) {
 #'   The original SPSS did not do this but it seems appropriate
 #'
 #' @param df data frame containing long form SURPS data
+#'
 #' @return wide form of SURPS data with summary vars
+#'
 #' @export
 deriveImgnSURPS <- function(df) {
   #Rotate
@@ -1669,7 +1688,9 @@ deriveImgnSURPS <- function(df) {
 #'   The original SPSS did not do this but it seems appropriate
 #'
 #' @param df data frame containing long form TCI data
+#'
 #' @return wide form of TCI data with summary vars
+#'
 #' @export
 deriveImgnTCI <- function(df) {
   #Rotate
@@ -1695,7 +1716,9 @@ deriveImgnTCI <- function(df) {
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' @param df data frame containing long form ESPAD data
+#'
 #' @return wide form of ESPAD data with summary vars
+#'
 #' @export
 deriveImgnESPAD <- function(df) {
   #Rotate
@@ -1842,6 +1865,7 @@ deriveImgnGEN <- function(df) {
 #' This could be added in but Frauke did not request them.
 #'
 #' @param df Data frame with IDENT data, read from CSV file exported from Delosis server.
+#'
 #' @return Derived data frame with summaries.
 #' 
 #' @importFrom data.table dcast
@@ -1933,7 +1957,6 @@ deriveImgnIDENT <- function(df) {
 #' @importFrom data.table dcast
 #' @importFrom data.table setDT
 #' @importFrom data.table setDF
-#' 
 #'
 #' @export
 deriveImgnDOTPROBE <- function(df) {
