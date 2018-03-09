@@ -23,7 +23,7 @@
 ##        compute a row index
 ##        supply the DF to one of the derive functions.
 ##
-##        repeat for each task seperately
+##        repeat for each task separately
 
 ## Happy to remove reliance on the row index if you prefer! Some additional flexibility can be worked in
 
@@ -527,8 +527,7 @@ deriveSOCRATIS <- function(df) {
   names(df) <- gsub("Trial.result.", "", names(df))
   df$SOCRATIS_TOM_1_INDEX <- as.numeric(df$SOCRATIS_TOM_1_INDEX)
   df$SOCRATIS_TOM_2_INDEX <- as.numeric(df$SOCRATIS_TOM_2_INDEX)
-  df$SOCRATIS_FAUS_PAS_INDEX <-
-    as.numeric(df$SOCRATIS_FAUS_PAS_INDEX)
+  df$SOCRATIS_FAUS_PAS_INDEX <- as.numeric(df$SOCRATIS_FAUS_PAS_INDEX)
   
   return (df)
 }
@@ -646,7 +645,7 @@ deriveBART <- function(df) {
 #' implemented in Psytools.
 #'
 #' @param df Data frame with PALP data, read from CSV file exported from Delosis server.
-#' If the PALP is adminstered with seperate conditions as seperate tasks then they should be merged into a single
+#' If the PALP is administered with separate conditions as separate tasks then they should be merged into a single
 #' long df containing all the different conditions
 #' NB if merging in this way the individual dfs must be limited to a single Iteration per participant beforehand
 #'
@@ -699,7 +698,7 @@ derivePALP <- function(df) {
   df$Condition[grepl('PR', df$Block)] <- "PR"
   df$Condition[grepl('PP', df$Block)] <- "PP"
   
-  #Extract the Summary Score into a seperate df
+  #Extract the Summary Score into a separate df
   scores <-
     df[grepl("summary", df$Block), grepl("User.code|Condition|Trial.result", colnames(df))]
   scores$Score <- as.numeric(scores$Trial.result)
@@ -734,7 +733,7 @@ derivePALP <- function(df) {
       value.var = c("Omission", "Commission", "RT")
     )
   
-  # Set the completed and processed timestamps to the LAST sub task if these were done as seperate tasks
+  # Set the completed and processed timestamps to the LAST sub task if these were done as separate tasks
   dfsums <-
     merge(
       merge(
@@ -993,7 +992,7 @@ deriveKIRBY <- function(df) {
   df$LDRscale[df$Block == 'KIRBY26'] <- 1
   df$LDRscale[df$Block == 'KIRBY27'] <- 2
   
-  # This analysis only works for completed attempts - remove any early teminations
+  # This analysis only works for completed attempts - remove any early terminations
   df <-
     df[order(df$User.code, df$Iteration, df$LDRscale, df$Kind), ]
   df <- subset(df, df$Completed == "t")
@@ -1232,9 +1231,9 @@ rotateQuestionnairePreserveBlock <- function(df) {
 #' @param df Data frame with simple questionnaire, read from CSV file exported from Delosis server.
 #' @param iterationFunction function to apply to Iteration - default min
 #' @param completed restrict to completed Iterations only - default TRUE
-#' @param valid restrict to Iterations marked as valid IF the user.code has any valid atempts  - default TRUE
+#' @param valid restrict to Iterations marked as valid IF the user.code has any valid attempts  - default TRUE
 #'
-#' It is not clear how the XNAT selection was acheived and the inclusion of invalids should be examined
+#' It is not clear how the XNAT selection was achieved and the inclusion of invalids should be examined
 #'
 #' @return data frame complying with input params
 #'
@@ -1247,7 +1246,7 @@ selectIteration <-
     # remove the valid constraint if there is no Validity column in supplied DF
     if (valid & !("Valid" %in% colnames(df))) {
       warning("Validity selection requested but 'Valid' variable not supplied")
-      valid <- FALSE
+      valid <- FALSErelevin
     }
     # Add an index to preserve order after the aggregation
     df$rowIndex <- seq_len(nrow(df))
@@ -1521,7 +1520,7 @@ deriveImgnPDS <- function(df) {
                                 !is.na(df$height_inches) &
                                 df$height_inches > 0]
   }
-  #Summary cannot be calculated at FU2 - these items not adminstered
+  #Summary cannot be calculated at FU2 - these items not administered
   if ("a8" %in% colnames(df)) {
     df$PDS_mean <-
       rowMeans(df[, grepl("a8|a9|a10|a11|a12a_f|a12_m", colnames(df))], na.rm = TRUE)
@@ -1855,7 +1854,7 @@ deriveImgnIDENT <- function(df) {
     stop("df does not meet requirements as passed")
   }
   
-  #Rotate out the id_check and ts variables if they exist to a seperate df to merge in later
+  #Rotate out the id_check and ts variables if they exist to a separate df to merge in later
   withTSID <- FALSE
   if (nrow(df[substr(df$Block, 1, 3) == 'ts_' |
               substr(df$Block, 1, 3) == 'id_', ]) > 0) {
@@ -1942,7 +1941,7 @@ deriveImgnDOTPROBE <- function(df) {
     stop("df does not meet requirements as passed")
   }
   
-  #Rotate out the id_check and ts variables if they exist to a seperate df to merge in later
+  #Rotate out the id_check and ts variables if they exist to a separate df to merge in later
   withTSID <- FALSE
   if (nrow(df[substr(df$Block, 1, 3) == 'ts_' |
               substr(df$Block, 1, 3) == 'id_', ]) > 0) {
