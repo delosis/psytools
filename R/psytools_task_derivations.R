@@ -1246,7 +1246,7 @@ selectIteration <-
     # remove the valid constraint if there is no Validity column in supplied DF
     if (valid & !("Valid" %in% colnames(df))) {
       warning("Validity selection requested but 'Valid' variable not supplied")
-      valid <- FALSErelevin
+      valid <- FALSE
     }
     # Add an index to preserve order after the aggregation
     df$rowIndex <- seq_len(nrow(df))
