@@ -1768,7 +1768,6 @@ deriveImgnESPAD <- function(df) {
 #' @importFrom data.table dcast
 #' @importFrom data.table setDT
 #' @importFrom data.table setDF
-#' @importFrom data.table setnames
 #' 
 #' @export
 deriveImgnGEN <- function(df) {
@@ -1780,7 +1779,7 @@ deriveImgnGEN <- function(df) {
   df <-
     merge(
       df,
-      setnames(df[df$Trial == 'relation', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c(
+      setNames(df[df$Trial == 'relation', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c(
         "User.code", "Iteration", "Block", "Relation"
       )),
       by = c("User.code", "Iteration", "Block"),
@@ -1790,7 +1789,7 @@ deriveImgnGEN <- function(df) {
   df <-
     merge(
       df,
-      setnames(df[df$Trial == 'sure', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c(
+      setNames(df[df$Trial == 'sure', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c(
         "User.code", "Iteration", "Block", "Sure"
       )),
       by = c("User.code", "Iteration", "Block"),
@@ -1800,7 +1799,7 @@ deriveImgnGEN <- function(df) {
   df <-
     merge(
       df,
-      setnames(df[df$Trial == 'disorder', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c(
+      setNames(df[df$Trial == 'disorder', grepl("User.code|Iteration|Block|Trial.result", colnames(df))], c(
         "User.code", "Iteration", "Block", "Disorder"
       )),
       by = c("User.code", "Iteration", "Block"),
