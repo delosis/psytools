@@ -27,6 +27,8 @@
 
 ## Happy to remove reliance on the row index if you prefer! Some additional flexibility can be worked in
 
+## TODO remove use of reshape - eg BART - slow as molasses
+
 library(data.table)
 
 
@@ -94,7 +96,9 @@ deriveSST <- function(df) {
                 mean = mean(x),
                 sd = sd(x),
                 final = tail(x, 1)
-              ), data = subset(df, df$TrialType == 'STOP_VAR'))
+              ),
+              na.action = NULL,
+              data = subset(df, df$TrialType == 'STOP_VAR'))
           ),
           by = c("User.code", "Iteration"))
   
@@ -1147,19 +1151,29 @@ deriveKIRBY <- function(df) {
 #' @importFrom data.table setDF
 #'
 #' @export
-rotateQuestionnaire <- function(df, BlockAsMeasureVar = FALSE) {
-  if (sanityCheck(df) == FALSE) {
-    stop("df does not meet requirements as passed")
-  }
-  
-  idVar = c(
+rotateQuestionnaire <-
+  function(df,
+           BlockAsMeasureVar = FALSE,
+           idVar = c(
+             "User.code",
+             "Iteration",
+             "Language",
+             "Completed",
+             "Completed.Timestamp",
+             "Processed.Timestamp"
+           )) {
+  nonRequiredVars<-setdiff(c(
     "User.code",
     "Iteration",
     "Language",
     "Completed",
     "Completed.Timestamp",
     "Processed.Timestamp"
-  )
+  ), idVar)
+  if (sanityCheck(df, , nonRequiredVars) == FALSE) {
+    stop("df does not meet requirements as passed")
+  }
+  
   measureVar = c("Trial")
   if (BlockAsMeasureVar) {
     measureVar = c("Block", measureVar)
@@ -1178,8 +1192,9 @@ rotateQuestionnaire <- function(df, BlockAsMeasureVar = FALSE) {
          df$Trial.result != 'skip_back',]
   
   # Select only the last response for each question in cases of skipping back and revising.
+  # only the first 2 idvars are needed
   df <-
-    df[!duplicated(subset(df, select = c("User.code", "Iteration", measureVar)), fromLast =
+    df[!duplicated(subset(df, select = c(head(idVar,2), measureVar)), fromLast =
                      T),]
   
   if (sanityCheck(df) == FALSE) {
