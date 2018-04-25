@@ -936,6 +936,8 @@ deriveKIRBY <- function(df) {
     stop("df does not meet requirements once filtered")
   }
   
+  #Convert to DT to speed up the iterative processing
+  df<-setDT(df)
   
   # Add the computed Kind values
   df$Kind[df$Block == 'KIRBY01'] <- 0.000158277936055715
@@ -1004,27 +1006,22 @@ deriveKIRBY <- function(df) {
   df$Trial.result[df$Trial.result == 'refuse'] <- 0
   
   ## First work out Kest by LDRscale
-  df$TrialOrderIdx <- 1
+  df[, TrialOrderIdx := seq(.N), by = c("User.code", "Iteration", "LDRscale")]
+  # Sum of higher and equal k choices which are 1 (LDR)
   for (i in 1:nrow(df)) {
-    if (i > 1) {
-      if (df[i, ]$User.code == df[i - 1, ]$User.code &
-          df[i, ]$Iteration == df[i - 1, ]$Iteration &
-          df[i, ]$LDRscale == df[i - 1, ]$LDRscale) {
-        df$TrialOrderIdx[i] <- df$TrialOrderIdx[i - 1] + 1
-      } else {
-        df$TrialOrderIdx[i] <- 1
-      }
-    }
-    # Sum of higher and equal k choices which are 1 (LDR)
-    df$Consistency[i] <-
-      sum(as.numeric(df$Trial.result[i:(i + 9 - df$TrialOrderIdx[i])]))
-    # Add on the sum of all the lower K ones which are 0 (SIR)
-    if (df$TrialOrderIdx[i] > 1) {
-      df$Consistency[i] <-
-        df$Consistency[i] + ((df$TrialOrderIdx[i] - 1) - sum(as.numeric(df$Trial.result[(i - (df$TrialOrderIdx[i] -
-                                                                                                1)):(i - 1)])))
-    }
+    set(df,
+        i,
+        "Consistency",
+        sum(as.numeric(df$Trial.result[i:(i + 9 - df$TrialOrderIdx[i])])) +
+          # Plus the number of lower k choices = 0
+          ifelse(
+            df$TrialOrderIdx[i] == 1,
+            0,
+            (df$TrialOrderIdx[i] - 1) -
+              sum(as.numeric(df$Trial.result[(i - (df$TrialOrderIdx[i] - 1)):(i - 1)]))
+          ))
   }
+  
   # Add a max consistency field
   df <-
     merge(
@@ -1044,7 +1041,6 @@ deriveKIRBY <- function(df) {
       ))))
     }
   }
-  
   # Finally make a geomean of all the max consistencies geomeans as their final outcome
   dfsums <-
     do.call(
@@ -1064,28 +1060,24 @@ deriveKIRBY <- function(df) {
   
   ## Next overall
   df <- df[order(df$User.code, df$Iteration, df$Kind), ]
-  df <-
-    subset(df, select = -c(TrialOrderIdx, Consistency, Consistency.max))
-  df$TrialOrderIdx <- 1
-  for (i in 1:nrow(df)) {
-    if (i > 1) {
-      if (df[i, ]$User.code == df[i - 1, ]$User.code &
-          df[i, ]$Iteration == df[i - 1, ]$Iteration) {
-        df$TrialOrderIdx[i] <- df$TrialOrderIdx[i - 1] + 1
-      } else {
-        df$TrialOrderIdx[i] <- 1
-      }
-    }
-    # Sum of higher and equal k choices which are 1 (LDR)
-    df$Consistency[i] <-
-      sum(as.numeric(df$Trial.result[i:(i + 27 - df$TrialOrderIdx[i])]))
-    # Add on the sum of all the lower K ones which are 0 (SIR)
-    if (df$TrialOrderIdx[i] > 1) {
-      df$Consistency[i] <-
-        df$Consistency[i] + ((df$TrialOrderIdx[i] - 1) - sum(as.numeric(df$Trial.result[(i - (df$TrialOrderIdx[i] -
-                                                                                                1)):(i - 1)])))
-    }
-  }
+  df <- subset(df, select = -c(TrialOrderIdx, Consistency, Consistency.max))
+  #Create a trial order index
+  df[, TrialOrderIdx := seq(.N), by = c("User.code", "Iteration")]
+  system.time(# Sum of higher and equal k choices which are 1 (LDR)
+    for (i in 1:nrow(df)) {
+      set(df,
+          i,
+          "Consistency",
+          sum(as.numeric(df$Trial.result[i:(i + 27 - df$TrialOrderIdx[i])])) +
+            # Plus the number of lower k choices = 0
+            ifelse(
+              df$TrialOrderIdx[i] == 1,
+              0,
+              (df$TrialOrderIdx[i] - 1) -
+                sum(as.numeric(df$Trial.result[(i - (df$TrialOrderIdx[i] - 1)):(i - 1)]))
+            ))
+    })
+  
   # Add a max consistency field
   df <-
     merge(
@@ -1130,7 +1122,6 @@ deriveKIRBY <- function(df) {
     )
   return (dfsums)
 }
-
 
 #' Rotate simple questionnaires from long to wide format.
 #'
