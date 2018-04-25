@@ -14,9 +14,9 @@ selectIteration(df, iterationFunction = min, completed = TRUE,
 
 \item{completed}{restrict to completed Iterations only - default TRUE}
 
-\item{valid}{restrict to Iterations marked as valid IF the user.code has any valid atempts  - default TRUE
+\item{valid}{restrict to Iterations marked as valid IF the user.code has any valid attempts - default TRUE
 
-It is not clear how the XNAT selection was acheived and the inclusion of invalids should be examined}
+It is not clear how the XNAT selection was achieved and the inclusion of invalids should be examined}
 }
 \value{
 data frame complying with input params

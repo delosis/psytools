@@ -13,7 +13,7 @@ deriveImgnAUDIT(df)
 wide form of AUDIT data with summary vars
 }
 \description{
-NB This does not select the appropriate attempt - this should be done by the calling funciton
+NB This does not select the appropriate attempt - this should be done by the calling function
 }
 \details{
 Note that in the case of no alcohol consumption this returns 0 for the summaries

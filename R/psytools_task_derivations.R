@@ -883,6 +883,11 @@ deriveERT <- function(df) {
 #'
 #' @return Derived data frame with summaries AND raw data.
 #' 
+#' @importFrom data.table dcast
+#' @importFrom data.table setDT
+#' @importFrom data.table setDF
+#' @importFrom data.table set
+#' 
 #' @export
 deriveKIRBY <- function(df) {
   if (sanityCheck(df) == FALSE) {

@@ -13,5 +13,5 @@ deriveImgnADRS(df)
 wide form of ADRS data with summary vars
 }
 \description{
-NB This does not select the appropriate attempt - this should be done by the calling funciton
+NB This does not select the appropriate attempt - this should be done by the calling function
 }

@@ -16,5 +16,5 @@ wide form of Reliability data with summary vars
 NB This does not select the appropriate attempt - this should be done by the calling function
 }
 \details{
-The FU / FU2 and FU3 files use a slightly different structure - this is homogneised here
+The FU / FU2 and FU3 files use a slightly different structure - this is homogenised here
 }

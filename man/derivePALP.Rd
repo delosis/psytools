@@ -8,7 +8,7 @@ derivePALP(df)
 }
 \arguments{
 \item{df}{Data frame with PALP data, read from CSV file exported from Delosis server.
-If the PALP is adminstered with seperate conditions as seperate tasks then they should be merged into a single
+If the PALP is administered with separate conditions as separate tasks then they should be merged into a single
 long df containing all the different conditions
 NB if merging in this way the individual dfs must be limited to a single Iteration per participant beforehand}
 }
