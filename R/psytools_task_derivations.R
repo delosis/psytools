@@ -1683,7 +1683,7 @@ deriveImgnSURPS <- function(df) {
   df$imp_mean <-
     rowMeans(df[, grepl("s2$|s5|s11|s15|s22", colnames(df))])
   df$ss_mean <-
-    rowMeans(df[, grepl("s3$|s6|s9|s12|s26|s19", colnames(df))])
+    rowMeans(df[, grepl("s3$|s6|s9|s12|s16|s19", colnames(df))])
   return(df)
 }
 
