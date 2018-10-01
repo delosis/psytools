@@ -1497,11 +1497,11 @@ deriveImgnIRI <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   #Summary
-  df$IRI_perspective <-
-    rowSums(df[, grepl("I03|I08|I11|I15|I21|I25|I28", colnames(df))], na.rm =
-              TRUE)
   df$IRI_fantasy <-
     rowSums(df[, grepl("I01|I05|I07|I12|I16|I23|I26", colnames(df))], na.rm =
+              TRUE)
+  df$IRI_perspective <-
+    rowSums(df[, grepl("I03|I08|I11|I15|I21|I25|I28", colnames(df))], na.rm =
               TRUE)
   df$IRI_empathic <-
     rowSums(df[, grepl("I02|I04|I09|I14|I18|I20|I22", colnames(df))], na.rm =
