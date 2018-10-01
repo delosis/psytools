@@ -1676,10 +1676,10 @@ deriveImgnSURPS <- function(df) {
   df <- rotateQuestionnaire(df)
   
   #Summaries
-  df$as_mean <-
-    rowMeans(df[, grepl("s8|s10|s14|s18|s21", colnames(df))])
   df$h_mean <-
     rowMeans(df[, grepl("s1$|s4|s7|s13|s17|s20|s23", colnames(df))])
+  df$as_mean <-
+    rowMeans(df[, grepl("s8|s10|s14|s18|s21", colnames(df))])
   df$imp_mean <-
     rowMeans(df[, grepl("s2$|s5|s11|s15|s22", colnames(df))])
   df$ss_mean <-
