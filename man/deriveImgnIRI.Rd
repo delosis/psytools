@@ -15,7 +15,3 @@ wide form of IRI data with summary vars
 \description{
 NB This does not select the appropriate attempt - this should be done by the calling function
 }
-\details{
-QUERY - in supplied docs Perspective sum contains IRI25 twice?
-I have followed this (i.e. counting 25 twice) please check
-}

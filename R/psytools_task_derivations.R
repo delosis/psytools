@@ -1,6 +1,6 @@
 # Derive Psytools CSV files exported from the Delosis server
 #
-#  Copyright (C) 2017 Delosis
+#  Copyright (C) 2017-2018 Delosis
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
