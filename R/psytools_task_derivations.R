@@ -1488,9 +1488,6 @@ deriveImgnCIS <- function(df) {
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
-#' QUERY - in supplied docs Perspective sum contains IRI25 twice?
-#' I have followed this (i.e. counting 25 twice) please check
-#'
 #' @param df data frame containing long form IRI data
 #'
 #' @return wide form of IRI data with summary vars
@@ -1501,8 +1498,8 @@ deriveImgnIRI <- function(df) {
   df <- rotateQuestionnaire(df)
   #Summary
   df$IRI_perspective <-
-    rowSums(df[, grepl("I03|I08|I11|I15|I21|I25", colnames(df))], na.rm =
-              TRUE) + df$IRI25
+    rowSums(df[, grepl("I03|I08|I11|I15|I21|I25|I28", colnames(df))], na.rm =
+              TRUE)
   df$IRI_fantasy <-
     rowSums(df[, grepl("I01|I05|I07|I12|I16|I23|I26", colnames(df))], na.rm =
               TRUE)
