@@ -1646,15 +1646,15 @@ deriveImgnNEO <- function(df) {
   
   #Summaries
   df$neur_mean <-
-    rowMeans(df[, grepl("1$|6$", colnames(df))])
+    rowMeans(df[, grepl("[^_][16]$", colnames(df))])
   df$extr_mean <-
-    rowMeans(df[, grepl("2$|7$", colnames(df))])
+    rowMeans(df[, grepl("[^_][27]$", colnames(df))])
   df$open_mean <-
-    rowMeans(df[, grepl("3$|8$", colnames(df))])
+    rowMeans(df[, grepl("[^_][38]$", colnames(df))])
   df$agre_mean <-
-    rowMeans(df[, grepl("4$|9$", colnames(df))])
+    rowMeans(df[, grepl("[^_][49]$", colnames(df))])
   df$cons_mean <-
-    rowMeans(df[, grepl("5$|0$", colnames(df))])
+    rowMeans(df[, grepl("[^_][50]$", colnames(df))])
   return(df)
 }
 
