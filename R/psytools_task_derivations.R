@@ -1684,6 +1684,14 @@ deriveImgnSURPS <- function(df) {
     rowMeans(df[, grepl("s2$|s5|s11|s15|s22", colnames(df))])
   df$ss_mean <-
     rowMeans(df[, grepl("s3$|s6|s9|s12|s16|s19", colnames(df))])
+  df$h_sum <-
+    rowSums(df[, grepl("s1$|s4|s7|s13|s17|s20|s23", colnames(df))])
+  df$as_sum <-
+    rowSums(df[, grepl("s8|s10|s14|s18|s21", colnames(df))])
+  df$imp_sum <-
+    rowSums(df[, grepl("s2$|s5|s11|s15|s22", colnames(df))])
+  df$ss_sum <-
+    rowSums(df[, grepl("s3$|s6|s9|s12|s16|s19", colnames(df))])
   return(df)
 }
 
