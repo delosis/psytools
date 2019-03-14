@@ -842,6 +842,7 @@ deriveERT <- function(df) {
 #' @importFrom data.table setDT
 #' @importFrom data.table setDF
 #' @importFrom data.table set
+#' @importFrom data.table setorder
 #' @importFrom data.table setnames
 #'
 #' @export
