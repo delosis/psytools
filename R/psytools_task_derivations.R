@@ -313,27 +313,63 @@ deriveDS <- function(df) {
   )
   
   # If they fail the easiest block then they get -777 for the span
-  
-  df[Corrects.F_2 <= 1, SpanF := -777]
-  df[Corrects.F_2 > 1, SpanF := 2]
-  df[Corrects.F_3 > 1, SpanF := 3]
-  df[Corrects.F_4 > 1, SpanF := 4]
-  df[Corrects.F_5 > 1, SpanF := 5]
-  df[Corrects.F_6 > 1, SpanF := 6]
-  df[Corrects.F_7 > 1, SpanF := 7]
-  df[Corrects.F_8 > 1, SpanF := 8]
-  df[Corrects.F_9 > 1, SpanF := 9]
-  df[Corrects.F_10 > 1, SpanF := 10]
-  df[Corrects.B_2 <= 1, SpanF := -777]
-  df[Corrects.B_2 > 1, SpanB := 2]
-  df[Corrects.B_3 > 1, SpanB := 3]
-  df[Corrects.B_4 > 1, SpanB := 4]
-  df[Corrects.B_5 > 1, SpanB := 5]
-  df[Corrects.B_6 > 1, SpanB := 6]
-  df[Corrects.B_7 > 1, SpanB := 7]
-  df[Corrects.B_8 > 1, SpanB := 8]
-  df[Corrects.B_9 > 1, SpanB := 9]
-  df[Corrects.B_10 > 1, SpanB := 9]
+
+  if ('Corrects.F_2' %in% names(df)) {
+    df[Corrects.F_2 <= 1, SpanF := -777]
+    df[Corrects.F_2 > 1, SpanF := 2]
+  }
+  if ('Corrects.F_3' %in% names(df)) {
+    df[Corrects.F_3 > 1, SpanF := 3]
+  }
+  if ('Corrects.F_4' %in% names(df)) {
+    df[Corrects.F_4 > 1, SpanF := 4]
+  }
+  if ('Corrects.F_5' %in% names(df)) {
+    df[Corrects.F_5 > 1, SpanF := 5]
+  }
+  if ('Corrects.F_2' %in% names(df)) {
+    df[Corrects.F_6 > 1, SpanF := 6]
+  }
+  if ('Corrects.F_7' %in% names(df)) {
+    df[Corrects.F_7 > 1, SpanF := 7]
+  }
+  if ('Corrects.F_8' %in% names(df)) {
+    df[Corrects.F_8 > 1, SpanF := 8]
+  }
+  if ('Corrects.F_9' %in% names(df)) {
+    df[Corrects.F_9 > 1, SpanF := 9]
+  }
+  if ('Corrects.F_10' %in% names(df)) {
+    df[Corrects.F_10 > 1, SpanF := 10]
+  }
+  if ('Corrects.B_2' %in% names(df)) {
+    df[Corrects.B_2 <= 1, SpanF := -777]
+    df[Corrects.B_2 > 1, SpanB := 2]
+  }
+  if ('Corrects.B_3' %in% names(df)) {
+    df[Corrects.B_3 > 1, SpanB := 3]
+  }
+  if ('Corrects.B_4' %in% names(df)) {
+    df[Corrects.B_4 > 1, SpanB := 4]
+  }
+  if ('Corrects.B_5' %in% names(df)) {
+    df[Corrects.B_5 > 1, SpanB := 5]
+  }
+  if ('Corrects.B_6' %in% names(df)) {
+    df[Corrects.B_6 > 1, SpanB := 6]
+  }
+  if ('Corrects.B_7' %in% names(df)) {
+    df[Corrects.B_7 > 1, SpanB := 7]
+  }
+  if ('Corrects.B_8' %in% names(df)) {
+    df[Corrects.B_8 > 1, SpanB := 8]
+  }
+  if ('Corrects.B_9' %in% names(df)) {
+    df[Corrects.B_9 > 1, SpanB := 9]
+  }
+  if ('Corrects.B_10' %in% names(df)) {
+    df[Corrects.B_10 > 1, SpanB := 10]
+  }
   return (setDF(df))
 }
 
@@ -361,7 +397,7 @@ deriveCORSI <- function(df) {
     stop("df does not meet requirements as passed")
   }
   df <- setDT(df)
-  df <- df[Block != 'P2', ]
+  df <- df[Block != 'P2',]
   
   #Create a numerical score to sum later
   df[Trial.result == 'PASS', Corrects := 1]
@@ -378,29 +414,72 @@ deriveCORSI <- function(df) {
     fun = sum,
     value.var = 'Corrects',
     sep = '.',
-    fill = ifelse(exists('defaultUnadministeredValue'), defaultUnadministeredValue, NA)
+    fill = ifelse(
+      exists('defaultUnadministeredValue'),
+      defaultUnadministeredValue,
+      NA
+    )
   )
   
   # If they fail the easiest block then they get -777 for the span
   
-  df[Corrects.F2 == 0, SpanF := -777]
-  df[Corrects.F2 > 0, SpanF := 2]
-  df[Corrects.F3 > 0, SpanF := 3]
-  df[Corrects.F4 > 0, SpanF := 4]
-  df[Corrects.F5 > 0, SpanF := 5]
-  df[Corrects.F6 > 0, SpanF := 6]
-  df[Corrects.F7 > 0, SpanF := 7]
-  df[Corrects.F8 > 0, SpanF := 8]
-  df[Corrects.F9 > 0, SpanF := 9]
-  df[Corrects.B2 == 0, SpanB := -777]
-  df[Corrects.B2 > 0, SpanB := 2]
-  df[Corrects.B3 > 0, SpanB := 3]
-  df[Corrects.B4 > 0, SpanB := 4]
-  df[Corrects.B5 > 0, SpanB := 5]
-  df[Corrects.B6 > 0, SpanB := 6]
-  df[Corrects.B7 > 0, SpanB := 7]
-  df[Corrects.B8 > 0, SpanB := 8]
-  df[Corrects.B9 > 0, SpanB := 9]
+  
+  if ('Corrects.F2' %in% names(df)) {
+    df[Corrects.F2 == 0, SpanF := -777]
+    df[Corrects.F2 > 0, SpanF := 2]
+  }
+  if ('Corrects.F3' %in% names(df)) {
+    df[Corrects.F3 > 0, SpanF := 3]
+  }
+  if ('Corrects.F4' %in% names(df)) {
+    df[Corrects.F4 > 0, SpanF := 4]
+  }
+  if ('Corrects.F5' %in% names(df)) {
+    df[Corrects.F5 > 0, SpanF := 5]
+  }
+  if ('Corrects.F6' %in% names(df)) {
+    df[Corrects.F6 > 0, SpanF := 6]
+  }
+  if ('Corrects.F7' %in% names(df)) {
+    df[Corrects.F7 > 0, SpanF := 7]
+  }
+  if ('Corrects.F8' %in% names(df)) {
+    df[Corrects.F8 > 0, SpanF := 8]
+  }
+  if ('Corrects.F9' %in% names(df)) {
+    df[Corrects.F9 > 0, SpanF := 9]
+  }
+  if ('Corrects.F10' %in% names(df)) {
+    df[Corrects.F10 > 0, SpanF := 10]
+  }
+  if ('Corrects.B2' %in% names(df)) {
+    df[Corrects.B2 == 0, SpanB := -777]
+    df[Corrects.B2 > 0, SpanB := 2]
+  }
+  if ('Corrects.B3' %in% names(df)) {
+    df[Corrects.B3 > 0, SpanB := 3]
+  }
+  if ('Corrects.B4' %in% names(df)) {
+    df[Corrects.B4 > 0, SpanB := 4]
+  }
+  if ('Corrects.B5' %in% names(df)) {
+    df[Corrects.B5 > 0, SpanB := 5]
+  }
+  if ('Corrects.B6' %in% names(df)) {
+    df[Corrects.B6 > 0, SpanB := 6]
+  }
+  if ('Corrects.B7' %in% names(df)) {
+    df[Corrects.B7 > 0, SpanB := 7]
+  }
+  if ('Corrects.B8' %in% names(df)) {
+    df[Corrects.B8 > 0, SpanB := 8]
+  }
+  if ('Corrects.B9' %in% names(df)) {
+    df[Corrects.B9 > 0, SpanB := 9]
+  }
+  if ('Corrects.B10' %in% names(df)) {
+    df[Corrects.B10 > 0, SpanB := 10]
+  }
   return (setDF(df))
 }
 
@@ -1111,7 +1190,8 @@ rotateQuestionnaire <-
     }
     
     if (sanityCheck(df, , nonRequiredVars) == FALSE) {
-      stop("df does not meet requirements as passed")
+      warning("df does not meet requirements as passed")
+      return (NULL)
     }
     
     measureVar = c("Trial")
@@ -1512,11 +1592,11 @@ deriveASSIST <- function(df) {
   df$Trial.result[(df$Block == 'ASSIST_3_a' | df$Block == 'ASSIST_5_a') &
                     df$Trial.result == 10] <- 2
   df$Trial.result[(df$Block == 'ASSIST_3_a' | df$Block == 'ASSIST_5_a') &
-                    df$Trial.result == 30] <- 3
+                    df$Trial.result == 20] <- 3
   df$Trial.result[(df$Block == 'ASSIST_3_a' | df$Block == 'ASSIST_5_a') &
-                    df$Trial.result == 40] <- 4
+                    df$Trial.result == 30] <- 4
   df$Trial.result[(df$Block == 'ASSIST_3_a' | df$Block == 'ASSIST_5_a') &
-                    df$Trial.result == 10] <- 6
+                    df$Trial.result == 40] <- 6
   df$Trial.result[df$Block == 'ASSIST_6_a' &
                     df$Trial.result == 10] <- 4
   df$Trial.result[df$Block == 'ASSIST_6_a' &
@@ -1538,38 +1618,71 @@ deriveASSIST <- function(df) {
   df <- rotateQuestionnaire(df)
   
   #Summary
-  df$prescription <-
-    rowSumsCustomMissing(df[, grepl("[356789]_a$", colnames(df))])
+  df$prescription <-ifelse(
+    rep(length(grep("[356789]_a$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_a$", colnames(df))]), 
+    -666
+  )
   
-  df$tobacco <-
-    rowSumsCustomMissing(df[, grepl("[356789]_b$", colnames(df))])
+  df$tobacco <-ifelse(
+    rep(length(grep("[356789]_b$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_b$", colnames(df))]), 
+    -666
+  )
   
-  df$alcohol <-
-    rowSumsCustomMissing(df[, grepl("[356789]_c$", colnames(df))])
+  df$alcohol <-ifelse(
+    rep(length(grep("[356789]_c$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_c$", colnames(df))]), 
+    -666
+  )
   
-  df$cannabis <-
-    rowSumsCustomMissing(df[, grepl("[356789]_d$", colnames(df))])
+  df$cannabis <-ifelse(
+    rep(length(grep("[356789]_d$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_d$", colnames(df))]), 
+    -666
+  )
   
-  df$inhalants <-
-    rowSumsCustomMissing(df[, grepl("[356789]_e$", colnames(df))])
+  df$inhalants <-ifelse(
+    rep(length(grep("[356789]_e$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_e$", colnames(df))]), 
+    -666
+  )
   
-  df$sleeping_pills <-
-    rowSumsCustomMissing(df[, grepl("[356789]_f$", colnames(df))])
+  df$sleeping_pills <-ifelse(
+    rep(length(grep("[356789]_f$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_f$", colnames(df))]), 
+    -666
+  )
   
-  df$opioids <-
-    rowSumsCustomMissing(df[, grepl("[356789]_g$", colnames(df))])
+  df$opioids <-ifelse(
+    rep(length(grep("[356789]_g$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_g$", colnames(df))]), 
+    -666
+  )
   
-  df$ats <-
-    rowSumsCustomMissing(df[, grepl("[356789]_h$", colnames(df))])
+  df$ats <-ifelse(
+    rep(length(grep("[356789]_h$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_h$", colnames(df))]), 
+    -666
+  )
   
-  df$cocaine <-
-    rowSumsCustomMissing(df[, grepl("[356789]_i$", colnames(df))])
+  df$cocaine <- ifelse(
+    rep(length(grep("[356789]_i$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_i$", colnames(df))]), 
+    -666
+  )
   
-  df$hallucinogens <-
-    rowSumsCustomMissing(df[, grepl("[356789]_j$", colnames(df))])
+  df$hallucinogens <-ifelse(
+    rep(length(grep("[356789]_j$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_j$", colnames(df))]), 
+    -666
+  )
   
-  df$other <-
-    rowSumsCustomMissing(df[, grepl("[356789]_k$", colnames(df))])
+  df$other <-ifelse(
+    rep(length(grep("[356789]_k$", colnames(df)))>0, nrow(df)), 
+    rowSumsCustomMissing(df[, grepl("[356789]_k$", colnames(df))]), 
+    -666
+  )
   
   return(df)
 }

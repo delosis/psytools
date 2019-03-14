@@ -124,6 +124,7 @@ deriveCvedaSDIM <- function(df) {
   df<-rotateQuestionnaire(df)
   
   # recode open language religion and caste info
+  if('SDI_03' %in% names(df)) {
     languageReligionCaste<-df[,grepl('SDI_03|SDI_04|SDI_05', names(df))]
     names(languageReligionCaste)<-gsub('SDI_03', 'language', names(languageReligionCaste))
     names(languageReligionCaste)<-gsub('SDI_05', 'religion', names(languageReligionCaste))
@@ -135,7 +136,7 @@ deriveCvedaSDIM <- function(df) {
     df$SDI_05_specify<-languageReligionCaste$religion_specify
     df$SDI_04<-languageReligionCaste$caste
     df$SDI_04_specify<-languageReligionCaste$caste_specify
-
+  }
   return(fixNumericVariables(df))
 }
 
