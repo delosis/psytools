@@ -4,14 +4,12 @@
 \alias{rotateQuestionnaire}
 \title{Rotate simple questionnaires from long to wide format.}
 \usage{
-rotateQuestionnaire(df, BlockAsMeasureVar = FALSE, idVar = c("User.code",
-  "Iteration", "Language", "Completed", "Completed.Timestamp",
-  "Processed.Timestamp"))
+rotateQuestionnaire(df, BlockAsMeasureVar = FALSE, skippedValue = NA,
+  idVar = c("User.code", "Iteration", "Language", "Completed",
+  "Completed.Timestamp", "Processed.Timestamp"))
 }
 \arguments{
 \item{df}{Data frame with simple questionnaire, read from CSV file exported from Delosis server.}
-
-\item{BlockAsMeasureVar}{}
 }
 \value{
 Rotated data frame.

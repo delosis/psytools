@@ -5,7 +5,7 @@
 \title{Rotate simple questionnaires from long to wide format.
 Preserving Block as well as trial for the output}
 \usage{
-rotateQuestionnairePreserveBlock(df)
+rotateQuestionnairePreserveBlock(df, skippedValue = NA)
 }
 \arguments{
 \item{df}{Data frame with simple questionnaire, read from CSV file exported from Delosis server.}
