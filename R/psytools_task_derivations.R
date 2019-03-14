@@ -844,6 +844,7 @@ deriveERT <- function(df) {
 #' @importFrom data.table set
 #' @importFrom data.table setorder
 #' @importFrom data.table setnames
+#' @importFrom data.table shift
 #'
 #' @export
 deriveKIRBY <- function(df) {
