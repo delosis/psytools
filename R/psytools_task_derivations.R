@@ -522,8 +522,7 @@ deriveTMT <- function(df) {
   ) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
-  df <- subset(df, !grepl("Practice", Block, ignore.case = TRUE))
+
   
   # Simplify the block names
   df$Block <- gsub("TMT_", "", df$Block)
@@ -531,11 +530,17 @@ deriveTMT <- function(df) {
   
   setDT(df)
   
+  # Produce a table of Ppts who timeout and on what block, needed to code to unadministered
+  timeouts<-df[Trial.result=='TIMEOUT', c('User.code', 'Iteration', 'Block')]
+  # remove "practice" in the timeouts - if they timed out in the letters practice then we still want to code the letter block missing
+  timeouts$Block<-gsub('_Practice', '',timeouts$Block )
+    
+  df <- subset(df, !grepl("Practice", Block, ignore.case = TRUE))
+  
+  
   # Remove error records - they are counted in the "Pass" record for the trial
   df<-df[Trial.result!='error',]
   
-  # Produce a table of Ppts who timeout and on what block, needed to code to unadministered
-  timeouts<-df[Trial.result=='TIMEOUT', c('User.code', 'Iteration', 'Block')]
   
   setnames(df, 'Response.time..ms.', 'RT')
   setnames(timeouts, 'Block', 'timeoutBlock')
