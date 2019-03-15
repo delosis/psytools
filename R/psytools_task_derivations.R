@@ -136,9 +136,16 @@ deriveMID <- function(df) {
     stop("df does not meet requirements as passed")
   }
   
-  df <-
-    subset(df, df$Block != 'MID_PRACTICE' &
-             df$Block != 'midNRCHECK')
+  # Save task version info
+  settings<-rotateQuestionnaire(df[df$Block=='Settings',])
+  settings<-settings[,grepl('User.code|Iteration|TargetDisplay', names(settings))]
+  
+  df <-df[ df$Block == 'MID_MAIN', ]
+  df<-merge(df, settings, by=c('User.code','Iteration'), all=T)
+  df$InitialTargetDisplay[is.na(df$InitialTargetDisplay)]<-220
+  df$MaxTargetDisplay[is.na(df$MaxTargetDisplay)]<-350
+  df$TargetDisplayStep[is.na(df$TargetDisplayStep)]<-10
+  
   df <-
     df[order(df$User.code, df$Iteration, df$rowIndex, df$Trial),]
   
@@ -182,7 +189,7 @@ deriveMID <- function(df) {
     do.call(
       data.frame,
       aggregate(cbind(TrialResult) ~ User.code + Iteration + Language + Completed +
-                  Completed.Timestamp + Processed.Timestamp, function(x)
+                  Completed.Timestamp + Processed.Timestamp +InitialTargetDisplay+MaxTargetDisplay+TargetDisplayStep ,  function(x)
                     c(
                       NO_RESPONSE = length(which(x == "NO_RESPONSE")),
                       TOO_LATE = length(which(x == "TOO_LATE")),
@@ -343,7 +350,7 @@ deriveDS <- function(df) {
     df[Corrects.F_10 > 1, SpanF := 10]
   }
   if ('Corrects.B_2' %in% names(df)) {
-    df[Corrects.B_2 <= 1, SpanF := -777]
+    df[Corrects.B_2 <= 1, SpanB := -777]
     df[Corrects.B_2 > 1, SpanB := 2]
   }
   if ('Corrects.B_3' %in% names(df)) {
