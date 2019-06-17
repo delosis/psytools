@@ -198,4 +198,12 @@ rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666),
   sums[nas > maxMissing * ncol(df) ] <- missingValue
   
   return(sums)
+  
+}
+
+#' Utility function to strip html tags from string or vector 
+#' @param htmlString String /  String Vector to process
+#' @return String / Vector with tags removed
+stripHTML <- function(htmlString) {
+  return(gsub("<.*?>", "", htmlString))
 }
