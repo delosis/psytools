@@ -564,6 +564,7 @@ deriveTMT <- function(df) {
   set(dfsumsDT, which(dfsumsDT$timeoutBlock=='Flea'), names(dfsumsDT)[grepl('Flea|Letters', names(dfsumsDT))], missingCode )
   set(dfsumsDT, which(dfsumsDT$timeoutBlock=='Letters'), names(dfsumsDT)[grepl('Letters', names(dfsumsDT))], missingCode )
   set(dfsumsDT, which(dfsumsDT$timeoutBlock=='NumbersLetters'), names(dfsumsDT)[grepl('NumbersLetters', names(dfsumsDT))], missingCode )
+  set(dfsumsDT, which(!is.na(dfsumsDT$timeoutBlock)), 'Completed', 'TimeOut' )
   dfsumsDT$timeoutBlock<-NULL
   
   return (setDF(dfsumsDT))
