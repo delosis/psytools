@@ -285,8 +285,8 @@ deriveBnuMW70 <- function(df) {
     rowMeansCustomMissing(df[, grepl("51|52|53|54", colnames(df))])
   df$Discrepancy <-
     rowMeansCustomMissing(df[, grepl("55|56|57|58", colnames(df))])
-  df$Discrepancy <-
-    Others_expectations(df[, grepl("59|60|61", colnames(df))])
+  df$Others_expectations <-
+    rowMeansCustomMissing(df[, grepl("59|60|61", colnames(df))])
   
   return(df)
 }
