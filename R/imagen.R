@@ -380,41 +380,6 @@ deriveImgnNEO <- function(df) {
 }
 
 
-#' Generate summary for SURPS questionnaire
-#'
-#' NB This does not select the appropriate attempt - this should be done by the calling function
-#'
-#' Note that in the case of no alcohol consumption this returns 0 for the summaries
-#'   The original SPSS did not do this but it seems appropriate
-#'
-#' @param df data frame containing long form SURPS data
-#'
-#' @return wide form of SURPS data with summary vars
-#'
-#' @export
-deriveImgnSURPS <- function(df) {
-  #Rotate
-  df <- rotateQuestionnaire(df)
-  
-  #Summaries
-  df$h_mean <-
-    rowMeans(df[, grepl("s1$|s4|s7|s13|s17|s20|s23", colnames(df))])
-  df$as_mean <-
-    rowMeans(df[, grepl("s8|s10|s14|s18|s21", colnames(df))])
-  df$imp_mean <-
-    rowMeans(df[, grepl("s2$|s5|s11|s15|s22", colnames(df))])
-  df$ss_mean <-
-    rowMeans(df[, grepl("s3$|s6|s9|s12|s16|s19", colnames(df))])
-  df$h_sum <-
-    rowSums(df[, grepl("s1$|s4|s7|s13|s17|s20|s23", colnames(df))])
-  df$as_sum <-
-    rowSums(df[, grepl("s8|s10|s14|s18|s21", colnames(df))])
-  df$imp_sum <-
-    rowSums(df[, grepl("s2$|s5|s11|s15|s22", colnames(df))])
-  df$ss_sum <-
-    rowSums(df[, grepl("s3$|s6|s9|s12|s16|s19", colnames(df))])
-  return(df)
-}
 
 
 #' Generate summary for TCI questionnaire

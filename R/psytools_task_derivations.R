@@ -1271,7 +1271,6 @@ rotateQuestionnairePreserveBlock <- function(df, skippedValue=NA) {
 
 
 
-
 #' Generate summary for Alabama Parenting Questionnaire, Child or Parent
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
@@ -1289,10 +1288,9 @@ deriveAPQ <- function(df) {
   df <- rotateQuestionnaire(df)
   #Summary
   
-  if ('APQ_C_01' %in% names(df)) {
+  if (max(grepl('APQ_?C_?01',names(df)))) {
     df$m_involvement <-
       rowSumsCustomMissing(df[, grepl("01$|04$|07$|09$|11$|14$|15$|20$|23$|26$", colnames(df))])
-    
     df$p_involvement <-
       rowSumsCustomMissing(df[, grepl("01A$|04A$|07A$|09A$|11A$|14A$|15A$|20A$|23$|26A$", colnames(df))])
     
@@ -1320,13 +1318,13 @@ deriveAPQ <- function(df) {
   return(df)
 }
 
-#' Generate summary for Alabama Parenting Questionnaire, Child or Parent
+#' Generate summary for Parental Bonding Instrument
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
-#' @param df data frame containing long form APQ data
+#' @param df data frame containing long form PBI data
 #'
-#' @return wide form of APQ data with summary vars
+#' @return wide form of PBI data with summary vars
 #'
 #' @export
 derivePBI <- function(df) {
@@ -1379,9 +1377,9 @@ deriveBIG5 <- function(df) {
   # Reverse coding of selected variables
   reverseVariables <-
     c('02', '06', '08', '09', 12, 18, 21, 23, 24, 27, 31, 34, 35, 37, 41, 43)
-
+  
   df<-recodeVariables(df, reverseVariables, fun= function(x) {6-x})
-
+  
   #Summary
   df$extraversion <-
     rowSumsCustomMissing(df[, grepl("01|06R|11|16|21R|26|31R|36", colnames(df))])
@@ -1401,6 +1399,99 @@ deriveBIG5 <- function(df) {
   return(df)
 }
 
+#' Generate summary for IPIP 20 item
+#'
+#' NB This does not select the appropriate attempt - this should be done by the calling function
+#'
+#' NB items 6, 7, 8, 9, 10, 15, 16, 17, 18, 19, 20 are reverse coded in place - they are reversed in the returned df with an R suffix
+#'
+#' @param df data frame containing long form IPIP data
+#'
+#' @return wide form of IPIP data with summary vars 
+#'
+#' @export
+deriveIPIP20 <- function(df) {
+  # Remove some stray max volume trials attempts from an early version of the task if they exist
+  df <- df[df$Trial != 'MaxVolume', ]
+  
+  #Rotate
+  df <- rotateQuestionnaire(df)
+  
+  # Reverse coding of selected variables
+  reverseVariables <-
+    c('06', '07','08','09',10,15,16,17,18,19,20)
+  
+  df<-recodeVariables(df, reverseVariables, fun= function(x) {6-x})
+  
+  #Summary
+  df$extraversion <-
+    rowSumsCustomMissing(df[, grepl("01|06R|11|16R", colnames(df))])
+  
+  df$agreeableness <-
+    rowSumsCustomMissing(df[, grepl("02|07R|12R|17R", colnames(df))])
+  
+  df$conscientiousness <-
+    rowSumsCustomMissing(df[, grepl("03|08R|13|18R", colnames(df))])
+  
+  df$neuroticism <-
+    rowSumsCustomMissing(df[, grepl("04|09R|14|19R", colnames(df))])
+  
+  df$openness <-
+    rowSumsCustomMissing(df[, grepl("05|10R|15R|20R", colnames(df))])
+  
+  return(df)
+}
+
+
+
+#' Generate summary for LEQ item
+#'
+#' NB This does not select the appropriate attempt - this should be done by the calling function
+#'
+#' NB items 6, 7, 8, 9, 10, 15, 16, 17, 18, 19, 20 are reverse coded in place - they are reversed in the returned df with an R suffix
+#'
+#' @param df data frame containing long form IPIP data
+#'
+#' @return wide form of IPIP data with summary vars 
+#'
+#' @export
+deriveLEQ <- function(df) {
+  # Remove some stray max volume trials attempts from an early version of the task if they exist
+  df <- df[df$Trial != 'MaxVolume', ]
+  
+  #Rotate
+  df <- rotateQuestionnaire(df)
+  
+  #Summary
+  df$family_valence <-
+    rowMeansCustomMissing(df[, grepl("01_feel|22_feel|24_feel|34_feel|39_feel", colnames(df))])
+  
+  df$accident_valence <-
+    rowMeansCustomMissing(df[, grepl("02_feel|06_feel|08_feel|37_feel", colnames(df))])
+
+  df$sexuality_valence <-
+    rowMeansCustomMissing(df[, grepl("07_feel|14_feel|20_feel|26_feel|30_feel|35_feel|38_feel", colnames(df))])
+
+  df$autonomy_valence <-
+    rowMeansCustomMissing(df[, grepl("03_feel|13_feel|15_feel|18_feel|23_feel|28_feel|29_feel|23_feel", colnames(df))])
+
+  df$devience_valence <-
+    rowMeansCustomMissing(df[, grepl("04_feel|05_feel|19_feel", colnames(df))])
+
+  df$relocation_valence <-
+    rowMeansCustomMissing(df[, grepl("12_feel|17_feel|31_feel", colnames(df))])
+  
+  df$distress_valence <-
+    rowMeansCustomMissing(df[, grepl("09_feel|11_feel|16_feel|25_feel|27_feel|36_feel", colnames(df))])
+  
+  df$noscale_valence <-
+    rowMeansCustomMissing(df[, grepl("10_feel|21_feel|33_feel|25_feel|27_feel|36_feel", colnames(df))])
+
+  df$overall_valence <-
+    rowMeansCustomMissing(df[, grepl("_feel", colnames(df))])
+  
+  return(df)
+}
 #' Generate summary for AAQ
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
@@ -1435,6 +1526,8 @@ deriveAAQ <- function(df) {
   
   return(df)
 }
+
+
 
 
 
@@ -1700,4 +1793,48 @@ deriveASSIST <- function(df) {
   return(df)
 }
 
+#' Generate summary for SURPS questionnaire
+#'
+#' NB This does not select the appropriate attempt - this should be done by the calling function
+#'
+#' Note that in the case of no alcohol consumption this returns 0 for the summaries
+#'   The original SPSS did not do this but it seems appropriate
+#'
+#' @param df data frame containing long form SURPS data
+#'
+#' @param requiresReverseCoding boolean is the source data already reverse coded?
+#' If true then the 1,4,7,13,20,23 are reversed in place
+#' If false (Imagen) then the existing coding is used
+#' @return wide form of SURPS data with summary vars
+#'
+#' @export
+deriveSURPS <- function(df, requiresReverseCoding = FALSE) {
+  #Rotate
+  df <- rotateQuestionnaire(df)
+  
+  if(requiresReverseCoding) {
+    # reverse code
+    reverseVariables <- c('[ACs]1$', '[ACs]4$', '[ACs]7$', '[ACs]13$', '[ACs]20$','[ACs]23$')
+    df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
+  }
+  
+  #Summaries
+  df$h_mean <-
+    rowMeans(df[, grepl("[ACs]1R?$|[ACs]4R?$|[ACs]7R?$|[ACs]13R?$|[ACs]17|[ACs]20R?$|[ACs]23R?$", colnames(df))])
+  df$as_mean <-
+    rowMeans(df[, grepl("[ACs]8|[ACs]10|[ACs]14|[ACs]18|[ACs]21", colnames(df))])
+  df$imp_mean <-
+    rowMeans(df[, grepl("[ACs]2$|[ACs]5|[ACs]11|[ACs]15|[ACs]22", colnames(df))])
+  df$ss_mean <-
+    rowMeans(df[, grepl("[ACs]3$|[ACs]6|[ACs]9|[ACs]12|[ACs]16|[ACs]19", colnames(df))])
+  df$h_sum <-
+    rowSums(df[, grepl("[ACs]1$|[ACs]4|[ACs]7|[ACs]13|[ACs]17|[ACs]20|[ACs]23", colnames(df))])
+  df$as_sum <-
+    rowSums(df[, grepl("[ACs]8|[ACs]10|[ACs]14|[ACs]18|[ACs]21", colnames(df))])
+  df$imp_sum <-
+    rowSums(df[, grepl("[ACs]2$|[ACs]5|[ACs]11|[ACs]15|[ACs]22", colnames(df))])
+  df$ss_sum <-
+    rowSums(df[, grepl("[ACs]3$|[ACs]6|[ACs]9|[ACs]12|[ACs]16|[ACs]19", colnames(df))])
+  return(df)
+}
 

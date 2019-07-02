@@ -8,7 +8,7 @@ selectIteration(df, iterationFunction = min, completed = TRUE,
   valid = TRUE)
 }
 \arguments{
-\item{df}{Data frame with simple questionnaire, read from CSV file exported from Delosis server.}
+\item{df}{Data frame or table with simple questionnaire, read from CSV file exported from Delosis server.}
 
 \item{iterationFunction}{function to apply to Iteration - default min}
 

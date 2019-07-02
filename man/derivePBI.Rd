@@ -2,15 +2,15 @@
 % Please edit documentation in R/psytools_task_derivations.R
 \name{derivePBI}
 \alias{derivePBI}
-\title{Generate summary for Alabama Parenting Questionnaire, Child or Parent}
+\title{Generate summary for Parental Bonding Instrument}
 \usage{
 derivePBI(df)
 }
 \arguments{
-\item{df}{data frame containing long form APQ data}
+\item{df}{data frame containing long form PBI data}
 }
 \value{
-wide form of APQ data with summary vars
+wide form of PBI data with summary vars
 }
 \description{
 NB This does not select the appropriate attempt - this should be done by the calling function

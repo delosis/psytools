@@ -24,7 +24,7 @@
 #'
 #' By default returns the df trimmed to the first complete iteration for each user code
 #'
-#' @param df Data frame with simple questionnaire, read from CSV file exported from Delosis server.
+#' @param df Data frame or table with simple questionnaire, read from CSV file exported from Delosis server.
 #' @param iterationFunction function to apply to Iteration - default min
 #' @param completed restrict to completed Iterations only - default TRUE
 #' @param valid restrict to Iterations marked as valid IF the user.code has any valid attempts - default TRUE
@@ -100,7 +100,7 @@ recodeVariables <- function(df, varlist, fun) {
     } else {
       df[,grep(i, names(df))]<- fun(df[,grep(i, names(df))])
     }
-    names(df)<-gsub(i, paste(i, 'R', sep=''), names(df))  
+    names(df)[grep(i, names(df))]<- paste(names(df)[grep(i, names(df))], 'R', sep='')  
   }
   return(df)
 }  
@@ -196,14 +196,112 @@ rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666),
   sums<-rowMeans(df, na.rm) * ncol(df)
   nas<-rowSums(is.na(df), na.rm=TRUE)
   sums[nas > maxMissing * ncol(df) ] <- missingValue
-  
   return(sums)
-  
 }
+
+#' Utility function to calculate row means first stripping custom missings 
+#' and then replacing missing results with a custom missing
+#' @param df Data Frame/Table to perform rowSums upon
+#'
+#' @param missingValue custom missing code to apply to missing results
+#'
+#' @param maxMissing (0 to 1) return a prorated sum if the number of missings are under this threshold
+#'
+#' @return recoded df/dt
+
+rowMeansCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0) {
+  if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
+  na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
+  df<-stripCustomMissings(df, customMissingCodes)
+  means<-rowMeans(df, na.rm)
+  nas<-rowSums(is.na(df), na.rm=TRUE)
+  means[nas > maxMissing * ncol(df) ] <- missingValue
+  return(means)
+}
+
+
 
 #' Utility function to strip html tags from string or vector 
 #' @param htmlString String /  String Vector to process
 #' @return String / Vector with tags removed
 stripHTML <- function(htmlString) {
   return(gsub("<.*?>", "", htmlString))
+}
+
+
+#' Download Single Data File
+#'
+#' Download the specified task from the specified server 
+#' Authentication cache provided by authenticate function
+#' 
+#' @param SMAusername username to login with
+#' @param taskDigestID taskID AND digest ID (eg TASK_ID-DIGEST_ID)
+#' @param server SMA server defaults to www.delosis.com
+#' @param sampleID sampleID defaults to NULL
+#' @keywords download dataset
+#' @importFrom data.table fread
+#' 
+#' @export
+downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www.delosis.com", sampleID=NULL){
+  #prompt for password if we don't hold it in the current session
+  login <- DelosisAuthenticate(SMAusername, studyID, server)
+  if(is.null(login)) {stop("Authentication Cancelled")}
+  URL<-paste('https://', URLencode(login["username"], reserved=T), ':',URLencode(login["password"], reserved=T), '@', login["server"], '/psytools-server/dataservice/dataset/', sep='')
+  taskID<-paste(studyID,taskDigestID, sep='-')
+  if(!is.null(sampleID)) {taskID<-paste(taskID, sampleID, sep='-')}
+  URL<-URLencode(paste(URL, taskID, '.csv.gz', sep=''))
+  success<-tryCatch( {
+    dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8")
+    0
+  }, warning = function(w) 999, error = function(e) 999 )
+  if (success==0) {
+    if(nrow(dt)>0) {
+    ##replace spaces and [] in column names to preserve compatibility with read.table
+    colnames(dt)<-gsub('[] []','.', colnames(dt))
+    return(dt)
+    } else {
+      warning(paste(taskID, 'is empty - returning an empty dt'))
+    }
+  } 
+  else { 
+    warning(paste("Could not download dataset", taskID, "from server", server, "using SMA username", login["username"]), call.=FALSE)
+    #try again perhaps the password was wrong
+    login <- DelosisAuthenticate(SMAusername, studyID, server, TRUE)
+    if(is.null(login)) {stop("Authentication Cancelled")}
+    return(downloadSingleDataFile(SMAusername, studyID, taskDigestID, server, sampleID))
+  }
+}
+
+#' Authenticate 
+#' local authentication cache prompts for login in shiny window and will cache details for a study and server over repeated calls.
+#' 
+#' @param SMAusername Username to access SMA
+#' @param studyID Study ID
+#' @param server SMA server defaults to www.delosis.com
+#' @param resetCache Force a new prompt defaults to FALSE
+#' @importFrom askpass askpass
+#' @keywords authentication download dataset
+DelosisAuthenticate<-function(SMAusername, studyID, server="www.delosis.com", resetCache=FALSE) {
+  if (!resetCache &
+      !is.null(attr(DelosisAuthenticate, "SMAusername")) &&
+      SMAusername == attr(DelosisAuthenticate, "SMAusername") &&
+      !is.null(attr(DelosisAuthenticate, "studyID")) &&
+      studyID == attr(DelosisAuthenticate, "studyID") &&
+      !is.null(attr(DelosisAuthenticate, "server")) &&
+      server == attr(DelosisAuthenticate, "server") &&
+      !is.null(attr(DelosisAuthenticate, "login"))) {
+    return(attr(DelosisAuthenticate, "login"))
+  }
+  else {
+    PASSWORD<-askpass::askpass(paste("Delosis SMA password for", SMAusername, " on ", server))
+    if (!is.null(PASSWORD)){
+      login<-c(username=SMAusername,password=PASSWORD,server=server)
+      attr(DelosisAuthenticate, "SMAusername") <<- SMAusername
+      attr(DelosisAuthenticate, "server") <<- server
+      attr(DelosisAuthenticate, "studyID") <<- studyID
+      attr(DelosisAuthenticate, "login") <<- login
+      return(login)
+    }
+    else {return(NULL)}
+  }
 }
