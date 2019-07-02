@@ -250,17 +250,25 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
   taskID<-paste(studyID,taskDigestID, sep='-')
   if(!is.null(sampleID)) {taskID<-paste(taskID, sampleID, sep='-')}
   URL<-URLencode(paste(URL, taskID, '.csv.gz', sep=''))
-  success<-tryCatch( {
-    dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8")
-    0
-  }, warning = function(w) 999, error = function(e) 999 )
-  if (success==0) {
+
+  dt<-NULL
+  retries<-0
+  while(is.null(dt) && retries<3) {
+    try(
+      dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8")
+    )
+    retries<-retries+1
+    Sys.sleep(2)
+  }
+  
+  if (!is.null(dt)) {
     if(nrow(dt)>0) {
     ##replace spaces and [] in column names to preserve compatibility with read.table
     colnames(dt)<-gsub('[] []','.', colnames(dt))
     return(dt)
     } else {
       warning(paste(taskID, 'is empty - returning an empty dt'))
+      return(dt)
     }
   } 
   else { 
@@ -283,23 +291,23 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
 #' @keywords authentication download dataset
 DelosisAuthenticate<-function(SMAusername, studyID, server="www.delosis.com", resetCache=FALSE) {
   if (!resetCache &
-      !is.null(attr(DelosisAuthenticate, "SMAusername")) &&
-      SMAusername == attr(DelosisAuthenticate, "SMAusername") &&
-      !is.null(attr(DelosisAuthenticate, "studyID")) &&
-      studyID == attr(DelosisAuthenticate, "studyID") &&
-      !is.null(attr(DelosisAuthenticate, "server")) &&
-      server == attr(DelosisAuthenticate, "server") &&
-      !is.null(attr(DelosisAuthenticate, "login"))) {
-    return(attr(DelosisAuthenticate, "login"))
+      !is.null(Sys.getenv("SMAusername")) &&
+      SMAusername == Sys.getenv("SMAusername") &&
+      !is.null(Sys.getenv("SMAstudyID")) &&
+      studyID == Sys.getenv("SMAstudyID") &&
+      !is.null(Sys.getenv("SMAserver")) &&
+      server == Sys.getenv("SMAserver") &&
+      !is.null(Sys.getenv("SMApassword"))) {
+    return(c(username=SMAusername,password=Sys.getenv("SMApassword"),server=server))
   }
   else {
     PASSWORD<-askpass::askpass(paste("Delosis SMA password for", SMAusername, " on ", server))
     if (!is.null(PASSWORD)){
       login<-c(username=SMAusername,password=PASSWORD,server=server)
-      attr(DelosisAuthenticate, "SMAusername") <<- SMAusername
-      attr(DelosisAuthenticate, "server") <<- server
-      attr(DelosisAuthenticate, "studyID") <<- studyID
-      attr(DelosisAuthenticate, "login") <<- login
+      Sys.setenv("SMAusername"= SMAusername)
+      Sys.setenv("SMAserver" = server)
+      Sys.setenv("SMAstudyID" = studyID)
+      Sys.setenv("SMApassword" = PASSWORD)
       return(login)
     }
     else {return(NULL)}
