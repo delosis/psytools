@@ -17,7 +17,9 @@
 
 
 
-#' Generate summary for PDS questionnaire
+#' Generate summary for PDS questionnaire as administered to children in BNU
+#' 
+#' NB - it is NOT suitable for the Adult version as that asks completely differnt questions - no derivation has been defined for that
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
@@ -30,20 +32,34 @@ deriveBnuPDS <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   
-  #Summary
-  df$PDS_sum <-
-    rowSumsCustomMissing(df[, grepl("2|4|5|6", colnames(df))])
+  # This does not work for the adult version - just return the rotated Q
+  if("T1_PD_BOY_A1" %in% names(df)) {
+    return(df)
+  }
+  
+  # Summary Note allowing missings as there are seperate variables for boys and girls - no prorating
+  # Boys is 2 4 and 6 summed
+  df$PDS_sum[df[,grepl('gender',names(df))]=='1'] <-
+               rowSumsCustomMissing(df[df[,grepl('gender',names(df))]=='1', grepl("2|4|5", colnames(df))], 
+                                    maxMissing = 1,
+                                    proRateMissings = FALSE)
+  # Girls is just Q2 and 4 ( Hair and Breasts ) Q6 is incorporated for the stage variable
+  df$PDS_sum[df[,grepl('gender',names(df))]=='2'] <-
+               rowSumsCustomMissing(df[df[,grepl('gender',names(df))]=='2', grepl("2|4", colnames(df))], 
+                                    maxMissing = 1,
+                                    proRateMissings = FALSE)
+                        
   
   df$PDS_stage[df[,grepl('gender',names(df))]=='1' & df$PDS_sum >= 12]<-5
   df$PDS_stage[df[,grepl('gender',names(df))]=='1' & df$PDS_sum >= 9 & df$PDS_sum <= 11]<-4
   df$PDS_stage[df[,grepl('gender',names(df))]=='1' & df$PDS_sum >= 6 & df$PDS_sum <= 8]<-3
   df$PDS_stage[df[,grepl('gender',names(df))]=='1' & df$PDS_sum >= 4 & df$PDS_sum <= 5]<-2
   df$PDS_stage[df[,grepl('gender',names(df))]=='1' & df$PDS_sum < 4]<-1
-  
-  df$PDS_stage[df[,grepl('gender',names(df))] =='2' & df[,grepl('7',names(df))] ==3 & df$PDS_sum>=8]<-5
-  df$PDS_stage[df[,grepl('gender',names(df))] =='2' & df[,grepl('7',names(df))] ==3 & df$PDS_sum < 8]<-4
-  df$PDS_stage[df[,grepl('gender',names(df))] =='2' & df[,grepl('7',names(df))] < 3 & df$PDS_sum > 3]<-3
-  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df[,grepl('7',names(df))] !=3 & df$PDS_sum == 3]<-2
+
+  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C6==1 & df$PDS_sum>=8]<-5
+  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C6==1 & df$PDS_sum < 8]<-4
+  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C6==2 & df$PDS_sum > 3]<-3
+  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C6==2 & df$PDS_sum == 3]<-2
   df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$PDS_sum < 3]<-1
   return(df)
 }
@@ -62,39 +78,24 @@ deriveBnuSC <- function(df) {
   df <- rotateQuestionnaire(df)
   
   # reverse code
-  reverseVariables <- c('38')
+  reverseVariables <- c('01','03','05','09',13,17,21,22,25,29,31,38)
   df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
   
   #Summary
-  df$Faith_of_school <-
+  df$order_and_discipline <-
+    rowSumsCustomMissing(df[, grepl("01R|05R|09R|13R|17R|21R|25R|29R|33", colnames(df))])
+  df$acceptance_and_support <-
+    rowSumsCustomMissing(df[, grepl("02|06|10|14|18|22R|26|30|34", colnames(df))])
+  df$fairness_and_justice <-
+    rowSumsCustomMissing(df[, grepl("03R|07|11|15|19|23|27|31R|35", colnames(df))])
+  df$encouragement_and_cooperation <-
+    rowSumsCustomMissing(df[, grepl("04|08|12|16|20|24|28|32|36", colnames(df))])
+  df$school_beliefs <-
     rowSumsCustomMissing(df[, grepl("37|38R|39|40", colnames(df))])
   
   return(df)
 }
 
-#' Generate summary for LS questionnaire
-#'
-#' NB This does not select the appropriate attempt - this should be done by the calling function
-#'
-#' @param df data frame containing long form LS data
-#'
-#' @return wide form of LS data with summary vars
-#'
-#' @export
-deriveBnuLS <- function(df) {
-  #Rotate
-  df <- rotateQuestionnaire(df)
-  
-  # reverse code
-  reverseVariables <- c('01','03','05','07','10','15')
-  df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
-  
-  #Summary
-  df$Loneliness_sum <-
-    rowSumsCustomMissing(df[, grepl("LS", colnames(df))])
-  
-  return(df)
-}
 
 #' Generate summary for COPE questionnaire
 #'
@@ -216,22 +217,6 @@ deriveBnuOCD <- function(df) {
   df$OCD_sum <-
     rowSumsCustomMissing(df[, grepl('OCD[^specify]*$', names(df))])
 
-  return(df)
-}
-
-#' Generate summary for basic questionnaire with summary total
-#' @param df data frame containing long form data
-#' @param Qname Name contained in all variables to be summed
-#' @return wide form of data with sum
-#'
-#' @export
-deriveBnuSimpleSum <- function(df, Qname) {
-  #Rotate
-  df <- rotateQuestionnaire(df)
-  
-  #Summary
-  df[,paste0(Qname,'_sum')]<-
-         rowSumsCustomMissing(df[, grepl(Qname, colnames(df))])
   return(df)
 }
 

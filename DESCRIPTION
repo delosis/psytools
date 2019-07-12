@@ -13,5 +13,5 @@ Maintainer: John Rogers <github@delosis.com>
 URL: https://github.com/delosis/psytools
 License: GPL-3
 Imports:
-    data.table
+    data.table (>= 1.12.0)
 RoxygenNote: 6.1.1

@@ -153,21 +153,20 @@ deriveCvedaPDS <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   
-  #Summary
   df$PDS_sum <-
     rowSums(stripCustomMissings(df[, grepl("02|04|05|06", colnames(df))]), na.rm = TRUE)
   
-  df$PDS_stage[df[,grepl('gender',names(df))]=='M' & df$PDS_sum >= 12]<-5
-  df$PDS_stage[df[,grepl('gender',names(df))] & df$PDS_sum >= 9 & df$PDS_sum <= 11]<-4
-  df$PDS_stage[df[,grepl('gender',names(df))] & df$PDS_sum >= 6 & df$PDS_sum <= 8]<-3
-  df$PDS_stage[df[,grepl('gender',names(df))] & df$PDS_sum >= 4 & df$PDS_sum <= 5]<-2
-  df$PDS_stage[df[,grepl('gender',names(df))] & df$PDS_sum < 4]<-1
+  df$PDS_stage[df$PDS_gender=='M' & df$PDS_sum >= 12]<-5
+  df$PDS_stage[df$PDS_gender=='M' & df$PDS_sum >= 9 & df$PDS_sum <= 11]<-4
+  df$PDS_stage[df$PDS_gender=='M' & df$PDS_sum >= 6 & df$PDS_sum <= 8]<-3
+  df$PDS_stage[df$PDS_gender=='M' & df$PDS_sum >= 4 & df$PDS_sum <= 5]<-2
+  df$PDS_stage[df$PDS_gender=='M' & df$PDS_sum < 4]<-1
   
-  df$PDS_stage[df[,grepl('gender',names(df))] =='F' & df[,grepl('07',names(df))] ==3 & df$PDS_sum>=8]<-5
-  df$PDS_stage[df[,grepl('gender',names(df))] =='F' & df[,grepl('07',names(df))] ==3 & df$PDS_sum < 8]<-4
-  df$PDS_stage[df[,grepl('gender',names(df))] =='F' & df[,grepl('07',names(df))] < 3 & df$PDS_sum > 3]<-3
-  df$PDS_stage[df[,grepl('gender',names(df))]=='F' & df[,grepl('07',names(df))] !=3 & df$PDS_sum == 3]<-2
-  df$PDS_stage[df[,grepl('gender',names(df))]=='F' & df$PDS_sum < 3]<-1
+  df$PDS_stage[df$PDS_gender=='F' & df$PDS_07 ==3 & df$PDS_sum>=8]<-5
+  df$PDS_stage[df$PDS_gender=='F' & df$PDS_07 ==3 & df$PDS_sum < 8]<-4
+  df$PDS_stage[df$PDS_gender=='F' & df$PDS_07 < 3 & df$PDS_sum > 3]<-3
+  df$PDS_stage[df$PDS_gender=='F' & df$PDS_07 !=3 & df$PDS_sum == 3]<-2
+  df$PDS_stage[df$PDS_gender=='F' & df$PDS_sum < 3]<-1
   return(df)
 }
 

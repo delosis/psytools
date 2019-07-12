@@ -7,14 +7,19 @@
 deriveLEQ(df)
 }
 \arguments{
-\item{df}{data frame containing long form IPIP data}
+\item{df}{data frame containing long form LEQ data - will accept LEQ data with missing items eg BNU / cVEDA}
 }
 \value{
-wide form of IPIP data with summary vars
+wide form of LEQ data with summary vars
 }
 \description{
-NB This does not select the appropriate attempt - this should be done by the calling function
+NB! The _year suffix has had 2 different meanings depending on timepoint
+At Imagen baseline _year was a binary yes / no for happened in the last year
+At all other timepoints it referred to the AGE at which the event happened
+This derivation function will generate _age_mean or _year_meanfreq appropriately
 }
 \details{
-NB items 6, 7, 8, 9, 10, 15, 16, 17, 18, 19, 20 are reverse coded in place - they are reversed in the returned df with an R suffix
+cVEDA follows Imagen baseline
+
+NB This does not select the appropriate attempt - this should be done by the calling function
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/BNU.R
 \name{deriveBnuPDS}
 \alias{deriveBnuPDS}
-\title{Generate summary for PDS questionnaire}
+\title{Generate summary for PDS questionnaire as administered to children in BNU}
 \usage{
 deriveBnuPDS(df)
 }
@@ -13,5 +13,8 @@ deriveBnuPDS(df)
 wide form of PDS data with summary vars
 }
 \description{
+NB - it is NOT suitable for the Adult version as that asks completely differnt questions - no derivation has been defined for that
+}
+\details{
 NB This does not select the appropriate attempt - this should be done by the calling function
 }

@@ -967,7 +967,7 @@ deriveKIRBY <- function(df) {
   dfraw <- rotateQuestionnaire(dfraw)
   
   # Remove anything that is not a Kirby block ( id check , ts in the case of imagen)
-  df <- df[substr(df$Block, 1, 5) == "KIRBY", ]
+  df <- df[grepl("KIRBY", df$Block), ]
   
   # Select just the LAST response on each question - note that this means repeating a task will update the results - but it also takes the most recent response if they navigate backwards and then change their mind
   df <-
@@ -1218,11 +1218,13 @@ rotateQuestionnaire <-
     }
     
     df <- setDT(df)
+    # prevent cast flipping large numbers to scientific notation as data.frames do not support them well
+    options(scipen = 999)
     
     # Remove the results generated when displaying the feedback from instruments such as the Mini
     df <-
       df[!grepl("FEEDBACK", df$Block, ignore.case = T) &
-           df$Trial.result != 'skip_back', ]
+           df$Response != 'skip_back', ]
     
     # Select only the last response for each question in cases of skipping back and revising.
     # only the first 2 idvars are needed
@@ -1442,17 +1444,20 @@ deriveIPIP20 <- function(df) {
   return(df)
 }
 
-
-
 #' Generate summary for LEQ item
+#' 
+#' NB! The _year suffix has had 2 different meanings depending on timepoint
+#' At Imagen baseline _year was a binary yes / no for happened in the last year
+#' At all other timepoints it referred to the AGE at which the event happened
+#' This derivation function will generate _age_mean or _year_meanfreq appropriately
+#'
+#'  cVEDA follows Imagen baseline
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
-#' NB items 6, 7, 8, 9, 10, 15, 16, 17, 18, 19, 20 are reverse coded in place - they are reversed in the returned df with an R suffix
+#' @param df data frame containing long form LEQ data - will accept LEQ data with missing items eg BNU / cVEDA
 #'
-#' @param df data frame containing long form IPIP data
-#'
-#' @return wide form of IPIP data with summary vars 
+#' @return wide form of LEQ data with summary vars 
 #'
 #' @export
 deriveLEQ <- function(df) {
@@ -1461,36 +1466,64 @@ deriveLEQ <- function(df) {
   
   #Rotate
   df <- rotateQuestionnaire(df)
-  
-  #Summary
-  df$family_valence <-
-    rowMeansCustomMissing(df[, grepl("01_feel|22_feel|24_feel|34_feel|39_feel", colnames(df))])
-  
-  df$accident_valence <-
-    rowMeansCustomMissing(df[, grepl("02_feel|06_feel|08_feel|37_feel", colnames(df))])
 
-  df$sexuality_valence <-
-    rowMeansCustomMissing(df[, grepl("07_feel|14_feel|20_feel|26_feel|30_feel|35_feel|38_feel", colnames(df))])
-
-  df$autonomy_valence <-
-    rowMeansCustomMissing(df[, grepl("03_feel|13_feel|15_feel|18_feel|23_feel|28_feel|29_feel|23_feel", colnames(df))])
-
-  df$devience_valence <-
-    rowMeansCustomMissing(df[, grepl("04_feel|05_feel|19_feel", colnames(df))])
-
-  df$relocation_valence <-
-    rowMeansCustomMissing(df[, grepl("12_feel|17_feel|31_feel", colnames(df))])
+  derived_labels<-c('_valence','_year_meanfreq', '_ever_meanfreq','_year_freq','_ever_freq')
   
-  df$distress_valence <-
-    rowMeansCustomMissing(df[, grepl("09_feel|11_feel|16_feel|25_feel|27_feel|36_feel", colnames(df))])
+  subscales<-list(
+    family=c('01','22','24','34','39'),
+    accident=c('02','06','08','37'),
+    sexuality=c('07','14','20','26','30','35','38'),
+    autonomy=c('03','13','15','18','23','28','29','32'),
+    devience=c('04','05','19'),
+    relocation=c('12','17','31'),
+    distress=c('09','11','16','25','27','36'),
+    noscale=c('10','21','33')
+  )
   
-  df$noscale_valence <-
-    rowMeansCustomMissing(df[, grepl("10_feel|21_feel|33_feel|25_feel|27_feel|36_feel", colnames(df))])
-
-  df$overall_valence <-
-    rowMeansCustomMissing(df[, grepl("_feel", colnames(df))])
+  setDT(df)
+  if(max(suppressWarnings(as.numeric(unlist(df[,grepl('year', names(df)), with=FALSE]))) , na.rm=TRUE) > 1) {
+    warning('Assuming _year variables in LEQ refer to AGE as they are not binary')
+    names(df)<-gsub('_year', '_age', names(df))
+    # Ranges ( eg 6-7 have occasionally been used to enter ages as "- is allowed in the number entry) recode them to the mid point to allow derivations
+    for (j in names(df)[grepl('_age', names(df))]) {
+      if(class(df[[(j)]])!='numeric'){
+        for(i in 1:nrow(df)){
+          if (!is.na(df[i,..j]) & length(grep('[0-9]+-+[0-9]+', df[i,..j]))) {
+              set(df, i ,j, as.character(mean(as.numeric(unlist(strsplit(as.character(df[i,..j]), '-+'))))))
+            }
+        }
+      # now convert the column back to numeric as it should be  
+      df<-df[, (j) := as.numeric(df[[j]])]
+      }
+    }
+    derived_labels<-c('_valence','_age_mean', '_ever_meanfreq','_ever_freq')
+  }
   
-  return(df)
+  for (label in derived_labels) {
+    FUN<-ifelse(length(grep("mean|valence", label)),
+      rowMeansCustomMissing, 
+      rowSumsCustomMissing
+    )
+    if(label=='_valence') {grepLabel<-"_feelh?$"} else { grepLabel<- paste0(gsub('_meanfreq|_mean|_freq', '', label), "$")}
+    
+    for(i in 1:length(subscales)) {
+      df <- df[, {paste0(names(subscales[i]), label) :=
+        FUN(df[, grepl(
+          paste0(
+            paste0(unlist(unname(
+              subscales[[i]]
+              )),
+            grepLabel),
+          collapse = "|"),
+          colnames(df)), with=FALSE], maxMissing=1)}]
+    }
+    df<-df[, {paste0('overall', label) :=
+      FUN(df[, grepl(
+        grepLabel,
+        colnames(df)), with=FALSE], maxMissing = 1)}]
+    
+  }
+   return(setDF(df))
 }
 #' Generate summary for AAQ
 #'
@@ -1605,27 +1638,27 @@ deriveSDQ <- function(df) {
   # Summary
   df$SDQ_EMO_PROB<-rowSumsCustomMissing(
       df[,grepl('03|08|13|16|24', names(df))],
-      maxMissing=0.4
+      maxMissing=0.4, proRateMissings = TRUE
     )
 
   df$SDQ_COND_PROB<-rowSumsCustomMissing(
     df[,grepl('05|07R|12|18|22', names(df))],
-    maxMissing=0.4
+    maxMissing=0.4, proRateMissings = TRUE
   )
   
   df$SDQ_HYPER<-rowSumsCustomMissing(
     df[,grepl('02|10|15|21R|25R', names(df))],
-    maxMissing=0.4
+    maxMissing=0.4, proRateMissings = TRUE
   )
   
   df$SDQ_PEER_PROB<-rowSumsCustomMissing(
     df[,grepl('06|11R|14R|19|23', names(df))],
-    maxMissing=0.4
+    maxMissing=0.4, proRateMissings = TRUE
   )
   
   df$SDQ_PROSOCIAL<-rowSumsCustomMissing(
     df[,grepl('01|04|09|17|20', names(df))],
-    maxMissing=0.4
+    maxMissing=0.4, proRateMissings = TRUE
   )
   
   df$SDQ_EXTERNALIZING<-rowSumsCustomMissing(df[,grepl('COND_PROB|HYPER', names(df))])
@@ -1838,3 +1871,24 @@ deriveSURPS <- function(df, requiresReverseCoding = FALSE) {
   return(df)
 }
 
+#' Generate summary for basic questionnaire with summary total
+#' @param df data frame containing long form data
+#' @param Qname Name contained in all variables to be summed
+#' @param recodeVariables list of grep terms to identify a list of variables which must be recoded prior to the sum
+#' @param recodeFun function that should be applied to the recoded variables prior to summing
+#' @return wide form of data with sum in a new variable named paste0(Qname,'_sum')
+#'
+#' @export
+deriveSimpleSum <- function(df, Qname, recodeVariables = NULL, recodeFun=NULL) {
+  #Rotate
+  df <- rotateQuestionnaire(df)
+  
+  if(!is.null(recodeVariables) & !is.null(recodeFun)){
+    df<-recodeVariables(df, recodeVariables, recodeFun)
+  }
+  
+  #Summary
+  df[,paste0(Qname,'_sum')]<-
+    rowSumsCustomMissing(df[, grepl(Qname, colnames(df))])
+  return(df)
+}

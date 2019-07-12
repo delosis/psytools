@@ -94,7 +94,7 @@ selectIteration <-
 #' @export
 recodeVariables <- function(df, varlist, fun) {
   for (i in varlist ){
-    if(length(grep(i, names(df))) !=1){stop(paste('Reverse token', i, 'does not uniquely identify one variable in suplied df'))}
+    if(length(grep(i, names(df))) > 1){stop(paste('Reverse token', i, 'does not uniquely identify one variable in suplied df'))}
     if(exists("customMissingValues")){
       df[!(df[,grep(i, names(df))]  %in% customMissingValues),grep(i, names(df))]<- fun(na.omit(stripCustomMissings(df[,grep(i, names(df))])))
     } else {
@@ -185,11 +185,18 @@ stripCustomMissings <-
 #'
 #' @param missingValue custom missing code to apply to missing results
 #'
-#' @param maxMissing (0 to 1) return a prorated sum if the number of missings are under this threshold
+#' @param maxMissing (0 to 1) return a raw or prorated sum if the number of missings are under this threshold
+#'
+#' @param proRateMissing optionally prorate missings to produce a comparable sum if missings are allowed
 #'
 #' @return recoded df/dt
 
-rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0) {
+rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0, proRateMissings = FALSE) {
+  # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created 
+  if(ncol(df)==0 |nrow(df)==0) { 
+    warning("No data to sum - will not create this variable")
+    return (NULL)
+  }
   if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
   na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
   df<-stripCustomMissings(df, customMissingCodes)
@@ -213,6 +220,7 @@ rowMeansCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666)
   if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
   na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
   df<-stripCustomMissings(df, customMissingCodes)
+  print(df)
   means<-rowMeans(df, na.rm)
   nas<-rowSums(is.na(df), na.rm=TRUE)
   means[nas > maxMissing * ncol(df) ] <- missingValue
@@ -240,6 +248,7 @@ stripHTML <- function(htmlString) {
 #' @param sampleID sampleID defaults to NULL
 #' @keywords download dataset
 #' @importFrom data.table fread
+#' @imports R.utils
 #' 
 #' @export
 downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www.delosis.com", sampleID=NULL){
