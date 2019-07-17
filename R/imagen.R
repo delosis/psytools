@@ -27,7 +27,7 @@
 #' @return wide form of Reliability data with summary vars
 #'
 #' @export
-deriveImgnCTS <- function(df) {
+deriveImagenCTS <- function(df) {
   df$Trial[as.numeric(df$Trial) < 10] <-
     paste(0, df$Trial[as.numeric(df$Trial) < 10], sep = "")
   dfScore <- df
@@ -142,7 +142,7 @@ deriveImgnCTS <- function(df) {
 #' @return wide form of Reliability data with summary vars
 #'
 #' @export
-deriveImgnReliability <- function(df) {
+deriveImagenReliability <- function(df) {
   # homogenise the variable naming/coding for FU FU2 FU3
   df$Trial <- gsub("comment", "_specify", df$Trial)
   df$Trial <- gsub("result", "", df$Trial)
@@ -166,7 +166,7 @@ deriveImgnReliability <- function(df) {
 #' @return wide form of ADRS data with summary vars
 #'
 #' @export
-deriveImgnADRS <- function(df) {
+deriveImagenADRS <- function(df) {
   #Recode
   df$Trial.result[df$Trial.result == "2" &
                     substr(df$Trial, 1, 4) == "adrs"] <- 0
@@ -188,7 +188,7 @@ deriveImgnADRS <- function(df) {
 #' @return wide form of CIS data with summary vars
 #'
 #' @export
-deriveImgnCIS <- function(df) {
+deriveImagenCIS <- function(df) {
   #Recode
   df$Trial.result[df$Trial.result == "3" &
                     substr(df$Trial, 1, 4) == "item"] <- 4
@@ -212,7 +212,7 @@ deriveImgnCIS <- function(df) {
 #' @return wide form of IRI data with summary vars
 #'
 #' @export
-deriveImgnIRI <- function(df) {
+deriveImagenIRI <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   #Summary
@@ -241,7 +241,7 @@ deriveImgnIRI <- function(df) {
 #' @return wide form of PDS data with summary vars
 #'
 #' @export
-deriveImgnPDS <- function(df) {
+deriveImagenPDS <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   #Convert Imperial to Metric if Administered ( not at BL )
@@ -280,7 +280,7 @@ deriveImgnPDS <- function(df) {
 #' @return wide form of AUDIT data with summary vars
 #'
 #' @export
-deriveImgnAUDIT <- function(df) {
+deriveImagenAUDIT <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   
@@ -309,7 +309,7 @@ deriveImgnAUDIT <- function(df) {
 #' @return wide form of MAST data with summary vars
 #'
 #' @export
-deriveImgnMAST <- function(df) {
+deriveImagenMAST <- function(df) {
   #The Parent version does not have "mast" in the trial names
   df$Trial[grepl("^[1-9]", df$Trial)] <-
     paste("mast", df$Trial[grepl("^[1-9]", df$Trial)], sep = "")
@@ -361,7 +361,7 @@ deriveImgnMAST <- function(df) {
 #' @return wide form of NEO FFI data with summary vars
 #'
 #' @export
-deriveImgnNEO <- function(df) {
+deriveImagenNEO <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   
@@ -394,7 +394,7 @@ deriveImgnNEO <- function(df) {
 #' @return wide form of TCI data with summary vars
 #'
 #' @export
-deriveImgnTCI <- function(df) {
+deriveImagenTCI <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   
@@ -422,7 +422,7 @@ deriveImgnTCI <- function(df) {
 #' @return wide form of ESPAD data with summary vars
 #'
 #' @export
-deriveImgnESPAD <- function(df) {
+deriveImagenESPAD <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
   
@@ -472,7 +472,7 @@ deriveImgnESPAD <- function(df) {
 #' @importFrom data.table setDF
 #'
 #' @export
-deriveImgnGEN <- function(df) {
+deriveImagenGEN <- function(df) {
   #long format processing
   df$Trial[df$Block == "Psych_History_Knowledge"] <- "Psych_History"
   #remove the relation on which they exit
@@ -575,7 +575,7 @@ deriveImgnGEN <- function(df) {
 #' @importFrom data.table setDF
 #'
 #' @export
-deriveImgnIDENT <- function(df) {
+deriveImagenIDENT <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
@@ -661,7 +661,7 @@ deriveImgnIDENT <- function(df) {
 #' @importFrom data.table setDF
 #'
 #' @export
-deriveImgnDOTPROBE <- function(df) {
+deriveImagenDOTPROBE <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
