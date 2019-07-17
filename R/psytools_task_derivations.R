@@ -1488,13 +1488,8 @@ deriveLEQ <- function(df) {
               set(df, i ,j, as.character(mean(as.numeric(unlist(strsplit(as.character(df[i,..j]), '-+'))))))
             }
         }
-<<<<<<< HEAD
       # now convert the column back to numeric as it should be  
       df[, (j) := as.numeric(df[[j]])][]
-=======
-      # now convert the column back to numeric as it should be
-      df<-df[, (j) := as.numeric(df[[j]])]
->>>>>>> 1a7ba38021bdafc0c17e23dd03622d4e922e24aa
       }
     }
     derived_labels<-c('_valence','_age_mean', '_ever_meanfreq','_ever_freq')
@@ -1521,13 +1516,7 @@ deriveLEQ <- function(df) {
     df[, paste0('overall', label) :=
       FUN(df[, grepl(
         grepLabel,
-<<<<<<< HEAD
         colnames(df)), with=FALSE], maxMissing = 1)]
-    
-=======
-        colnames(df)), with=FALSE], maxMissing = 1)}]
-
->>>>>>> 1a7ba38021bdafc0c17e23dd03622d4e922e24aa
   }
    return(setDF(df))
 }
