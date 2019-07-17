@@ -380,8 +380,6 @@ deriveDS <- function(df) {
 }
 
 
-
-
 #' Derive CORSI data.
 #'
 #' Applies to the
@@ -1271,7 +1269,6 @@ rotateQuestionnairePreserveBlock <- function(df, skippedValue=NA) {
 }
 
 
-
 #' Generate summary for Alabama Parenting Questionnaire, Child or Parent
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
@@ -1524,6 +1521,8 @@ deriveLEQ <- function(df) {
   }
    return(setDF(df))
 }
+
+
 #' Generate summary for AAQ
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
@@ -1558,9 +1557,6 @@ deriveAAQ <- function(df) {
 
   return(df)
 }
-
-
-
 
 
 #' Generate summary for IFVCS
@@ -1665,6 +1661,7 @@ deriveSDQ <- function(df) {
   df$SDQ_TOTAL_DIFFICULTIES<-rowSumsCustomMissing(df[,grepl('EXTERNALIZING|INTERNALIZING', names(df))])
   return(df)
 }
+
 
 #' Generate summary for SCQ questionnaire
 #'
@@ -1825,6 +1822,7 @@ deriveASSIST <- function(df) {
   return(df)
 }
 
+
 #' Generate summary for SURPS questionnaire
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
@@ -1869,6 +1867,7 @@ deriveSURPS <- function(df, requiresReverseCoding = FALSE) {
     rowSums(df[, grepl("[ACs]3$|[ACs]6|[ACs]9|[ACs]12|[ACs]16|[ACs]19", colnames(df))])
   return(df)
 }
+
 
 #' Generate summary for basic questionnaire with summary total
 #' @param df data frame containing long form data
