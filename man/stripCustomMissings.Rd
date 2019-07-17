@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{stripCustomMissings}
 \alias{stripCustomMissings}
-\title{recode defined missign codes back to NA for Row summing purposes}
+\title{recode defined missing codes back to NA for Row summing purposes}
 \usage{
 stripCustomMissings(df, customCodes = c(-999, -888, -777, -666))
 }
@@ -15,5 +15,5 @@ stripCustomMissings(df, customCodes = c(-999, -888, -777, -666))
 recoded df/dt
 }
 \description{
-recode defined missign codes back to NA for Row summing purposes
+recode defined missing codes back to NA for Row summing purposes
 }
