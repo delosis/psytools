@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{DelosisAuthenticate}
 \alias{DelosisAuthenticate}
-\title{Authenticate 
+\title{Authenticate
 local authentication cache prompts for login in shiny window and will cache details for a study and server over repeated calls.}
 \usage{
 DelosisAuthenticate(SMAusername, studyID, server = "www.delosis.com",
@@ -18,7 +18,7 @@ DelosisAuthenticate(SMAusername, studyID, server = "www.delosis.com",
 \item{resetCache}{Force a new prompt defaults to FALSE}
 }
 \description{
-Authenticate 
+Authenticate
 local authentication cache prompts for login in shiny window and will cache details for a study and server over repeated calls.
 }
 \keyword{authentication}

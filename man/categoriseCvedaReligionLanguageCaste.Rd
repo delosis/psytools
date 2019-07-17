@@ -2,7 +2,7 @@
 % Please edit documentation in R/cVeda.R
 \name{categoriseCvedaReligionLanguageCaste}
 \alias{categoriseCvedaReligionLanguageCaste}
-\title{Convert the opentext Language Religion Caste variables found in SDIM and ACEIQ 
+\title{Convert the opentext Language Religion Caste variables found in SDIM and ACEIQ
 to the categorical format used in later versions}
 \usage{
 categoriseCvedaReligionLanguageCaste(df)
@@ -20,6 +20,6 @@ caste_specify caste Other Specify Responses}
 df with categories replaced and uncategorised resposnes shifted to other specify
 }
 \description{
-Convert the opentext Language Religion Caste variables found in SDIM and ACEIQ 
+Convert the opentext Language Religion Caste variables found in SDIM and ACEIQ
 to the categorical format used in later versions
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{rowMeansCustomMissing}
 \alias{rowMeansCustomMissing}
-\title{Utility function to calculate row means first stripping custom missings 
+\title{Utility function to calculate row means first stripping custom missings
 and then replacing missing results with a custom missing}
 \usage{
 rowMeansCustomMissing(df, customMissingCodes = c(-999, -888, -777, -666),
@@ -19,6 +19,6 @@ rowMeansCustomMissing(df, customMissingCodes = c(-999, -888, -777, -666),
 recoded df/dt
 }
 \description{
-Utility function to calculate row means first stripping custom missings 
+Utility function to calculate row means first stripping custom missings
 and then replacing missing results with a custom missing
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/cVeda.R
 \name{applyCvedaCustomMissings}
 \alias{applyCvedaCustomMissings}
-\title{Apply Cveda custom missing / refused / not known coding values. 
+\title{Apply Cveda custom missing / refused / not known coding values.
 This should be run for every cVeda questionnaire prior to standard derivation
 It is safe to run on all tasks also - no changes will be made}
 \usage{
@@ -16,6 +16,6 @@ long form with trial results recoded where required
 }
 \description{
 This function defines a list customMissingValues in the parent scope
-as well as a defaultUnadmininisteredValue (-666 for cVEDA) 
+as well as a defaultUnadmininisteredValue (-666 for cVEDA)
 which will be applied to all variables not seen by the Ppt
 }
