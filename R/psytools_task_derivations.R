@@ -1493,7 +1493,7 @@ deriveLEQ <- function(df) {
             }
         }
       # now convert the column back to numeric as it should be  
-      df<-df[, (j) := as.numeric(df[[j]])]
+      df[, (j) := as.numeric(df[[j]])][]
       }
     }
     derived_labels<-c('_valence','_age_mean', '_ever_meanfreq','_ever_freq')
@@ -1507,7 +1507,7 @@ deriveLEQ <- function(df) {
     if(label=='_valence') {grepLabel<-"_feelh?$"} else { grepLabel<- paste0(gsub('_meanfreq|_mean|_freq', '', label), "$")}
     
     for(i in 1:length(subscales)) {
-      df <- df[, {paste0(names(subscales[i]), label) :=
+      df[, paste0(names(subscales[i]), label) :=
         FUN(df[, grepl(
           paste0(
             paste0(unlist(unname(
@@ -1515,12 +1515,12 @@ deriveLEQ <- function(df) {
               )),
             grepLabel),
           collapse = "|"),
-          colnames(df)), with=FALSE], maxMissing=1)}]
+          colnames(df)), with=FALSE], maxMissing=1)]
     }
-    df<-df[, {paste0('overall', label) :=
+    df[, paste0('overall', label) :=
       FUN(df[, grepl(
         grepLabel,
-        colnames(df)), with=FALSE], maxMissing = 1)}]
+        colnames(df)), with=FALSE], maxMissing = 1)]
     
   }
    return(setDF(df))
