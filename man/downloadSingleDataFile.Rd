@@ -17,7 +17,7 @@ downloadSingleDataFile(SMAusername, studyID, taskDigestID,
 \item{sampleID}{sampleID defaults to NULL}
 }
 \description{
-Download the specified task from the specified server 
+Download the specified task from the specified server
 Authentication cache provided by authenticate function
 }
 \keyword{dataset}

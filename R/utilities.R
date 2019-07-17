@@ -81,6 +81,7 @@ selectIteration <-
     return(df)
   }
 
+
 #' Recode select variables in supplied wide df adding "R" suffix to them
 #'
 #' @param df data frame containing wide form data
@@ -164,7 +165,8 @@ sanityCheck <-
     return(sane)
   }
 
-#' recode defined missign codes back to NA for Row summing purposes
+
+#' recode defined missing codes back to NA for Row summing purposes
 #' @param df Data Frame/Table containg custom missing codes
 #'
 #' @param customCodes custom missing codes to code to NA
@@ -178,6 +180,7 @@ stripCustomMissings <-
     }
     return(df)
   }
+
 
 #' Utility function to calculate row sums first stripping custom missings
 #' and then replacing missing results with a custom missing
@@ -206,6 +209,7 @@ rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666),
   return(sums)
 }
 
+
 #' Utility function to calculate row means first stripping custom missings
 #' and then replacing missing results with a custom missing
 #' @param df Data Frame/Table to perform rowSums upon
@@ -215,7 +219,6 @@ rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666),
 #' @param maxMissing (0 to 1) return a prorated sum if the number of missings are under this threshold
 #'
 #' @return recoded df/dt
-
 rowMeansCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0) {
   if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
   na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
