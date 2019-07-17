@@ -18,7 +18,7 @@
 
 
 #' Generate summary for PDS questionnaire as administered to children in BNU
-#' 
+#'
 #' NB - it is NOT suitable for the Adult version as that asks completely differnt questions - no derivation has been defined for that
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
@@ -31,25 +31,25 @@
 deriveBnuPDS <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # This does not work for the adult version - just return the rotated Q
   if("T1_PD_BOY_A1" %in% names(df)) {
     return(df)
   }
-  
+
   # Summary Note allowing missings as there are seperate variables for boys and girls - no prorating
   # Boys is 2 4 and 6 summed
   df$PDS_sum[df[,grepl('gender',names(df))]=='1'] <-
-               rowSumsCustomMissing(df[df[,grepl('gender',names(df))]=='1', grepl("2|4|5", colnames(df))], 
+               rowSumsCustomMissing(df[df[,grepl('gender',names(df))]=='1', grepl("2|4|5", colnames(df))],
                                     maxMissing = 1,
                                     proRateMissings = FALSE)
   # Girls is just Q2 and 4 ( Hair and Breasts ) Q6 is incorporated for the stage variable
   df$PDS_sum[df[,grepl('gender',names(df))]=='2'] <-
-               rowSumsCustomMissing(df[df[,grepl('gender',names(df))]=='2', grepl("2|4", colnames(df))], 
+               rowSumsCustomMissing(df[df[,grepl('gender',names(df))]=='2', grepl("2|4", colnames(df))],
                                     maxMissing = 1,
                                     proRateMissings = FALSE)
-                        
-  
+
+
   df$PDS_stage[df[,grepl('gender',names(df))]=='1' & df$PDS_sum >= 12]<-5
   df$PDS_stage[df[,grepl('gender',names(df))]=='1' & df$PDS_sum >= 9 & df$PDS_sum <= 11]<-4
   df$PDS_stage[df[,grepl('gender',names(df))]=='1' & df$PDS_sum >= 6 & df$PDS_sum <= 8]<-3
@@ -76,11 +76,11 @@ deriveBnuPDS <- function(df) {
 deriveBnuSC <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # reverse code
   reverseVariables <- c('01','03','05','09',13,17,21,22,25,29,31,38)
   df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
-  
+
   #Summary
   df$order_and_discipline <-
     rowSumsCustomMissing(df[, grepl("01R|05R|09R|13R|17R|21R|25R|29R|33", colnames(df))])
@@ -92,7 +92,7 @@ deriveBnuSC <- function(df) {
     rowSumsCustomMissing(df[, grepl("04|08|12|16|20|24|28|32|36", colnames(df))])
   df$school_beliefs <-
     rowSumsCustomMissing(df[, grepl("37|38R|39|40", colnames(df))])
-  
+
   return(df)
 }
 
@@ -109,14 +109,14 @@ deriveBnuSC <- function(df) {
 deriveBnuCOPE <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   #Summary
   df$Positive_coping <-
     rowMeansCustomMissing(df[, grepl("01|02|03|04|05|06|07|08|09|10|11|12", colnames(df))])
   df$Negative_coping <-
     rowMeansCustomMissing(df[, grepl("13|14|15|16|17|18|19|20", colnames(df))])
 
-  message('Specs ask for a norming score - do you want to use Z scores within each dataset here?')  
+  message('Specs ask for a norming score - do you want to use Z scores within each dataset here?')
   return(df)
 }
 
@@ -134,13 +134,13 @@ deriveBnuCOPE <- function(df) {
 deriveBnuCWB <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   #Summary
   df$Emotional_index <-
     rowMeansCustomMissing(df[, grepl("1|2|3|4|5|6|7|8", colnames(df))])
   df$Life_satisfaction <- df[, grepl("9", colnames(df))]
   df$Student_happiness <- df$Emotional_index + 1.1* df$Life_satisfaction
-  
+
   return(df)
 }
 
@@ -156,13 +156,13 @@ deriveBnuCWB <- function(df) {
 deriveBnuER <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   #Summary
   df$Reappraisal <-
     rowSumsCustomMissing(df[, grepl("1$|3|5|7|8|10", colnames(df))])
   df$Suppression <-
     rowSumsCustomMissing(df[, grepl("2|4|6|9", colnames(df))])
- 
+
   return(df)
 }
 
@@ -182,7 +182,7 @@ deriveBnuBISBAS <- function(df) {
   # reverse code
   reverseVariables <- c('02','22')
   df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
-  
+
   #Summary
   df$BAS_Drive <-
     rowSumsCustomMissing(df[, grepl("03|09|12|21", colnames(df))])
@@ -192,7 +192,7 @@ deriveBnuBISBAS <- function(df) {
     rowSumsCustomMissing(df[, grepl("04|07|14|18|23", colnames(df))])
   df$BIS <-
     rowSumsCustomMissing(df[, grepl("02R|08|13|16|19|22R|24", colnames(df))])
-  
+
   return(df)
 }
 
@@ -208,11 +208,11 @@ deriveBnuBISBAS <- function(df) {
 deriveBnuOCD <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # recode down by 1
   recodeVariables <- names(df)[grepl('OCD[^specify]*$', names(df))]
   df<-recodeVariables(df, paste0(recodeVariables, '$'), fun= function(x) {x-1})
-  
+
   #Summary
   df$OCD_sum <-
     rowSumsCustomMissing(df[, grepl('OCD[^specify]*$', names(df))])
@@ -232,7 +232,7 @@ deriveBnuOCD <- function(df) {
 deriveBnuMW70 <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   #Summary
   df$Mastery_intrinsic <-
     rowMeansCustomMissing(df[, grepl("13|14|15", colnames(df))])
@@ -272,6 +272,6 @@ deriveBnuMW70 <- function(df) {
     rowMeansCustomMissing(df[, grepl("55|56|57|58", colnames(df))])
   df$Others_expectations <-
     rowMeansCustomMissing(df[, grepl("59|60|61", colnames(df))])
-  
+
   return(df)
 }

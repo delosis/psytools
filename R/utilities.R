@@ -46,7 +46,7 @@ selectIteration <-
     }
     # Add an index to preserve order after the aggregation
     df$rowIndex <- seq_len(nrow(df))
-    
+
     if (completed) {
       df <- df[df$Completed == 't', ]
     }
@@ -66,7 +66,7 @@ selectIteration <-
       df <- df[order(df$rowIndex), ]
       df$everValid <- NULL
     }
-    
+
     df <-
       merge (
         df,
@@ -100,10 +100,10 @@ recodeVariables <- function(df, varlist, fun) {
     } else {
       df[,grep(i, names(df))]<- fun(df[,grep(i, names(df))])
     }
-    names(df)[grep(i, names(df))]<- paste(names(df)[grep(i, names(df))], 'R', sep='')  
+    names(df)[grep(i, names(df))]<- paste(names(df)[grep(i, names(df))], 'R', sep='')
   }
   return(df)
-}  
+}
 
 
 #' Coerce numeric vars encoded as character to numeric to facilitate derivations
@@ -179,7 +179,7 @@ stripCustomMissings <-
     return(df)
   }
 
-#' Utility function to calculate row sums first stripping custom missings 
+#' Utility function to calculate row sums first stripping custom missings
 #' and then replacing missing results with a custom missing
 #' @param df Data Frame/Table to perform rowSums upon
 #'
@@ -192,8 +192,8 @@ stripCustomMissings <-
 #' @return recoded df/dt
 
 rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0, proRateMissings = FALSE) {
-  # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created 
-  if(ncol(df)==0 |nrow(df)==0) { 
+  # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created
+  if(ncol(df)==0 |nrow(df)==0) {
     warning("No data to sum - will not create this variable")
     return (NULL)
   }
@@ -206,7 +206,7 @@ rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666),
   return(sums)
 }
 
-#' Utility function to calculate row means first stripping custom missings 
+#' Utility function to calculate row means first stripping custom missings
 #' and then replacing missing results with a custom missing
 #' @param df Data Frame/Table to perform rowSums upon
 #'
@@ -229,7 +229,7 @@ rowMeansCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666)
 
 
 
-#' Utility function to strip html tags from string or vector 
+#' Utility function to strip html tags from string or vector
 #' @param htmlString String /  String Vector to process
 #' @return String / Vector with tags removed
 stripHTML <- function(htmlString) {
@@ -239,9 +239,9 @@ stripHTML <- function(htmlString) {
 
 #' Download Single Data File
 #'
-#' Download the specified task from the specified server 
+#' Download the specified task from the specified server
 #' Authentication cache provided by authenticate function
-#' 
+#'
 #' @param SMAusername username to login with
 #' @param taskDigestID taskID AND digest ID (eg TASK_ID-DIGEST_ID)
 #' @param server SMA server defaults to www.delosis.com
@@ -249,7 +249,7 @@ stripHTML <- function(htmlString) {
 #' @keywords download dataset
 #' @importFrom data.table fread
 #' @imports R.utils
-#' 
+#'
 #' @export
 downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www.delosis.com", sampleID=NULL){
   #prompt for password if we don't hold it in the current session
@@ -269,7 +269,7 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
     retries<-retries+1
     Sys.sleep(2)
   }
-  
+
   if (!is.null(dt)) {
     if(nrow(dt)>0) {
     ##replace spaces and [] in column names to preserve compatibility with read.table
@@ -279,8 +279,8 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
       warning(paste(taskID, 'is empty - returning an empty dt'))
       return(dt)
     }
-  } 
-  else { 
+  }
+  else {
     warning(paste("Could not download dataset", taskID, "from server", server, "using SMA username", login["username"]), call.=FALSE)
     #try again perhaps the password was wrong
     login <- DelosisAuthenticate(SMAusername, studyID, server, TRUE)
@@ -289,9 +289,9 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
   }
 }
 
-#' Authenticate 
+#' Authenticate
 #' local authentication cache prompts for login in shiny window and will cache details for a study and server over repeated calls.
-#' 
+#'
 #' @param SMAusername Username to access SMA
 #' @param studyID Study ID
 #' @param server SMA server defaults to www.delosis.com

@@ -44,7 +44,7 @@ deriveImgnCTS <- function(df) {
   dfScore$Trial.result[dfScore$Response == 6] <- 25
   df <- rbind(df, dfScore)
   df <- rotateQuestionnaire(df)
-  
+
   # Compute summary Variables from SPSS syntax
   df$ccamyp <-
     rowMeans(cbind(
@@ -126,7 +126,7 @@ deriveImgnCTS <- function(df) {
     rowMeans(cbind(df$ccpmyp, df$ccpmys, df$ccpsyp , df$ccpsys))
   df$cts_sexual_coercion <-
     rowMeans(cbind(df$ccsmyp, df$ccsmys, df$ccssyp , df$ccssys))
-  
+
   return(df)
 }
 
@@ -283,7 +283,7 @@ deriveImgnPDS <- function(df) {
 deriveImgnAUDIT <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   #Summary Vars
   df$audit_freq <-
     rowSums(cbind(df$audit1, df$audit2, df$audit3), na.rm = TRUE)
@@ -313,10 +313,10 @@ deriveImgnMAST <- function(df) {
   #The Parent version does not have "mast" in the trial names
   df$Trial[grepl("^[1-9]", df$Trial)] <-
     paste("mast", df$Trial[grepl("^[1-9]", df$Trial)], sep = "")
-  
+
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   #Recodes - Some items are weighted according to the SPSS script
   df$mast8 <- 5 * df$mast8
   df$mast20 <- 5 * df$mast20
@@ -335,7 +335,7 @@ deriveImgnMAST <- function(df) {
   df$mast17 <- 2 * df$mast17
   df$mast24 <- 2 * df$mast24
   df$mast25 <- 2 * df$mast25
-  
+
   #Summaries
   df$mast_total <-
     rowSums(df[, grepl("mast", colnames(df))], na.rm = TRUE)
@@ -364,7 +364,7 @@ deriveImgnMAST <- function(df) {
 deriveImgnNEO <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   #Summaries
   df$neur_mean <-
     rowMeans(df[, grepl("[^_][16]$", colnames(df))])
@@ -397,7 +397,7 @@ deriveImgnNEO <- function(df) {
 deriveImgnTCI <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   #Summaries
   df$tci_excit <-
     rowSums(df[, grepl("001|063|053|104|122|145|156|165|176|205", colnames(df))])
@@ -425,7 +425,7 @@ deriveImgnTCI <- function(df) {
 deriveImgnESPAD <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   #Summary Vars
   df$ftnd_sum <-
     rowSums(df[, grepl("ftnd", colnames(df))] , na.rm = TRUE)
@@ -454,7 +454,7 @@ deriveImgnESPAD <- function(df) {
       ifelse(df[[paste("dast", drug, "sum", sep = "_")]] > 0, df[[paste("dast", drug, "sum", sep =
                                                                           "_")]] + 1, df[[paste("dast", drug, "sum", sep = "_")]])
   }
-  
+
   return(df)
 }
 
@@ -517,7 +517,7 @@ deriveImgnGEN <- function(df) {
     df[df$Relation != "" &
          df$Trial != "sure" & df$Trial != "disorder",]
   df <- df[!is.na(df$User.code),]
-  
+
   #Order by relation within iteration
   df <- df[order(df$User.code, df$Iteration, df$Relation),]
   ## Iterate through and subscript the relation with an index so multiple diagnoses per relation can be supported
@@ -533,9 +533,9 @@ deriveImgnGEN <- function(df) {
       }
     }
   }
-  
+
   df$Relation <- paste(df$Relation, df$RelationOrderIdx, sep = "_")
-  
+
   df <-
     dcast(
       setDT(df),
@@ -544,7 +544,7 @@ deriveImgnGEN <- function(df) {
       value.var = c("Sure", "Disorder")
     )
   setDF(df)
-  
+
   df <- merge(dfEth,
               df,
               by = c("User.code", "Iteration"),
@@ -579,7 +579,7 @@ deriveImgnIDENT <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   #Rotate out the id_check and ts variables if they exist to a separate df to merge in later
   withTSID <- FALSE
   if (nrow(df[substr(df$Block, 1, 3) == 'ts_' |
@@ -592,10 +592,10 @@ deriveImgnIDENT <- function(df) {
       df[!(substr(df$Block, 1, 3) == 'ts_' |
              substr(df$Block, 1, 3) == 'id_'),]
   }
-  
+
   #Select just the Main block
   df <- df[df$Block == 'IDENT_MAIN',]
-  
+
   # Split the Trial and response columns
   options(stringsAsFactors = FALSE)
   df <-
@@ -613,13 +613,13 @@ deriveImgnIDENT <- function(df) {
   names(df)[names(df) == 'X1'] <- 'Response_side'
   names(df)[names(df) == 'X2'] <- 'Response_emotion'
   df$Morph <- 10 * as.numeric(df$Morph)
-  
+
   #Create a response var indicating if they chose the 0% or 100% end of the continuum
   df$P[df$Response_emotion == df$ContA] <- 0
   df$P[df$Response_emotion == df$ContB] <- 100
   df$P <- as.numeric(df$P)
   names(df)[names(df) == 'Response.time..ms.'] <- 'RT'
-  
+
   dfsums <-
     dcast(
       setDT(df),
@@ -665,7 +665,7 @@ deriveImgnDOTPROBE <- function(df) {
   if (sanityCheck(df) == FALSE) {
     stop("df does not meet requirements as passed")
   }
-  
+
   #Rotate out the id_check and ts variables if they exist to a separate df to merge in later
   withTSID <- FALSE
   if (nrow(df[substr(df$Block, 1, 3) == 'ts_' |
@@ -678,10 +678,10 @@ deriveImgnDOTPROBE <- function(df) {
       df[!(substr(df$Block, 1, 3) == 'ts_' |
              substr(df$Block, 1, 3) == 'id_'),]
   }
-  
+
   #Select just the Main block
   df <- df[df$Block == 'DOT_PROBE_MAIN',]
-  
+
   # Split the Trial column
   options(stringsAsFactors = FALSE)
   df <-
@@ -692,13 +692,13 @@ deriveImgnDOTPROBE <- function(df) {
   names(df)[names(df) == 'X2'] <- 'Congruence'
   names(df)[names(df) == 'X3'] <- 'dotSide'
   names(df)[names(df) == 'X4'] <- 'faceID'
-  
+
   #Create a response var indicating if they chose the 0% or 100% end of the continuum
   df$SCORE[df$Trial.result == "PASS"] <- 1
   df$SCORE[df$Trial.result == "FAIL"] <- 0
   df$SCORE <- as.numeric(df$SCORE)
   names(df)[names(df) == 'Response.time..ms.'] <- 'RT'
-  
+
   dfsums <-
     dcast(
       setDT(df),
@@ -708,7 +708,7 @@ deriveImgnDOTPROBE <- function(df) {
       value.var = c("SCORE", "RT")
     )
   setDF(dfsums)
-  
+
   # Remove the RT_sum and SCORE_mean variables
   dfsums <- dfsums[,!grepl("RT_sum|SCORE_mean", colnames(dfsums))]
   if (withTSID) {
