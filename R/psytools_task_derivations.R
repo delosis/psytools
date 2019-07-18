@@ -1224,7 +1224,7 @@ rotateQuestionnaire <-
     # Remove the results generated when displaying the feedback from instruments such as the Mini
     df <-
       df[!grepl("FEEDBACK", df$Block, ignore.case = T) &
-           df$Response != 'skip_back', ]
+           (is.na(df$Response) | df$Response != 'skip_back'), ]
 
     # Select only the last response for each question in cases of skipping back and revising.
     # only the first 2 idvars are needed
