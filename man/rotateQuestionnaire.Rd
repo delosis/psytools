@@ -10,6 +10,12 @@ rotateQuestionnaire(df, BlockAsMeasureVar = FALSE, skippedValue = NA,
 }
 \arguments{
 \item{df}{Data frame with simple questionnaire, read from CSV file exported from Delosis server.}
+
+\item{BlockAsMeasureVar}{Default FALSE - Boolean indicating if the Block should be used as a measureVar when rotating,}
+
+\item{skippedValue}{Default NA - value to apply to omitted questions when rotating}
+
+\item{idVar}{list of variables to identify a row after rotation}
 }
 \value{
 Rotated data frame.

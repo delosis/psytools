@@ -251,7 +251,7 @@ stripHTML <- function(htmlString) {
 #' @param sampleID sampleID defaults to NULL
 #' @keywords download dataset
 #' @importFrom data.table fread
-#' @imports R.utils
+#' @import R.utils
 #'
 #' @export
 downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www.delosis.com", sampleID=NULL){

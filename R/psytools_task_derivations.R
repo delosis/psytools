@@ -1160,7 +1160,10 @@ deriveKIRBY <- function(df) {
 #'
 #' Preserves the Valid column if it is included in the supplied DF
 #'
-#' @param BlockAsMeasureVar
+#' @param BlockAsMeasureVar Default FALSE - Boolean indicating if the Block should be used as a measureVar when rotating,
+#' @param skippedValue Default NA - value to apply to omitted questions when rotating 
+#' @param idVar list of variables to identify a row after rotation
+#'
 #' @param df Data frame with simple questionnaire, read from CSV file exported from Delosis server.
 #'
 #' @return Rotated data frame.
