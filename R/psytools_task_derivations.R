@@ -1480,6 +1480,7 @@ deriveLEQ <- function(df) {
   )
 
   setDT(df)
+  options(datatable.print.nrows = 0)
   if(max(suppressWarnings(as.numeric(unlist(df[,grepl('year', names(df)), with=FALSE]))) , na.rm=TRUE) > 1) {
     warning('Assuming _year variables in LEQ refer to AGE as they are not binary')
     names(df)<-gsub('_year', '_age', names(df))
@@ -1497,7 +1498,7 @@ deriveLEQ <- function(df) {
     }
     derived_labels<-c('_valence','_age_mean', '_ever_meanfreq','_ever_freq')
   }
-
+  
   for (label in derived_labels) {
     FUN<-ifelse(length(grep("mean|valence", label)),
       rowMeansCustomMissing,
@@ -1506,8 +1507,7 @@ deriveLEQ <- function(df) {
     if(label=='_valence') {grepLabel<-"_feelh?$"} else { grepLabel<- paste0(gsub('_meanfreq|_mean|_freq', '', label), "$")}
 
     for(i in 1:length(subscales)) {
-      df[, paste0(names(subscales[i]), label) :=
-        FUN(df[, grepl(
+      df[, paste0(names(subscales[i]), label) := FUN(df[, grepl(
           paste0(
             paste0(unlist(unname(
               subscales[[i]]
@@ -1521,7 +1521,9 @@ deriveLEQ <- function(df) {
         grepLabel,
         colnames(df)), with=FALSE], maxMissing = 1)]
   }
-   return(setDF(df))
+
+  options(datatable.print.nrows = 100)
+  return(setDF(df))
 }
 
 
