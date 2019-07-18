@@ -1576,14 +1576,13 @@ deriveIFVCS <- function(df) {
 
   #Summary
   df$ControlScore <-
-    rowSumsCustomMissing(df[, grepl("CONTROL", colnames(df))])
+    rowSumsCustomMissing(df[, grepl("CONTROL_[1-9]", colnames(df))])
   df$PhysicalAbuse <-
-    rowSumsCustomMissing(df[, grepl("PHYSICAL", colnames(df))])
+    rowSumsCustomMissing(df[, grepl("PHYSICAL_[1-9]", colnames(df))])
   df$PsychologicalAbuse <-
-    rowSumsCustomMissing(df[, grepl("PSYCH", colnames(df))])
+    rowSumsCustomMissing(df[, grepl("PSYCH_[1-9]", colnames(df))])
   df$SexualAbuse <-
-    rowSumsCustomMissing(df[, grepl("SEXUAL", colnames(df))])
-
+    rowSumsCustomMissing(df[, grepl("SEXUAL_[1-9]", colnames(df))])
   return(df)
 }
 
@@ -1754,67 +1753,89 @@ deriveASSIST <- function(df) {
   #Summary
   df$prescription <-ifelse(
     rep(length(grep("[356789]_a$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_a$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_a$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
   df$tobacco <-ifelse(
     rep(length(grep("[356789]_b$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_b$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_b$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
   df$alcohol <-ifelse(
     rep(length(grep("[356789]_c$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_c$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_c$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
   df$cannabis <-ifelse(
     rep(length(grep("[356789]_d$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_d$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_d$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
   df$inhalants <-ifelse(
     rep(length(grep("[356789]_e$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_e$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_e$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
   df$sleeping_pills <-ifelse(
     rep(length(grep("[356789]_f$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_f$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_f$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
   df$opioids <-ifelse(
     rep(length(grep("[356789]_g$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_g$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_g$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
   df$ats <-ifelse(
     rep(length(grep("[356789]_h$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_h$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_h$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
   df$cocaine <- ifelse(
     rep(length(grep("[356789]_i$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_i$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_i$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
   df$hallucinogens <-ifelse(
     rep(length(grep("[356789]_j$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_j$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_j$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
   df$other <-ifelse(
     rep(length(grep("[356789]_k$", colnames(df)))>0, nrow(df)),
-    rowSumsCustomMissing(df[, grepl("[356789]_k$", colnames(df))]),
+    rowSumsCustomMissing(df[, grepl("[356789]_k$", colnames(df))], 
+                         maxMissing=1,
+                         proRateMissings = FALSE),
     -666
   )
 
