@@ -1482,7 +1482,7 @@ deriveLEQ <- function(df) {
   setDT(df)
   options(datatable.print.nrows = 0)
   if(max(suppressWarnings(as.numeric(unlist(df[,grepl('year', names(df)), with=FALSE]))) , na.rm=TRUE) > 1) {
-    warning('Assuming _year variables in LEQ refer to AGE as they are not binary')
+    message('Assuming _year variables in LEQ refer to AGE as they are not binary')
     names(df)<-gsub('_year', '_age', names(df))
     # Ranges ( eg 6-7 have occasionally been used to enter ages as "- is allowed in the number entry) recode them to the mid point to allow derivations
     for (j in names(df)[grepl('_age', names(df))]) {
