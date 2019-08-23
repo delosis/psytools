@@ -203,7 +203,11 @@ rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666),
   if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
   na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
   df<-stripCustomMissings(df, customMissingCodes)
-  sums<-rowMeans(df, na.rm) * ncol(df)
+  if(proRateMissings) {
+    sums<-rowMeans(df, na.rm) * ncol(df)
+  } else {
+    sums<-rowSums(df, na.rm)
+  }
   nas<-rowSums(is.na(df), na.rm=TRUE)
   sums[nas > maxMissing * ncol(df) ] <- missingValue
   return(sums)

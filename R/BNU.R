@@ -78,20 +78,20 @@ deriveBnuSC <- function(df) {
   df <- rotateQuestionnaire(df)
 
   # reverse code
-  reverseVariables <- c('01','03','05','09',13,17,21,22,25,29,31,38)
+  reverseVariables <- c('05','09',13,17,21,27,28,30,34,35)
   df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
 
   #Summary
   df$order_and_discipline <-
-    rowSumsCustomMissing(df[, grepl("01R|05R|09R|13R|17R|21R|25R|29R|33", colnames(df))])
+    rowMeansCustomMissing(df[, grepl("01|05|09|13|17|21|25|29|33", colnames(df))])
   df$acceptance_and_support <-
-    rowSumsCustomMissing(df[, grepl("02|06|10|14|18|22R|26|30|34", colnames(df))])
+    rowMeansCustomMissing(df[, grepl("02|06|10|14|18|22R|26|30|34", colnames(df))])
   df$fairness_and_justice <-
-    rowSumsCustomMissing(df[, grepl("03R|07|11|15|19|23|27|31R|35", colnames(df))])
+    rowMeansCustomMissing(df[, grepl("03|07|11|15|19|23|27|31|35", colnames(df))])
   df$encouragement_and_cooperation <-
-    rowSumsCustomMissing(df[, grepl("04|08|12|16|20|24|28|32|36", colnames(df))])
+    rowMeansCustomMissing(df[, grepl("04|08|12|16|20|24|28|32|36", colnames(df))])
   df$school_beliefs <-
-    rowSumsCustomMissing(df[, grepl("37|38R|39|40", colnames(df))])
+    rowMeansCustomMissing(df[, grepl("37|38|39|40", colnames(df))])
 
   return(df)
 }
@@ -233,6 +233,10 @@ deriveBnuMW70 <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
 
+  # reverse code
+  reverseVariables <- c('08','10',12,46)
+  df<-recodeVariables(df, reverseVariables, fun= function(x) {6-x})
+  
   #Summary
   df$Mastery_intrinsic <-
     rowMeansCustomMissing(df[, grepl("13|14|15", colnames(df))])
@@ -275,3 +279,38 @@ deriveBnuMW70 <- function(df) {
 
   return(df)
 }
+
+
+#' Generate summary for MS questionnaire
+#' 
+#' NB the script sent seemed to have an error in the reverse coding of the MX_fixed items
+#' I have assumed that those items should have been fully reversed as the comments seemed to support this idea
+#'
+#' NB This does not select the appropriate attempt - this should be done by the calling function
+#'
+#' @param df data frame containing long form MS data
+#'
+#' @return wide form of MS data with summary vars
+#'
+#' @export
+deriveBnuMS <- function(df) {
+  #Rotate
+  df <- rotateQuestionnaire(df)
+  
+  # recode down by 1
+  recodeVariables <- names(df)[grepl('MS', names(df))]
+  df<-recodeVariables(df, recodeVariables, fun= function(x) {x-1})
+  
+  #Summary
+  df$T1_MS_Growth <-
+    rowSumsCustomMissing(df[, grepl("02|03|05|06|09|10|13|15|18|19", colnames(df))])
+  df$T1_MS_Fixed <-
+    rowSumsCustomMissing(df[, grepl("01|04|07|08|11|12|14|16|17|20", colnames(df))])
+  df$T1_MS_4 <- ifelse(df$T1_MS_Growth + 30 - df$T1_MS_Fixed < 21, 1,
+                       ifelse(df$T1_MS_Growth + 30 - df$T1_MS_Fixed < 34, 2,
+                              ifelse(df$T1_MS_Growth + 30 - df$T1_MS_Fixed < 45, 3, 4)))
+  df$T1_MS_2 <- ifelse(df$T1_MS_Growth + 30 - df$T1_MS_Fixed < 34, 1,2)
+  
+  return(df)
+}
+
