@@ -234,7 +234,7 @@ deriveBnuMW70 <- function(df) {
   df <- rotateQuestionnaire(df)
 
   # reverse code
-  reverseVariables <- c('08', '10', 12, 46, 45, 62, 65, 70, 63, 67, 68)
+  reverseVariables <- c('08', '10', 12, 46, 45, 62, 65, '[^MW]70', 63, 67, 68)
   df<-recodeVariables(df, reverseVariables, fun= function(x) {6-x})
   
   #Summary
