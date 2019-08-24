@@ -234,10 +234,18 @@ deriveBnuMW70 <- function(df) {
   df <- rotateQuestionnaire(df)
 
   # reverse code
-  reverseVariables <- c('08','10',12,46)
+  reverseVariables <- c('08', '10', 12, 46, 45, 62, 65, 70, 63, 67, 68)
   df<-recodeVariables(df, reverseVariables, fun= function(x) {6-x})
   
   #Summary
+  df$Fear_of_fauilure <-
+    rowMeansCustomMissing(df[, grepl("01|02|03", colnames(df))])
+  df$Academic_withdrawal <-
+    rowMeansCustomMissing(df[, grepl("04|05|06", colnames(df))])
+  df$Self_esteem <-
+    rowMeansCustomMissing(df[, grepl("07|08|09|10|11", colnames(df))])
+  df$School_value <-
+    rowMeansCustomMissing(df[, grepl("12|43|44|45|46|47", colnames(df))])
   df$Mastery_intrinsic <-
     rowMeansCustomMissing(df[, grepl("13|14|15", colnames(df))])
   df$Mastery_extrinsic <-
@@ -258,16 +266,6 @@ deriveBnuMW70 <- function(df) {
     rowMeansCustomMissing(df[, grepl("37|38|39", colnames(df))])
   df$Means_ends_luck <-
     rowMeansCustomMissing(df[, grepl("40|41|42", colnames(df))])
-  df$Temperament <-
-    rowMeansCustomMissing(df[, grepl("62|63|64|65|66|67|68|69|[^MW]70", colnames(df))])
-  df$Fear_of_fauilure <-
-    rowMeansCustomMissing(df[, grepl("01|02|03", colnames(df))])
-  df$Academic_withdrawal <-
-    rowMeansCustomMissing(df[, grepl("04|05|06", colnames(df))])
-  df$Self_esteem <-
-    rowMeansCustomMissing(df[, grepl("07|08|09|10|11", colnames(df))])
-  df$School_value <-
-    rowMeansCustomMissing(df[, grepl("12|43|44|45|46|47", colnames(df))])
   df$Emotional_exhaustion <-
     rowMeansCustomMissing(df[, grepl("48|49|50", colnames(df))])
   df$Standards <-
@@ -276,7 +274,12 @@ deriveBnuMW70 <- function(df) {
     rowMeansCustomMissing(df[, grepl("55|56|57|58", colnames(df))])
   df$Others_expectations <-
     rowMeansCustomMissing(df[, grepl("59|60|61", colnames(df))])
-
+  df$New_pursuit <-
+    rowMeansCustomMissing(df[, grepl("62|65|[^MW]70", colnames(df))])
+  df$Seeking_rewards <-
+    rowMeansCustomMissing(df[, grepl("63|67|68|69", colnames(df))])
+  df$Emotional_exposure <-
+    rowMeansCustomMissing(df[, grepl("64|66", colnames(df))])
   return(df)
 }
 
