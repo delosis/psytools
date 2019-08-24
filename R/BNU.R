@@ -314,3 +314,29 @@ deriveBnuMS <- function(df) {
   return(df)
 }
 
+#' Generate summary for BG questionnaire
+#' 
+#' All this does is to calculate AGE variables from the DOBs provided
+#'
+#' NB This does not select the appropriate attempt - this should be done by the calling function
+#'
+#' @param df data frame containing long form BG data
+#'
+#' @return wide form of BG data with summary vars
+#'
+#' @export
+deriveBnuBG <- function(df) {
+  #Rotate
+  df <- rotateQuestionnaire(df)
+  
+  #Compute Age ( in years ) for the child based on the DOB and Processed Timestamp
+  if("T1_BG_PC3" %in% names(df)) {
+    df$Child_Age_Days<-floor(difftime(df$Processed.Timestamp, df$T1_BG_PC3, "days"))
+  }
+  if("T1_BG_C2" %in% names(df)) {
+    df$Child_Age_Days<-floor(difftime(df$Processed.Timestamp,df$T1_BG_C2,  "days"))
+  }
+
+  return(df)
+}
+
