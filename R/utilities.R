@@ -224,6 +224,11 @@ rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666),
 #'
 #' @return recoded df/dt
 rowMeansCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0) {
+  # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created
+  if(ncol(df)==0 |nrow(df)==0) {
+    warning("No data to make means from - will not create this variable")
+    return (NULL)
+  }
   if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
   na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
   df<-stripCustomMissings(df, customMissingCodes)
