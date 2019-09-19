@@ -28,8 +28,6 @@
 #'
 #' @export
 deriveCvedaACEIQ <- function(df) {
-  # Remove some stray max volume trials attempts from an early version of the task if they exist
-  df <- df[df$Trial != 'MaxVolume', ]
 
   df<-rotateQuestionnaire(df)
 
@@ -118,8 +116,6 @@ deriveCvedaACEIQ <- function(df) {
 #'
 #' @export
 deriveCvedaSDIM <- function(df) {
-  # Remove some stray max volume trials attempts from an early version of the task if they exist
-  df <- df[df$Trial != 'MaxVolume', ]
 
   df<-rotateQuestionnaire(df)
 
@@ -170,6 +166,7 @@ deriveCvedaPDS <- function(df) {
   return(df)
 }
 
+
 #' Generate summary for cVeda's Anthropometry task - including homogenising units
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
@@ -180,11 +177,7 @@ deriveCvedaPDS <- function(df) {
 #'
 #' @export
 deriveCvedaAnthropometry <- function(df) {
-  # Remove some stray max volume trials attempts from an early version of the task if they exist
-  df <- df[df$Trial != 'MaxVolume', ]
-
   # deal with hand entered units such as inch / cm
-
   # .. and - have occasionally been used as decimal delimiters
   # might be worth checking the - was meant to be a decimal - it makes no sense as a minus?
   # was 110001840790-C3 for Weight - certainly didnt mean pounds and ounces
@@ -230,6 +223,38 @@ deriveCvedaAnthropometry <- function(df) {
 #'
 #' @export
 applyCvedaCustomMissings <- function(df) {
+  
+  #remove all "MaxVolume" Trials - Not relevant for cVEDA
+  df<-df[df$Trial!='MaxVolume',]
+  
+  # Recode Categorical changed to AllThatApply questions into allThatApply format
+  df$Trial[df$Block %in% c('EEQ_04', 'EEQ_11', 'EEQ_21', 'EEQ_22') &
+             df$Trial %in% c('EEQ_04', 'EEQ_11', 'EEQ_21', 'EEQ_22') & 
+             df$Trial.result != 'refuse']<-
+    paste0(df$Trial[df$Block %in% c('EEQ_04', 'EEQ_11', 'EEQ_21', 'EEQ_22') &
+                      df$Trial %in% c('EEQ_04', 'EEQ_11', 'EEQ_21', 'EEQ_22') &
+                      df$Trial.result != 'refuse'], 
+           '_',
+           df$Trial.result[df$Block %in% c('EEQ_04', 'EEQ_11', 'EEQ_21', 'EEQ_22') &
+                             df$Trial %in% c('EEQ_04', 'EEQ_11', 'EEQ_21', 'EEQ_22') & 
+                             df$Trial.result != 'refuse'])
+  
+  df$Trial.result[df$Block %in% c('EEQ_04', 'EEQ_11', 'EEQ_21', 'EEQ_22') & df$Trial.result > 1 & df$Trial.result != 'refuse'] <-1
+  
+  # recode refusals on multiple choice questions to be refuse for ALL response options
+  mcCols<-c('EEQ_04', 'EEQ_11', 'EEQ_21', 'EEQ_22','SDI_10', 'SDI_29', 'SDI_31','EEQ_01','EEQ_36','EEQ_52','EEQ_53','EEQ_57','SCAMP_P_q5', 'SCAMP_P_q10', 'SCAMP_S_q29', 'SCAMP_S_q2')
+  for (mcCol in mcCols){
+    df$Trial.result[df$Block == mcCol & 
+                      df$User.code %in% df$User.code[df$Block == mcCol &
+                                                       df$Trial.result == 'refuse'] & 
+                      df$Iteration %in% df$Iteration[df$Block == mcCol &
+                                                       df$Trial.result == 'refuse']]<-'refuse'
+    
+  }
+  
+  #finally remove all allThatApply base question rows
+  df<-df[!df$Trial %in% mcCols,]
+  
   #Instrument Specific
   df$Trial.result[grepl('SCAMP_S', df$Trial) & df$Trial.result == "refuse"]<- -777
   df$Trial.result[df$Trial == 'SCAMP_S_q19' & df$Trial.result == "5"]<- -777
@@ -257,7 +282,7 @@ applyCvedaCustomMissings <- function(df) {
   df$Trial.result[grepl('EEQ_37_EEQ_38', df$Trial) & df$Trial.result == "99"]<- -777
   df$Trial.result[grepl('EEQ_58', df$Trial) & df$Trial.result == "refuse"]<- -777
 
-
+   
   # General
   df$Trial.result[df$Trial.result == "NK" |
                     df$Trial.result == "DK"] <- -999
@@ -269,6 +294,10 @@ applyCvedaCustomMissings <- function(df) {
 
   # define custom missing codes in the parent scope for use by other functions
   customMissingValues<<-c(-666,-777,-888,-999)
+  customMissingValueLabels<<-c('not administered or revision in data collection procedure',
+                              'not applicable',
+                              'refused',
+                              "don't know")
   defaultUnadministeredValue<<- -666
   return(df)
 }

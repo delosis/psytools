@@ -10,6 +10,8 @@ downloadSingleDataFile(SMAusername, studyID, taskDigestID,
 \arguments{
 \item{SMAusername}{username to login with}
 
+\item{studyID}{Study to authenticate against}
+
 \item{taskDigestID}{taskID AND digest ID (eg TASK_ID-DIGEST_ID)}
 
 \item{server}{SMA server defaults to www.delosis.com}

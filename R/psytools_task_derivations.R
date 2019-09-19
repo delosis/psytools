@@ -312,7 +312,7 @@ deriveDS <- function(df) {
       Completed +
       Completed.Timestamp +
       Processed.Timestamp ~ paste('Corrects.', Block, sep = '') ,
-    fun = sum,
+    fun.aggregate = sum,
     value.var = 'Corrects',
     sep = '.',
     fill = ifelse(exists('defaultUnadministeredValue'), defaultUnadministeredValue, NA)
@@ -415,7 +415,7 @@ deriveCORSI <- function(df) {
       Completed +
       Completed.Timestamp +
       Processed.Timestamp ~ paste('Corrects.', Block, sep = '') ,
-    fun = sum,
+    fun.aggregate = sum,
     value.var = 'Corrects',
     sep = '.',
     fill = ifelse(
@@ -547,7 +547,7 @@ deriveTMT <- function(df) {
     df,
     User.code +
       Iteration + Language + Completed + Completed.Timestamp + Processed.Timestamp ~ Block,
-    fun = sum,
+    fun.aggregate = sum,
     na.rm = TRUE,
     value.var = c('RT' ,'Incorrect.responses', 'Wild.responses'),
     fill = NA,
@@ -684,7 +684,7 @@ deriveBART <- function(df) {
       Completed +
       Completed.Timestamp +
       Processed.Timestamp ~ TrialResult + BalloonColour ,
-    fun = sum,
+    fun.aggregate = sum,
     value.var = c('PumpsMade', 'NumPopped'),
     sep = '.'
   )
@@ -888,7 +888,7 @@ deriveERT <- function(df) {
         setDT(df),
         User.code + Iteration + Language + Completed +
           Completed.Timestamp + Processed.Timestamp ~ paste('Correct', TrialEmotion, sep = '.'),
-        fun = sum,
+        fun.aggregate = sum,
         na.rm = TRUE,
         value.var = 'Correct',
         sep = '.'
@@ -897,7 +897,7 @@ deriveERT <- function(df) {
       dcast(
         setDT(df),
         User.code + Iteration ~ TrialEmotion,
-        fun = mean,
+        fun.aggregate = mean,
         na.rm = TRUE,
         value.var = c('RTcorrect', 'RTincorrect'),
         sep = '.'
@@ -1202,7 +1202,7 @@ rotateQuestionnaire <-
       skippedValue <- defaultUnadministeredValue
     }
 
-    if (sanityCheck(df, , nonRequiredVars) == FALSE) {
+    if (sanityCheck(df, nonRequiredVars=nonRequiredVars) == FALSE) {
       warning("df does not meet requirements as passed")
       return (NULL)
     }
@@ -1224,7 +1224,8 @@ rotateQuestionnaire <-
     # Remove the results generated when displaying the feedback from instruments such as the Mini
     df <-
       df[!grepl("FEEDBACK", df$Block, ignore.case = T) &
-           (is.na(df$Response) | df$Response != 'skip_back'), ]
+           (is.na(df$Response) | df$Response != 'skip_back') &
+           (is.na(df$Trial.result) | df$Trial.result != 'skip_back'), ]
 
     # Select only the last response for each question in cases of skipping back and revising.
     # only the first 2 idvars are needed
@@ -1249,7 +1250,7 @@ rotateQuestionnaire <-
             fill = skippedValue,
             value.var = "Trial.result")
 
-
+    
     return (setDF(fixNumericVariables(df)))
   }
 
@@ -1282,8 +1283,6 @@ rotateQuestionnairePreserveBlock <- function(df, skippedValue=NA) {
 #'
 #' @export
 deriveAPQ <- function(df) {
-  # Remove some stray max volume trials attempts from an early version of the task if they exist
-  df <- df[df$Trial != 'MaxVolume', ]
 
   #Rotate
   df <- rotateQuestionnaire(df)
@@ -1291,31 +1290,46 @@ deriveAPQ <- function(df) {
 
   if (max(grepl('APQ_?C_?01',names(df)))) {
     df$m_involvement <-
-      rowSumsCustomMissing(df[, grepl("01$|04$|07$|09$|11$|14$|15$|20$|23$|26$", colnames(df))])
+      rowMeansCustomMissing(df[, grepl("01$|04$|07$|09$|11$|14$|15$|20$|23$|26$", colnames(df))])
     df$p_involvement <-
-      rowSumsCustomMissing(df[, grepl("01A$|04A$|07A$|09A$|11A$|14A$|15A$|20A$|23$|26A$", colnames(df))])
+      rowMeansCustomMissing(df[, grepl("01A$|04A$|07A$|09A$|11A$|14A$|15A$|20A$|23$|26A$", colnames(df))])
 
   } else {
     df$involvement <-
-      rowSumsCustomMissing(df[, grepl("01$|04$|07$|09$|11$|14$|15$|20$|23$|26$", colnames(df))])
-
+      rowMeansCustomMissing(df[, grepl("01$|04$|07$|09$|11$|14$|15$|20$|23$|26$", colnames(df))])
   }
 
   df$pos_parenting <-
-    rowSumsCustomMissing(df[, grepl("02$|05$|13$|16$|18$|27$", colnames(df))])
+    rowMeansCustomMissing(df[, grepl("02$|05$|13$|16$|18$|27$", colnames(df))])
 
   df$pr_monitoring <-
-    rowSumsCustomMissing(df[, grepl("06$|10$|17$|19$|21$|24$|28$|29$|30$|32$", colnames(df))])
+    rowMeansCustomMissing(df[, grepl("06$|10$|17$|19$|21$|24$|28$|29$|30$|32$", colnames(df))])
 
   df$inc_discipline <-
-    rowSumsCustomMissing(df[, grepl("03$|08$|12$|22$|25$|31$", colnames(df))])
+    rowMeansCustomMissing(df[, grepl("03$|08$|12$|22$|25$|31$", colnames(df))])
 
+## 16/09/2019 bug fixed 39-->38
   df$corp_punishment <-
-    rowSumsCustomMissing(df[,grepl("33$|35$|39$", colnames(df))])
+    rowMeansCustomMissing(df[,grepl("33$|35$|38$", colnames(df))])
 
-  df$other_discipline <-
-    rowSumsCustomMissing(df[, grepl("34$|36$|37$|39$|40$|41$|42$", colnames(df))])
-
+## While often calculated as such, this is NOT a subscale
+## It is just a selection of other parenting behaviours they should not be combined
+##  df$other_discipline <-
+##    rowMeansCustomMissing(df[, grepl("34$|36$|37$|39$|40$|41$|42$", colnames(df))])
+  
+  if (max(grepl('APQ_?C_?01',names(df)))) {
+    df$m_pos_parenting_mode <-
+      rowSumsCustomMissing(df[, grepl("m_involvement$|pos_parenting$", colnames(df))])
+    df$p_pos_parenting_mode <-
+      rowSumsCustomMissing(df[, grepl("p_involvement$|pos_parenting$", colnames(df))])  
+  } else {
+    df$pos_parenting_mode <-
+      rowSumsCustomMissing(df[, grepl("involvement$|pos_parenting$", colnames(df))])  
+  }
+  
+  df$neg_parenting_mode <-
+    rowSumsCustomMissing(df[, grepl("pr_monitoring$|inc_discipline$|corp_punishment$", colnames(df))])  
+  
   return(df)
 }
 
@@ -1558,7 +1572,6 @@ deriveAAQ <- function(df) {
     rowSumsCustomMissing(df[, grepl("_A_", colnames(df))])
   df$GCPsum <-
     rowSumsCustomMissing(df[, grepl("_GCP_", colnames(df))])
-
   return(df)
 }
 

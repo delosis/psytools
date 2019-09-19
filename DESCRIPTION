@@ -1,6 +1,6 @@
 Package: Psytools
 Type: Package
-Version: 0.1
+Version: 0.2
 Title: Derive Psytools task data
 Description: Derive Psytools task data in CSV files
     exported from the Delosis server.
@@ -13,7 +13,10 @@ Maintainer: John Rogers <github@delosis.com>
 URL: https://github.com/delosis/psytools
 License: GPL-3
 Imports:
+    haven,
+    labelled,
     askpass,
     data.table (>= 1.12.0),
     R.utils
 RoxygenNote: 6.1.1
+LazyData: true

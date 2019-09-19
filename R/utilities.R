@@ -192,6 +192,9 @@ stripCustomMissings <-
 #'
 #' @param proRateMissing optionally prorate missings to produce a comparable sum if missings are allowed
 #'
+#' @importFrom haven labelled_spss
+#' @importFrom labelled var_label
+#' 
 #' @return recoded df/dt
 
 rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0, proRateMissings = FALSE) {
@@ -210,6 +213,17 @@ rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666),
   }
   nas<-rowSums(is.na(df), na.rm=TRUE)
   sums[nas > maxMissing * ncol(df) ] <- missingValue
+  Qlabel<-paste0("Sum of (", paste(names(df), collapse=','), ")")
+  if(exists("customMissingValues")){
+    sums <- labelled_spss(sums,
+                  unlist(setNames(
+                    customMissingValues, customMissingValueLabels
+                  )),
+                  label = Qlabel,
+                  na_range = c(-999, -666))
+  } else {
+    labelled::var_label(sums)<-Qlabel
+  }
   return(sums)
 }
 
@@ -222,6 +236,9 @@ rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666),
 #'
 #' @param maxMissing (0 to 1) return a prorated sum if the number of missings are under this threshold
 #'
+#' @importFrom haven labelled_spss
+#' @importFrom labelled var_label
+#'
 #' @return recoded df/dt
 rowMeansCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0) {
   # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created
@@ -232,10 +249,20 @@ rowMeansCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666)
   if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
   na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
   df<-stripCustomMissings(df, customMissingCodes)
-  print(df)
   means<-rowMeans(df, na.rm)
   nas<-rowSums(is.na(df), na.rm=TRUE)
   means[nas > maxMissing * ncol(df) ] <- missingValue
+  Qlabel<-paste0("Mean of (", paste(names(df), collapse=','), ")")
+  if(exists("customMissingValues")){
+    means <- labelled_spss(means,
+                  unlist(setNames(
+                    customMissingValues, customMissingValueLabels
+                  )),
+                  label = Qlabel,
+                  na_range = c(-999, -666))
+  } else {
+    labelled::var_label(means)<-Qlabel
+  }
   return(means)
 }
 
@@ -255,6 +282,7 @@ stripHTML <- function(htmlString) {
 #' Authentication cache provided by authenticate function
 #'
 #' @param SMAusername username to login with
+#' @param studyID Study to authenticate against
 #' @param taskDigestID taskID AND digest ID (eg TASK_ID-DIGEST_ID)
 #' @param server SMA server defaults to www.delosis.com
 #' @param sampleID sampleID defaults to NULL
@@ -334,3 +362,159 @@ DelosisAuthenticate<-function(SMAusername, studyID, server="www.delosis.com", re
     else {return(NULL)}
   }
 }
+
+#' Label Data Frame from Psytools (Desktop) Questionnaire Resources file
+#' @param df Wide format data frame (or table) to label
+#' 
+#' @param resources df containing Psytools resources for this instrument
+#' 
+#' @importFrom haven labelled_spss
+#' 
+#' @importFrom labelled var_label
+#' 
+#' @export
+#' 
+labelData<-function(df, resources) {
+  # Don't even try if it doesn't look at least a bit like a questionnaire resources sheet
+  if(ncol(resources) <5 | length(resources[grepl('%%', resources)])==0){
+    return(df)
+  }
+  #remove any rows where there is nothing in the QCode column
+  resources<-resources[!is.na(resources[1]),]
+  # remove any rows where there are no responses specified as these will generate no data
+  resources<-resources[rowSums(!is.na(resources[5:ncol(resources)]))>1, ]
+
+  #Create a single variable label from Title and Question
+  Rlabels<-list()
+  apply(resources, 1, function(x) {
+    Qcode <-as.character(x[1])
+    isAllThatApply <-
+      ifelse(grepl('allthatapply', x[5], ignore.case = TRUE), TRUE, FALSE)
+    if(!Qcode %in% names(df)) {
+      # Perhaps it was reversed in the derivations
+      if(paste0(Qcode, "R") %in% names(df)) {
+        Qcode<-paste0(Qcode, "R")
+      } else {
+        # - There are a lot of these! warning(paste0(Qcode, ' specified in resources but not in data'))
+        return()
+      }
+    }
+    Qlabel <- gsub("NA : | : NA", "", paste(stripHTML(x[4]), stripHTML(x[3]), sep=' : '))
+    Rlabels<<-list()
+    Rlabel<-strsplit(as.character(x[grepl('%%', x[5:length(x)])]), "%%")
+    if(length(Rlabel)){
+        lapply(Rlabel, function(responseLabel) {
+          responseLabel[1]<-gsub('\\*\\*NA\\*\\*|other_specify', '', responseLabel[1])
+          responseLabel[2]<-stripHTML(responseLabel[2])
+          if(responseLabel[1] != '') {
+            Rlabels<<-c(Rlabels, setNames(responseLabel[1], responseLabel[2]))
+          }
+        })
+    }
+    if(isAllThatApply==TRUE) {
+        lapply(Rlabels, function(responseLabel) {
+          subVariable<-paste0(Qcode, '_', responseLabel[1])
+          if(!subVariable %in% names(df)) {
+            if(paste0(subVariable, "R") %in% names(df)) {
+              subVariable<-paste0(subVariable, "R")
+            } else {
+              return()
+            }
+          }
+          subVariableLabel <-
+            paste0(names(Rlabels)[which(Rlabels == responseLabel)], ' : ', Qlabel)
+          df[,subVariable]<<-
+            labelVariable(df[,subVariable],
+                          as.list(setNames(c(0,1), c('No','Yes'))),
+                          subVariableLabel
+                          
+            )
+        })
+      }else{
+        df[,Qcode]<-labelVariable(df[,Qcode], Rlabels, Qlabel)
+      }
+    df<<-df})
+  return(df)
+}
+
+#' Label individual row - split out as seperate function to simplify loops in labelData
+#' @param x vector to label
+#' @param Rlabels named list to apply to response labels
+#' @param Qlabel String to apply as question label
+#' @importFrom haven labelled_spss
+#' @importFrom labelled var_label
+#' 
+labelVariable <- function (x, Rlabels, Qlabel) {
+  #strip out non numeric response labels from numeric variables - they will never be used and are not supported
+  if(("numeric" %in% class(x) | is.numeric(x)) & !is.null(Rlabels)){
+    suppressWarnings({
+      Rlabels<-Rlabels[!is.na(as.numeric(Rlabels))]
+      Rlabels<-setNames(as.numeric(Rlabels), names(Rlabels))
+    })
+  }
+  if(exists("customMissingValues") & !is.null(Rlabels)){
+    if("numeric" %in% class(x) | is.numeric(x)) {
+      missingLabels <-
+        as.list(setNames(customMissingValues,
+                         customMissingValueLabels))
+    } else {
+      missingLabels <-
+        as.list(setNames(as.character(customMissingValues),
+                         customMissingValueLabels))
+    }
+    Rlabels<-c(Rlabels, missingLabels)
+  }
+  # For the SDIM There is a duplicate response code (13 gradute and postgraduate )
+  # This must be coerced in the database but for now just assign the value 14 to it in the resources sheet
+
+  if("numeric" %in% class(x) | is.numeric(x)){
+    x<-labelled_spss(x,
+                     unlist(Rlabels),
+                     label = Qlabel,
+                     #SPSS only support 3 missing values for non numeric variables... 
+                     na_range = c(-999,-666)
+    )
+  } else{
+  x<-labelled_spss(x,
+                  unlist(Rlabels),
+                  label = Qlabel,
+                  na_values = c('-888', '-777', '-666')
+  )
+  }
+  return(x)
+}
+
+
+#' Convert new style AllThatApply (seperate binary sufixed columns) into old style (single column concatenated with pipe )
+#' @param df data frame to work on
+#' @param grepColumnCollection a grepable term to grab all columns that should be merged
+#' @param finalColumn the new column name to contain the merged data
+#' @param booleanIndicator - defaults to "Y"
+#' @importFrom data.table setDT
+#' @importFrom data.table setDF
+MergeAllThatApply<- function (df, grepColumnCollection, finalColumn, booleanIndicator ="Y") {
+  setDT(df)
+  targetCols<-grep(grepColumnCollection, names(df))
+
+  # replace all "Y" with the column name suffix ( between the periods ( originally ))
+  for(col in targetCols) {
+    df <-
+      df[as.vector(df[, ..col] ==booleanIndicator), 
+         (col) := gsub("^[A-z0-9]+[\\.[]|[\\.]]$", "", names(df)[col]
+                      )
+         ]
+  }
+  # set the first column to be the allThatApply column and remove the rest
+  df[,(targetCols[1]) := apply(
+    df[, grepl(grepColumnCollection, names(df)), with = FALSE],
+    1,
+    function(x) paste(x[x!="" & !is.na(x)], collapse="|")
+  )]
+  names(df)[targetCols[1]]<-finalColumn
+  targetCols<-targetCols[2:length(targetCols)]
+  df[,(targetCols) := NULL]
+  return(setDF(df))
+} 
+
+
+
