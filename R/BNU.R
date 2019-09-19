@@ -236,7 +236,7 @@ deriveBnuMW70 <- function(df) {
   # reverse code
   reverseVariables <- c('08', '10', 12, 46, 45, 62, 65, '[^MW]70', 63, 67, 68)
   df<-recodeVariables(df, reverseVariables, fun= function(x) {6-x})
-  
+
   #Summary
   df$Fear_of_fauilure <-
     rowMeansCustomMissing(df[, grepl("01|02|03", colnames(df))])
@@ -285,7 +285,7 @@ deriveBnuMW70 <- function(df) {
 
 
 #' Generate summary for MS questionnaire
-#' 
+#'
 #' NB the script sent seemed to have an error in the reverse coding of the MX_fixed items
 #' I have assumed that those items should have been fully reversed as the comments seemed to support this idea
 #'
@@ -299,11 +299,11 @@ deriveBnuMW70 <- function(df) {
 deriveBnuMS <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # recode down by 1
   recodeVariables <- names(df)[grepl('MS', names(df))]
   df<-recodeVariables(df, recodeVariables, fun= function(x) {x-1})
-  
+
   #Summary
   df$T1_MS_Growth <-
     rowSumsCustomMissing(df[, grepl("02|03|05|06|09|10|13|15|18|19", colnames(df))])
@@ -313,12 +313,12 @@ deriveBnuMS <- function(df) {
                        ifelse(df$T1_MS_Growth + 30 - df$T1_MS_Fixed < 34, 2,
                               ifelse(df$T1_MS_Growth + 30 - df$T1_MS_Fixed < 45, 3, 4)))
   df$T1_MS_2 <- ifelse(df$T1_MS_Growth + 30 - df$T1_MS_Fixed < 34, 1,2)
-  
+
   return(df)
 }
 
 #' Generate summary for BG questionnaire
-#' 
+#'
 #' All this does is to calculate AGE variables from the DOBs provided
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
@@ -331,7 +331,7 @@ deriveBnuMS <- function(df) {
 deriveBnuBG <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   #Compute Age ( in years ) for the child based on the DOB and Processed Timestamp
   if("T1_BG_PC3" %in% names(df)) {
     df$Child_Age_Days<-floor(difftime(df$Processed.Timestamp, df$T1_BG_PC3, "days"))
