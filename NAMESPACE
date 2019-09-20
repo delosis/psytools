@@ -2,7 +2,6 @@
 
 export(applyCvedaCustomMissings)
 export(categoriseCvedaReligionLanguageCaste)
-export(convertFU3toFU2)
 export(deriveAAQ)
 export(deriveAPQ)
 export(deriveASSIST)
