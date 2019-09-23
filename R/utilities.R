@@ -401,12 +401,12 @@ labelData<-function(df, resources) {
     }
     Qlabel <- gsub("NA : | : NA", "", paste(stripHTML(x[4]), stripHTML(x[3]), sep=' : '))
     Rlabels<<-list()
-    Rlabel<-strsplit(as.character(x[grepl('%%', x[5:length(x)])]), "%%")
+    Rlabel<-strsplit(as.character(x[5:length(x)][grepl('%%', x[5:length(x)])]), "%%")
     if(length(Rlabel)){
         lapply(Rlabel, function(responseLabel) {
           responseLabel[1]<-gsub('\\*\\*NA\\*\\*|other_specify', '', responseLabel[1])
           responseLabel[2]<-stripHTML(responseLabel[2])
-          if(responseLabel[1] != '') {
+          if(!is.na(responseLabel[1]) & responseLabel[1] != '') {
             Rlabels<<-c(Rlabels, setNames(responseLabel[1], responseLabel[2]))
           }
         })
