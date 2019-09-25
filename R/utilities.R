@@ -97,7 +97,8 @@ recodeVariables <- function(df, varlist, fun) {
   for (i in varlist ){
     if(length(grep(i, names(df))) > 1){stop(paste('Reverse token', i, 'does not uniquely identify one variable in suplied df'))}
     if(exists("customMissingValues")){
-      df[!(df[,grep(i, names(df))]  %in% customMissingValues),grep(i, names(df))]<- fun(na.omit(stripCustomMissings(df[,grep(i, names(df))])))
+      #If there are any NAs or Custom missings in the original data we should not touch them
+      df[!(df[,grep(i, names(df))]  %in% customMissingValues) & !is.na(df[,grep(i, names(df))]),grep(i, names(df))]<- fun(na.omit(stripCustomMissings(df[,grep(i, names(df))])))
     } else {
       df[,grep(i, names(df))]<- fun(df[,grep(i, names(df))])
     }
@@ -486,7 +487,7 @@ labelVariable <- function (x, Rlabels, Qlabel) {
 
 
 #' Convert new style AllThatApply (seperate binary sufixed columns) into old style (single column concatenated with pipe )
-#' @param df data frame to work on
+#' @param df data table to work on
 #' @param grepColumnCollection a grepable term to grab all columns that should be merged
 #' @param finalColumn the new column name to contain the merged data
 #' @param booleanIndicator - defaults to "Y"
@@ -498,10 +499,8 @@ MergeAllThatApply<- function (df, grepColumnCollection, finalColumn, booleanIndi
 
   # replace all "Y" with the column name suffix ( between the periods ( originally ))
   for(col in targetCols) {
-    df <-
       df[as.vector(df[, ..col] ==booleanIndicator), 
-         (col) := gsub("^[A-z0-9]+[\\.[]|[\\.]]$", "", names(df)[col]
-                      )
+          (col) := (gsub("^[A-z0-9]+[\\.]|[\\.]$", "", names(df)[col]))
          ]
   }
   # set the first column to be the allThatApply column and remove the rest
@@ -512,7 +511,7 @@ MergeAllThatApply<- function (df, grepColumnCollection, finalColumn, booleanIndi
   )]
   names(df)[targetCols[1]]<-finalColumn
   targetCols<-targetCols[2:length(targetCols)]
-  df[,(targetCols) := NULL]
+  df<-df[,(targetCols) := NULL]
   return(setDF(df))
 } 
 

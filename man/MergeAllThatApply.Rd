@@ -8,7 +8,7 @@ MergeAllThatApply(df, grepColumnCollection, finalColumn,
   booleanIndicator = "Y")
 }
 \arguments{
-\item{df}{data frame to work on}
+\item{df}{data table to work on}
 
 \item{grepColumnCollection}{a grepable term to grab all columns that should be merged}
 

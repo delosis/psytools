@@ -179,16 +179,16 @@ deriveImagenADRS <- function(df) {
 }
 
 
-#' Generate summary for CIS questionnaire
+#' Generate summary for CSI questionnaire
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
-#' @param df data frame containing long form CIS data
+#' @param df data frame containing long form CSI data
 #'
-#' @return wide form of CIS data with summary vars
+#' @return wide form of CSI data with summary vars
 #'
 #' @export
-deriveImagenCIS <- function(df) {
+deriveImagenCSI <- function(df) {
   #Recode
   df$Trial.result[df$Trial.result == "3" &
                     substr(df$Trial, 1, 4) == "item"] <- 4
@@ -284,6 +284,13 @@ deriveImagenAUDIT <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
 
+  #Recode items 9 and 10 as per Frauke's comments
+  df$audit9[df$audit9==2]<-4
+  df$audit9[df$audit9==1]<-2
+  df$audit10[df$audit10==2]<-4
+  df$audit10[df$audit10==1]<-2
+  
+  
   #Summary Vars
   df$audit_freq <-
     rowSums(cbind(df$audit1, df$audit2, df$audit3), na.rm = TRUE)
@@ -293,6 +300,8 @@ deriveImagenAUDIT <- function(df) {
     rowSums(cbind(df$audit5, df$audit7, df$audit9, df$audit10), na.rm = TRUE)
   df$audit_total <-
     rowSums(cbind(df$audit_freq, df$audit_symp, df$audit_prob), na.rm = TRUE)
+  #Added abuse flag as per Frauke's comments
+  df$audit_abuse_flag <- ifelse(df$audit_total>7,1,0)
   return(df)
 }
 
@@ -357,25 +366,49 @@ deriveImagenMAST <- function(df) {
 #'   The original SPSS did not do this but it seems appropriate
 #'
 #' @param df data frame containing long form NEO FFI data
-#'
+#' @param requiresReverseCoding (default FALSE) boolean indicating if the df is already reverse coded - If not the R suffix is still applied to the reversed items (if not there already) to avoid confusion
+#' 
 #' @return wide form of NEO FFI data with summary vars
 #'
 #' @export
-deriveImagenNEO <- function(df) {
+deriveImagenNEO <- function(df, requiresReverseCoding = FALSE) {
   #Rotate
   df <- rotateQuestionnaire(df)
-
+  
+  if(requiresReverseCoding) {
+    df <-
+      recodeVariables(
+        df,
+        paste0(names(df)[grepl(
+          "[^0-9_](1|3|8|9|12|14|15|16|18|23|24|27|29|30|31|33|38|39|42|44|45|46|48|54|55|57|59)$", 
+          names(df)
+        )], "$"),
+        fun = function(x) {
+          4 - x
+        }
+      )
+  } else {
+    names(df)[grepl(
+      "[^0-9_](1|3|8|9|12|14|15|16|18|23|24|27|29|30|31|33|38|39|42|44|45|46|48|54|55|57|59)$",
+      names(df)
+    )] <-
+      paste0(names(df)[grepl(
+        "[^0-9_](1|3|8|9|12|14|15|16|18|23|24|27|29|30|31|33|38|39|42|44|45|46|48|54|55|57|59)$",
+        names(df)
+      )], "R")
+  }
+  
   #Summaries
   df$neur_mean <-
-    rowMeans(df[, grepl("[^_][16]$", colnames(df))])
+    rowMeans(df[, grepl("[^_][16]R?$", colnames(df))])
   df$extr_mean <-
-    rowMeans(df[, grepl("[^_][27]$", colnames(df))])
+    rowMeans(df[, grepl("[^_][27]R?$", colnames(df))])
   df$open_mean <-
-    rowMeans(df[, grepl("[^_][38]$", colnames(df))])
+    rowMeans(df[, grepl("[^_][38]R?$", colnames(df))])
   df$agre_mean <-
-    rowMeans(df[, grepl("[^_][49]$", colnames(df))])
+    rowMeans(df[, grepl("[^_][49]R?$", colnames(df))])
   df$cons_mean <-
-    rowMeans(df[, grepl("[^_][50]$", colnames(df))])
+    rowMeans(df[, grepl("[^_][50]R?$", colnames(df))])
   return(df)
 }
 
@@ -386,32 +419,129 @@ deriveImagenNEO <- function(df) {
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
-#' Note that in the case of no alcohol consumption this returns 0 for the summaries
-#'   The original SPSS did not do this but it seems appropriate
-#'
 #' @param df data frame containing long form TCI data
-#'
+#' 
+#' @param requiresReverseCoding (default FALSE) boolean indicating if the df is already reverse coded - If not the R suffix is still applied to the reversed items (if not there already) to avoid confusion
+#' 
 #' @return wide form of TCI data with summary vars
 #'
 #' @export
-deriveImagenTCI <- function(df) {
+deriveImagenTCI <- function(df, requiresReverseCoding=FALSE) {
   #Rotate
   df <- rotateQuestionnaire(df)
-
+  if(requiresReverseCoding) {
+    df <-
+      recodeVariables(
+        df,
+        paste0(names(df)[grepl(
+          "(222|014|047|059|071|053|105|123|139|145|155|156|159|165|170|172|176|179|193|205|210|239)$", 
+          names(df)
+        )], "$"),
+        fun = function(x) {
+          6 - x
+        }
+      )
+  } else {
+    names(df)[grepl(
+      "(222|014|047|059|071|053|105|123|139|145|155|156|159|165|170|172|176|179|193|205|210|239)$",
+      names(df)
+    )] <-
+      paste0(names(df)[grepl(
+        "(222|014|047|059|071|053|105|123|139|145|155|156|159|165|170|172|176|179|193|205|210|239)$",
+        names(df)
+      )], "R")
+  }
   #Summaries
   df$tci_excit <-
-    rowSums(df[, grepl("001|063|053|104|122|145|156|165|176|205", colnames(df))])
+    rowSums(df[, grepl("(001|063|053|104|122|145|156|165|176|205)R?", colnames(df))])
   df$tci_imp <-
-    rowSums(df[, grepl("010|047|071|102|123|179|193|210|239", colnames(df))])
+    rowSums(df[, grepl("(010|047|071|102|123|179|193|210|239)R?", colnames(df))])
   df$tci_extra <-
-    rowSums(df[, grepl("014|024|059|105|139|155|172|215|222", colnames(df))])
+    rowSums(df[, grepl("(014|024|059|105|139|155|172|215|222)R?", colnames(df))])
   df$tci_diso <-
-    rowSums(df[, grepl("044|051|077|109|135|159|170", colnames(df))])
+    rowSums(df[, grepl("(044|051|077|109|135|159|170)R?", colnames(df))])
   df$tci_novseek <-
     rowSums(df[, grepl("tci_", colnames(df))])
   return(df)
 }
 
+#' Generate summary for TCI3 questionnaire
+#'
+#' NB This does not select the appropriate attempt - this should be done by the calling function
+#' 
+#' The TCI3 had different items in the German FU2 version - for FU3 the German was updated to match the English and French Locales
+#' It seems from discussions with Frauke that actually the German version was the originally intended one and has the most subscales derivable from it
+#' all are merged together for return
+#' 
+#' The derived varaibles produces depend on which 
+#'
+#' @param df data frame containing long form TCI3 data
+#'  
+#' @return wide form of TCI3 data with summary vars
+#'
+#' @export
+deriveImagenTCI3 <- function(df) {
+  # Split out participants who have done the FU2 DE style list of questions as there is item number over lap
+  # TODO it might be wise to homogneise the item numbers to whatever is "correct"
+  
+  dfdefu2<- df[paste0(df$User.code,'-', df$Iteration) %in% do.call(paste, c(df[df$Trial=='TCI_4', 1:2], sep = "-")), ]
+  df<-df[!(paste0(df$User.code,'-', df$Iteration) %in% do.call(paste, c(df[df$Trial=='TCI_4', 1:2], sep = "-"))), ]
+  
+  #Rotate
+  df <- rotateQuestionnaire(df)
+  names(dfdefu2)[grepl('TCI', names(dfdefu2))]<-paste("DEFU2",names(dfdefu2)[grepl('TCI', names(dfdefu2))],  sep="_")
+  
+  # Recode
+  df <-
+    recodeVariables(
+      df,  paste0("[_]", c('96', '110','79'), "R?$"),
+      fun = function(x) {
+        6 - x
+      }
+    )
+ 
+  #Summaries
+  df$tci_rs_binding <-
+    rowSums(df[, grepl("[_](96|116|110|15|79)R?$", colnames(df))])
+  df$tci_i_ambition <-
+    rowSums(df[, grepl("[_](60|117|37|126|62)R?$", colnames(df))])
+
+  # If there are any DEFU2 rows then treat them seperately
+  if (nrow(dfdefu2)) {
+    dfdefu2 <- rotateQuestionnaire(dfdefu2)
+    dfdefu2 <-
+      recodeVariables(
+        dfdefu2,
+        paste0(
+          "[_]",
+          c('108', '129', '8', '80', '123', '107', '114', '118', '128', '133'),
+          "R?$"
+        ),
+        fun = function(x) {
+          6 - x
+        }
+      )
+    dfdefu2$tci_rs_binding <-
+      rowSums(dfdefu2[, grepl("[_](20|26|44|99|119)R?$", colnames(dfdefu2))])
+    dfdefu2$tci_i_ambition <-
+      rowSums(dfdefu2[, grepl("[_](18|35|67|111|139)R?$", colnames(dfdefu2))])
+    dfdefu2$tci_rs_sensitivity <-
+      rowSums(dfdefu2[, grepl("[_](30|56|71|78|137)R?$", colnames(dfdefu2))])
+    dfdefu2$tci_rs_emoopenness <-
+      rowSums(dfdefu2[, grepl("[_](39|104|108|112|129)R?$", colnames(dfdefu2))])
+    dfdefu2$tci_rs_dependency <-
+      rowSums(dfdefu2[, grepl("[_](8|75|80|96|123)R?$", colnames(dfdefu2))])
+    dfdefu2$tci_i_workenthusiasm <-
+      rowSums(dfdefu2[, grepl("[_](107|114|118|128|133)R?$", colnames(dfdefu2))])
+    dfdefu2$tci_i_workinghard <-
+      rowSums(dfdefu2[, grepl("[_](1|40|57|98|136)R?$", colnames(dfdefu2))])
+    dfdefu2$tci_i_perfectionism <-
+      rowSums(dfdefu2[, grepl("[_](5|25|54|77|88)R?$", colnames(dfdefu2))])
+    df <- rbindlist(list(df, dfdefu2), fill = TRUE)
+  }
+  
+  return(setDF(df))
+}
 
 #' Generate summary for ESPAD questionnaire
 #'
@@ -722,4 +852,130 @@ deriveImagenDOTPROBE <- function(df) {
       )
   }
   return (dfsums)
+}
+
+
+#' Convert FU3 to FU2 data format
+#'
+#' Convert FU3 variable names and any Value recodes neccessary
+#' to return to the format expected from Imagen FU2
+#'
+#' @param df Data frame with FU3 data for an instrument or instruments represented by a single task at FU2 
+#'
+#' @return named list of Data Frames in FU2 format representing the component FU2 instruments contained in the FU3 
+#'
+#' @importFrom data.table dcast setDT setDF setcolorder setorder set
+#' 
+#' @export
+#' 
+convertFU3toFU2<- function(df) {
+  setDT(df)
+  fu3Names<-as.data.table(names(df))
+  names(fu3Names)<-"fu3Column"
+  nameMap<-merge(fu3Names,imagenFu2Fu3Map, by="fu3Column")
+  
+  #Swap the FU3 names for FU2 names
+  for(i in 1:nrow(nameMap)) {
+    if(as.character(nameMap$fu2Column[i])=="DELETE"){
+      df[,as.character(nameMap$fu3Column[i])]<-NULL
+    } else {
+    names(df)[which(names(df) == as.character(nameMap$fu3Column[i]))]<- as.character(nameMap$fu2Column[i])
+    }
+  }
+  nameMap<-nameMap[fu2Column!="DELETE",]
+  
+  #collapse All That Applies into a single column as at FU2
+  allThatApplys<-imagenFu2Fu3Map[grepl('AllThatApply',imagenFu2Fu3Map$fu3Column),]
+  for(i in 1:nrow(allThatApplys)) {
+    grepColumnCollection<-gsub('.AllThatApply','',allThatApplys[i,1])
+    if(length(grep(grepColumnCollection, names(df)))){
+      df<-MergeAllThatApply(df,grepColumnCollection, as.character(allThatApplys[i,2]))
+    }
+  }
+  
+  Instruments<-unique(as.character(nameMap[,Instrument]))
+  Instruments<-Instruments[!Instruments %in% c("ALL", "NONE")]
+  
+  splitDFs<- list()
+  #Split and return list of DTs
+  for(targetInstrument in Instruments){
+     #print(targetInstrument)
+     targetVars<-as.character(nameMap[Instrument==targetInstrument | Instrument=="ALL", fu2Column])
+     targetDT<-as.data.table(df[, names(df) %in% targetVars])
+     targetDT$Completed<-getFU3Complete(targetInstrument,targetDT)
+     targetDT$Iteration<-1
+     targetDT$Processed.Timestamp<-targetDT$Completed.Timestamp
+     setcolorder(targetDT, c("User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"))
+     #Coerce all value columns and Trial to character to avoid warnings when melting
+     for (col in names(targetDT)[(which(names(targetDT) == "Processed.Timestamp") + 1):length(names(targetDT))]) {
+       set(targetDT, j=col, value=as.character(targetDT[[col]]))
+     } 
+     targetDT<-melt.data.table(targetDT,
+                    id.vars = names(targetDT)[1:which(names(targetDT)=="Processed.Timestamp")],
+                    measure.vars = names(targetDT)[(which(names(targetDT)=="Processed.Timestamp") + 1):length(names(targetDT))],
+                    variable.name = "Trial",
+                    value.name = "Trial.result",
+                    variable.factor = FALSE
+                    )
+     targetDT$Block<-targetDT$Trial
+     setcolorder(
+       targetDT,
+       c(
+         "User.code",
+         "Iteration",
+         "Language",
+         "Completed",
+         "Completed.Timestamp",
+         "Processed.Timestamp",
+         "Block",
+         "Trial"
+       )
+     )
+     setorder(targetDT, User.code)
+     targetDT<-getFU3Recode(targetInstrument, targetDT)
+     splitDFs[[targetInstrument]]<-targetDT
+     
+  }
+  
+  return(splitDFs)
+}
+
+getFU3Recode<-function(targetInstrument, targetDT){
+  # Convert Y/N to 1/0
+  targetDT[grepl(
+    "ts_2|leq_[0-9][0-9]_ever|HRQOL_ALM_1|^mast[0-9]+[ab]?$|SCAMP_01|SCAMP_06|SCAMP_07|EDEQ_31|EDEQ_33|^23$|^31|^SCID_A1AC_[135]_|SCID_A1B_[1345]_|SCID_A1D_[1346]_|SCID_A[23]_[135]_|SCID_A4ABCD_[135]_|SCID_D1AB_[13]_|SCID_D2A_1_|SCID_D2B_|SCID_D3AB_|SCID_D4AB_[13567]_|SCID_D5_[12]_|SCID_D6_|SCID_D7ABCD_[13456]_",
+    Trial
+  ), Trial.result := ifelse(Trial.result == "Y",
+                            "1",
+                            ifelse(
+                              Trial.result == "N",
+                              "0",
+                              ifelse(Trial.result == "", NA, Trial.result)
+                            ))]
+  switch(
+      targetInstrument,
+      "IMGN_KIRBY_FU3"= targetDT[grepl('kirby',Trial), Trial.result:= as.character(ifelse(targetDT[grepl('kirby',Trial),Trial.result]=="NOW", '0','1'))],
+      "IMGN_HRQOL_FU3"= targetDT[Trial=='HRQOL_ALM_2' & Trial.result=="-oth-", Trial.result := as.character(14)],
+      targetDT
+    )  
+}
+
+
+getFU3Complete<-function(targetInstrument, targetDT){
+  switch(
+    targetInstrument,
+    "IMGN_ANXDX_FU3" = ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):which(names(targetDT)=="ANXDX_17_EVER"), with=FALSE])), 'f','t'),
+    "IMGN_BSI_FU3" = ifelse(targetDT$BSICheck.change.=="N" & targetDT$BSICheck.truth.=="Y", 't','f'),
+    "IMGN_CAPE_FU3" = ifelse(targetDT$CAPECheck.change.=="N" & targetDT$CAPECheck.truth.=="Y", 't','f'),
+    "IMGN_ESPAD_FU3" = ifelse(targetDT$EspadCheck.change.=="N" & targetDT$EspadCheck.truth.=="Y", 't','f'),
+    "IMGN_SURPS_FU3" = ifelse(targetDT$surpsCheck.change.=="N" & targetDT$surpsCheck.truth.=="Y", 't','f'),
+    "IMGN_AUDIT_FU3" = ifelse(targetDT$audit1==0 | !rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])), 't','f'),
+    "IMGN_EDEQ_FU3" = ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])) >2 , 'f','t'),
+    "IMGN_HRQOL_FU3" = ifelse(!is.na(targetDT$HRQOL_HDSM_5), 't','f'), # TODO Could be improved
+    "IMGN_K6PLUS_FU3" = ifelse(rowSums(targetDT[,grepl('K6PLUS_1', names(targetDT)), with=FALSE], na.rm=TRUE) ==30 | !is.na(targetDT$K6PLUS_6), 't','f'),
+    "IMGN_LEQ_FU3" = ifelse(rowSums(is.na(targetDT[,grepl("_ever", names(targetDT)), with=FALSE])), 'f','t'),
+    "IMGN_VIDGAME_FU3" = ifelse(targetDT$VideoGame_1==0 | rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE]))<7, 't','f'), # TODO could be improved
+    # check if there are any NAs in all columns beyond ts_4 - suitable for all compulsory instruments
+    ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])), 'f','t')
+  )
 }

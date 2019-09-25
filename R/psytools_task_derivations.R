@@ -1176,7 +1176,7 @@ deriveKIRBY <- function(df) {
 rotateQuestionnaire <-
   function(df,
            BlockAsMeasureVar = FALSE,
-           skippedValue=NA,
+           skippedValue=NA ,
            idVar = c(
              "User.code",
              "Iteration",
@@ -1192,7 +1192,9 @@ rotateQuestionnaire <-
         "Language",
         "Completed",
         "Completed.Timestamp",
-        "Processed.Timestamp"
+        "Processed.Timestamp",
+        "Trial",
+        "Trial.result"
       ),
       idVar
     )
@@ -1202,16 +1204,18 @@ rotateQuestionnaire <-
       skippedValue <- defaultUnadministeredValue
     }
 
+    measureVar = c("Trial")
+    if (BlockAsMeasureVar) {
+      measureVar = c("Block", measureVar)
+    } else {
+      nonRequiredVars<-c(nonRequiredVars, "Block")
+    }
+
     if (sanityCheck(df, nonRequiredVars=nonRequiredVars) == FALSE) {
       warning("df does not meet requirements as passed")
       return (NULL)
     }
-
-    measureVar = c("Trial")
-    if (BlockAsMeasureVar) {
-      measureVar = c("Block", measureVar)
-    }
-
+    
     #Keep in the Valid column if it exists
     if ("Valid" %in% colnames(df)) {
       idVar = c(idVar, "Valid")
@@ -1222,10 +1226,14 @@ rotateQuestionnaire <-
     options(scipen = 999)
 
     # Remove the results generated when displaying the feedback from instruments such as the Mini
+    # Also remove skip back flags
+    # This only needs doing if there is a Response column - online questionnaires do not have this and cannot be skipped back
+    if("Response" %in% names(df)){
     df <-
       df[!grepl("FEEDBACK", df$Block, ignore.case = T) &
-           (is.na(df$Response) | df$Response != 'skip_back') &
+           ( is.na(df$Response) | df$Response != 'skip_back') &
            (is.na(df$Trial.result) | df$Trial.result != 'skip_back'), ]
+    } 
 
     # Select only the last response for each question in cases of skipping back and revising.
     # only the first 2 idvars are needed
@@ -1233,7 +1241,7 @@ rotateQuestionnaire <-
       df[!duplicated(subset(df, select = c(head(idVar, 2), measureVar)), fromLast =
                        T), ]
 
-    if (sanityCheck(df) == FALSE) {
+    if (sanityCheck(df, nonRequiredVars=nonRequiredVars) == FALSE) {
       stop("df does not meet requirements once filtered")
     }
 
