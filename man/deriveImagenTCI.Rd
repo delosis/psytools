@@ -4,18 +4,16 @@
 \alias{deriveImagenTCI}
 \title{Generate summary for TCI questionnaire}
 \usage{
-deriveImagenTCI(df)
+deriveImagenTCI(df, requiresReverseCoding = FALSE)
 }
 \arguments{
 \item{df}{data frame containing long form TCI data}
+
+\item{requiresReverseCoding}{(default FALSE) boolean indicating if the df is already reverse coded - If not the R suffix is still applied to the reversed items (if not there already) to avoid confusion}
 }
 \value{
 wide form of TCI data with summary vars
 }
 \description{
 NB This does not select the appropriate attempt - this should be done by the calling function
-}
-\details{
-Note that in the case of no alcohol consumption this returns 0 for the summaries
-  The original SPSS did not do this but it seems appropriate
 }

@@ -4,10 +4,12 @@
 \alias{deriveImagenNEO}
 \title{Generate summary for NEO FFI questionnaire}
 \usage{
-deriveImagenNEO(df)
+deriveImagenNEO(df, requiresReverseCoding = FALSE)
 }
 \arguments{
 \item{df}{data frame containing long form NEO FFI data}
+
+\item{requiresReverseCoding}{(default FALSE) boolean indicating if the df is already reverse coded - If not the R suffix is still applied to the reversed items (if not there already) to avoid confusion}
 }
 \value{
 wide form of NEO FFI data with summary vars

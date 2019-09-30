@@ -86,7 +86,7 @@ selectIteration <-
 #'
 #' @param df data frame containing wide form data
 #'
-#' @param vars list of greppable tokens in the df colnames - each must uniquely identify 1 col
+#' @param varlist list of greppable tokens in the df colnames - each must uniquely identify 1 col
 #'
 #' @param fun funtion to apply
 #'

@@ -10,7 +10,7 @@ convertFU3toFU2(df)
 \item{df}{Data frame with FU3 data for an instrument or instruments represented by a single task at FU2}
 }
 \value{
-Data Frame in FU2 format.
+named list of Data Frames in FU2 format representing the component FU2 instruments contained in the FU3
 }
 \description{
 Convert FU3 variable names and any Value recodes neccessary

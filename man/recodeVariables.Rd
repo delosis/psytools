@@ -9,9 +9,9 @@ recodeVariables(df, varlist, fun)
 \arguments{
 \item{df}{data frame containing wide form data}
 
-\item{fun}{funtion to apply}
+\item{varlist}{list of greppable tokens in the df colnames - each must uniquely identify 1 col}
 
-\item{vars}{list of greppable tokens in the df colnames - each must uniquely identify 1 col}
+\item{fun}{funtion to apply}
 }
 \value{
 modified df
