@@ -479,6 +479,8 @@ deriveImagenTCI <- function(df, requiresReverseCoding=FALSE) {
 #'  
 #' @return wide form of TCI3 data with summary vars
 #'
+#' @importFrom data.table rbindlist
+#'
 #' @export
 deriveImagenTCI3 <- function(df) {
   # Split out participants who have done the FU2 DE style list of questions as there is item number over lap
