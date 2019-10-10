@@ -289,8 +289,7 @@ deriveImagenAUDIT <- function(df) {
   df$audit9[df$audit9==1]<-2
   df$audit10[df$audit10==2]<-4
   df$audit10[df$audit10==1]<-2
-  
-  
+
   #Summary Vars
   df$audit_freq <-
     rowSums(cbind(df$audit1, df$audit2, df$audit3), na.rm = TRUE)
@@ -367,20 +366,20 @@ deriveImagenMAST <- function(df) {
 #'
 #' @param df data frame containing long form NEO FFI data
 #' @param requiresReverseCoding (default FALSE) boolean indicating if the df is already reverse coded - If not the R suffix is still applied to the reversed items (if not there already) to avoid confusion
-#' 
+#'
 #' @return wide form of NEO FFI data with summary vars
 #'
 #' @export
 deriveImagenNEO <- function(df, requiresReverseCoding = FALSE) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  
+
   if(requiresReverseCoding) {
     df <-
       recodeVariables(
         df,
         paste0(names(df)[grepl(
-          "[^0-9_](1|3|8|9|12|14|15|16|18|23|24|27|29|30|31|33|38|39|42|44|45|46|48|54|55|57|59)$", 
+          "[^0-9_](1|3|8|9|12|14|15|16|18|23|24|27|29|30|31|33|38|39|42|44|45|46|48|54|55|57|59)$",
           names(df)
         )], "$"),
         fun = function(x) {
@@ -397,7 +396,7 @@ deriveImagenNEO <- function(df, requiresReverseCoding = FALSE) {
         names(df)
       )], "R")
   }
-  
+
   #Summaries
   df$neur_mean <-
     rowMeans(df[, grepl("[^_][16]R?$", colnames(df))])
@@ -420,9 +419,9 @@ deriveImagenNEO <- function(df, requiresReverseCoding = FALSE) {
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
 #' @param df data frame containing long form TCI data
-#' 
+#'
 #' @param requiresReverseCoding (default FALSE) boolean indicating if the df is already reverse coded - If not the R suffix is still applied to the reversed items (if not there already) to avoid confusion
-#' 
+#'
 #' @return wide form of TCI data with summary vars
 #'
 #' @export
@@ -434,7 +433,7 @@ deriveImagenTCI <- function(df, requiresReverseCoding=FALSE) {
       recodeVariables(
         df,
         paste0(names(df)[grepl(
-          "(222|014|047|059|071|053|105|123|139|145|155|156|159|165|170|172|176|179|193|205|210|239)$", 
+          "(222|014|047|059|071|053|105|123|139|145|155|156|159|165|170|172|176|179|193|205|210|239)$",
           names(df)
         )], "$"),
         fun = function(x) {
@@ -468,15 +467,15 @@ deriveImagenTCI <- function(df, requiresReverseCoding=FALSE) {
 #' Generate summary for TCI3 questionnaire
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
-#' 
+#'
 #' The TCI3 had different items in the German FU2 version - for FU3 the German was updated to match the English and French Locales
 #' It seems from discussions with Frauke that actually the German version was the originally intended one and has the most subscales derivable from it
 #' all are merged together for return
-#' 
-#' The derived varaibles produces depend on which 
+#'
+#' The derived varaibles produces depend on which
 #'
 #' @param df data frame containing long form TCI3 data
-#'  
+#'
 #' @return wide form of TCI3 data with summary vars
 #'
 #' @importFrom data.table rbindlist setDF
@@ -485,14 +484,14 @@ deriveImagenTCI <- function(df, requiresReverseCoding=FALSE) {
 deriveImagenTCI3 <- function(df) {
   # Split out participants who have done the FU2 DE style list of questions as there is item number over lap
   # TODO it might be wise to homogneise the item numbers to whatever is "correct"
-  
+
   dfdefu2<- df[paste0(df$User.code,'-', df$Iteration) %in% do.call(paste, c(df[df$Trial=='TCI_4', 1:2], sep = "-")), ]
   df<-df[!(paste0(df$User.code,'-', df$Iteration) %in% do.call(paste, c(df[df$Trial=='TCI_4', 1:2], sep = "-"))), ]
-  
+
   #Rotate
   df <- rotateQuestionnaire(df)
   names(dfdefu2)[grepl('TCI', names(dfdefu2))]<-paste("DEFU2",names(dfdefu2)[grepl('TCI', names(dfdefu2))],  sep="_")
-  
+
   # Recode
   df <-
     recodeVariables(
@@ -501,7 +500,7 @@ deriveImagenTCI3 <- function(df) {
         6 - x
       }
     )
- 
+
   #Summaries
   df$tci_rs_binding <-
     rowSums(df[, grepl("[_](96|116|110|15|79)R?$", colnames(df))])
@@ -541,7 +540,7 @@ deriveImagenTCI3 <- function(df) {
       rowSums(dfdefu2[, grepl("[_](5|25|54|77|88)R?$", colnames(dfdefu2))])
     df <- rbindlist(list(df, dfdefu2), fill = TRUE)
   }
-  
+
   return(setDF(df))
 }
 
@@ -856,20 +855,20 @@ deriveImagenDOTPROBE <- function(df) {
 #' Convert FU3 variable names and any Value recodes neccessary
 #' to return to the format expected from Imagen FU2
 #'
-#' @param df Data frame with FU3 data for an instrument or instruments represented by a single task at FU2 
+#' @param df Data frame with FU3 data for an instrument or instruments represented by a single task at FU2
 #'
-#' @return named list of Data Frames in FU2 format representing the component FU2 instruments contained in the FU3 
+#' @return named list of Data Frames in FU2 format representing the component FU2 instruments contained in the FU3
 #'
 #' @importFrom data.table dcast setDT setDF setcolorder setorder set
-#' 
+#'
 #' @export
-#' 
+#'
 convertFU3toFU2<- function(df) {
   setDT(df)
   fu3Names<-as.data.table(names(df))
   names(fu3Names)<-"fu3Column"
   nameMap<-merge(fu3Names,imagenFu2Fu3Map, by="fu3Column")
-  
+
   #Swap the FU3 names for FU2 names
   for(i in 1:nrow(nameMap)) {
     if(as.character(nameMap$fu2Column[i])=="DELETE"){
@@ -879,7 +878,7 @@ convertFU3toFU2<- function(df) {
     }
   }
   nameMap<-nameMap[fu2Column!="DELETE",]
-  
+
   #collapse All That Applies into a single column as at FU2
   allThatApplys<-imagenFu2Fu3Map[grepl('AllThatApply',imagenFu2Fu3Map$fu3Column),]
   for(i in 1:nrow(allThatApplys)) {
@@ -888,10 +887,10 @@ convertFU3toFU2<- function(df) {
       df<-MergeAllThatApply(df,grepColumnCollection, as.character(allThatApplys[i,2]))
     }
   }
-  
+
   Instruments<-unique(as.character(nameMap[,Instrument]))
   Instruments<-Instruments[!Instruments %in% c("ALL", "NONE")]
-  
+
   splitDFs<- list()
   #Split and return list of DTs
   for(targetInstrument in Instruments){
@@ -905,7 +904,7 @@ convertFU3toFU2<- function(df) {
      #Coerce all value columns and Trial to character to avoid warnings when melting
      for (col in names(targetDT)[(which(names(targetDT) == "Processed.Timestamp") + 1):length(names(targetDT))]) {
        set(targetDT, j=col, value=as.character(targetDT[[col]]))
-     } 
+     }
      targetDT<-melt.data.table(targetDT,
                     id.vars = names(targetDT)[1:which(names(targetDT)=="Processed.Timestamp")],
                     measure.vars = names(targetDT)[(which(names(targetDT)=="Processed.Timestamp") + 1):length(names(targetDT))],
@@ -930,9 +929,9 @@ convertFU3toFU2<- function(df) {
      setorder(targetDT, User.code)
      targetDT<-getFU3Recode(targetInstrument, targetDT)
      splitDFs[[targetInstrument]]<-targetDT
-     
+
   }
-  
+
   return(splitDFs)
 }
 
@@ -953,7 +952,7 @@ getFU3Recode<-function(targetInstrument, targetDT){
       "IMGN_KIRBY_FU3"= targetDT[grepl('kirby',Trial), Trial.result:= as.character(ifelse(targetDT[grepl('kirby',Trial),Trial.result]=="NOW", '0','1'))],
       "IMGN_HRQOL_FU3"= targetDT[Trial=='HRQOL_ALM_2' & Trial.result=="-oth-", Trial.result := as.character(14)],
       targetDT
-    )  
+    )
 }
 
 
