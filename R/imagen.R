@@ -479,6 +479,8 @@ deriveImagenTCI <- function(df, requiresReverseCoding=FALSE) {
 #'  
 #' @return wide form of TCI3 data with summary vars
 #'
+#' @importFrom data.table rbindlist setDF
+#'
 #' @export
 deriveImagenTCI3 <- function(df) {
   # Split out participants who have done the FU2 DE style list of questions as there is item number over lap
@@ -597,9 +599,7 @@ deriveImagenESPAD <- function(df) {
 #'
 #' @return wide form of GEN data with summary vars
 #'
-#' @importFrom data.table dcast
-#' @importFrom data.table setDT
-#' @importFrom data.table setDF
+#' @importFrom data.table dcast setDT setDF
 #'
 #' @export
 deriveImagenGEN <- function(df) {
@@ -700,9 +700,7 @@ deriveImagenGEN <- function(df) {
 #'
 #' @return Derived data frame with summaries.
 #'
-#' @importFrom data.table dcast
-#' @importFrom data.table setDT
-#' @importFrom data.table setDF
+#' @importFrom data.table dcast setDT setDF
 #'
 #' @export
 deriveImagenIDENT <- function(df) {
@@ -786,9 +784,7 @@ deriveImagenIDENT <- function(df) {
 #'
 #' @return Derived data frame with summaries.
 #'
-#' @importFrom data.table dcast
-#' @importFrom data.table setDT
-#' @importFrom data.table setDF
+#' @importFrom data.table dcast setDT setDF
 #'
 #' @export
 deriveImagenDOTPROBE <- function(df) {
@@ -970,7 +966,7 @@ getFU3Complete<-function(targetInstrument, targetDT){
     "IMGN_ESPAD_FU3" = ifelse(targetDT$EspadCheck.change.=="N" & targetDT$EspadCheck.truth.=="Y", 't','f'),
     "IMGN_SURPS_FU3" = ifelse(targetDT$surpsCheck.change.=="N" & targetDT$surpsCheck.truth.=="Y", 't','f'),
     "IMGN_AUDIT_FU3" = ifelse(targetDT$audit1==0 | !rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])), 't','f'),
-    "IMGN_EDEQ_FU3" = ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])) >2 , 'f','t'),
+    "IMGN_EDEQ_FU3" = ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])) >5 , 'f','t'),
     "IMGN_HRQOL_FU3" = ifelse(!is.na(targetDT$HRQOL_HDSM_5), 't','f'), # TODO Could be improved
     "IMGN_K6PLUS_FU3" = ifelse(rowSums(targetDT[,grepl('K6PLUS_1', names(targetDT)), with=FALSE], na.rm=TRUE) ==30 | !is.na(targetDT$K6PLUS_6), 't','f'),
     "IMGN_LEQ_FU3" = ifelse(rowSums(is.na(targetDT[,grepl("_ever", names(targetDT)), with=FALSE])), 'f','t'),
