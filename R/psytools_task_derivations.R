@@ -1215,7 +1215,7 @@ rotateQuestionnaire <-
       warning("df does not meet requirements as passed")
       return (NULL)
     }
-    
+
     #Keep in the Valid column if it exists
     if ("Valid" %in% colnames(df)) {
       idVar = c(idVar, "Valid")
@@ -1233,7 +1233,7 @@ rotateQuestionnaire <-
       df[!grepl("FEEDBACK", df$Block, ignore.case = T) &
            ( is.na(df$Response) | df$Response != 'skip_back') &
            (is.na(df$Trial.result) | df$Trial.result != 'skip_back'), ]
-    } 
+    }
 
     # Select only the last response for each question in cases of skipping back and revising.
     # only the first 2 idvars are needed
@@ -1258,7 +1258,6 @@ rotateQuestionnaire <-
             fill = skippedValue,
             value.var = "Trial.result")
 
-    
     return (setDF(fixNumericVariables(df)))
   }
 
@@ -1324,20 +1323,20 @@ deriveAPQ <- function(df) {
 ## It is just a selection of other parenting behaviours they should not be combined
 ##  df$other_discipline <-
 ##    rowMeansCustomMissing(df[, grepl("34$|36$|37$|39$|40$|41$|42$", colnames(df))])
-  
+
   if (max(grepl('APQ_?C_?01',names(df)))) {
     df$m_pos_parenting_mode <-
       rowSumsCustomMissing(df[, grepl("m_involvement$|pos_parenting$", colnames(df))])
     df$p_pos_parenting_mode <-
-      rowSumsCustomMissing(df[, grepl("p_involvement$|pos_parenting$", colnames(df))])  
+      rowSumsCustomMissing(df[, grepl("p_involvement$|pos_parenting$", colnames(df))])
   } else {
     df$pos_parenting_mode <-
-      rowSumsCustomMissing(df[, grepl("involvement$|pos_parenting$", colnames(df))])  
+      rowSumsCustomMissing(df[, grepl("involvement$|pos_parenting$", colnames(df))])
   }
-  
+
   df$neg_parenting_mode <-
-    rowSumsCustomMissing(df[, grepl("pr_monitoring$|inc_discipline$|corp_punishment$", colnames(df))])  
-  
+    rowSumsCustomMissing(df[, grepl("pr_monitoring$|inc_discipline$|corp_punishment$", colnames(df))])
+
   return(df)
 }
 

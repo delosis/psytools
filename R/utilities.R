@@ -195,7 +195,7 @@ stripCustomMissings <-
 #'
 #' @importFrom haven labelled_spss
 #' @importFrom labelled var_label
-#' 
+#'
 #' @return recoded df/dt
 
 rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0, proRateMissings = FALSE) {
@@ -366,15 +366,15 @@ DelosisAuthenticate<-function(SMAusername, studyID, server="www.delosis.com", re
 
 #' Label Data Frame from Psytools (Desktop) Questionnaire Resources file
 #' @param df Wide format data frame (or table) to label
-#' 
+#'
 #' @param resources df containing Psytools resources for this instrument
-#' 
+#'
 #' @importFrom haven labelled_spss
-#' 
+#'
 #' @importFrom labelled var_label
-#' 
+#'
 #' @export
-#' 
+#'
 labelData<-function(df, resources) {
   # Don't even try if it doesn't look at least a bit like a questionnaire resources sheet
   if(ncol(resources) <5 | length(resources[grepl('%%', resources)])==0){
@@ -428,7 +428,6 @@ labelData<-function(df, resources) {
             labelVariable(df[,subVariable],
                           as.list(setNames(c(0,1), c('No','Yes'))),
                           subVariableLabel
-                          
             )
         })
       }else{
@@ -444,7 +443,7 @@ labelData<-function(df, resources) {
 #' @param Qlabel String to apply as question label
 #' @importFrom haven labelled_spss
 #' @importFrom labelled var_label
-#' 
+#'
 labelVariable <- function (x, Rlabels, Qlabel) {
   #strip out non numeric response labels from numeric variables - they will never be used and are not supported
   if(("numeric" %in% class(x) | is.numeric(x)) & !is.null(Rlabels)){
@@ -472,7 +471,7 @@ labelVariable <- function (x, Rlabels, Qlabel) {
     x<-labelled_spss(x,
                      unlist(Rlabels),
                      label = Qlabel,
-                     #SPSS only support 3 missing values for non numeric variables... 
+                     #SPSS only support 3 missing values for non numeric variables...
                      na_range = c(-999,-666)
     )
   } else{
@@ -499,7 +498,7 @@ MergeAllThatApply<- function (df, grepColumnCollection, finalColumn, booleanIndi
 
   # replace all "Y" with the column name suffix ( between the periods ( originally ))
   for(col in targetCols) {
-      df[as.vector(df[, ..col] ==booleanIndicator), 
+      df[as.vector(df[, ..col] ==booleanIndicator),
           (col) := (gsub("^[A-z0-9]+[\\.]|[\\.]$", "", names(df)[col]))
          ]
   }
@@ -513,7 +512,4 @@ MergeAllThatApply<- function (df, grepColumnCollection, finalColumn, booleanIndi
   targetCols<-targetCols[2:length(targetCols)]
   df<-df[,(targetCols) := NULL]
   return(setDF(df))
-} 
-
-
-
+}
