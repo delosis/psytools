@@ -4,14 +4,21 @@
 \alias{derivePBI}
 \title{Generate summary for Parental Bonding Instrument}
 \usage{
-derivePBI(df)
+derivePBI(df, requiresReverseCoding = FALSE)
 }
 \arguments{
 \item{df}{data frame containing long form PBI data}
+
+\item{requiresReverseCoding}{(default FALSE) boolean indicating if the df is already}
 }
 \value{
 wide form of PBI data with summary vars
 }
 \description{
 NB This does not select the appropriate attempt - this should be done by the calling function
+}
+\details{
+This assumes that 2,4,14,16,18,24,3, 7, 15, 21, 22, 25 are already reverse coded in the source
+If they are not then please call with the requiresReverseCoding parameter
+reversed variables are tagged with R whether supplied reversed or reversed here to avoid confusion.
 }

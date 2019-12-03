@@ -1343,20 +1343,43 @@ deriveAPQ <- function(df) {
 #' Generate summary for Parental Bonding Instrument
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
-#'
+#' 
+#' This assumes that 2,4,14,16,18,24,3, 7, 15, 21, 22, 25 are already reverse coded in the source
+#' If they are not then please call with the requiresReverseCoding parameter
+#' reversed variables are tagged with R whether supplied reversed or reversed here to avoid confusion.
+#' 
 #' @param df data frame containing long form PBI data
+#'
+#' @param requiresReverseCoding (default FALSE) boolean indicating if the df is already 
 #'
 #' @return wide form of PBI data with summary vars
 #'
 #' @export
-derivePBI <- function(df) {
+derivePBI <- function(df, requiresReverseCoding = FALSE) {
   # Remove some stray max volume trials attempts from an early version of the task if they exist
   df <- df[df$Trial != 'MaxVolume', ]
 
   #Rotate
   df <- rotateQuestionnaire(df)
-  #Summary
 
+  #Recode if the source is not already reverse coded
+  if(requiresReverseCoding) {
+    reverseVariables <-
+      c('02','03','04','07',14,15,16,18,21,22,24,25)
+    
+    df<-recodeVariables(df, reverseVariables, fun= function(x) {3-x})
+  } else {
+    names(df)[grepl(
+      "(02|03|04|07|14|15|16|18|21|22|24|25)$",
+      names(df)
+    )] <-
+      paste0(names(df)[grepl(
+        "(02|03|04|07|14|15|16|18|21|22|24|25)$",
+        names(df)
+      )], "R")
+  }
+  
+  #Summary
   calcCareOverprotection<-function (df, stub) {
     care<-rowSumsCustomMissing(
           df[, grepl('01|02|04|05|06|11|12|14|16|17|18|24', names(df))]
@@ -1516,6 +1539,14 @@ deriveLEQ <- function(df) {
       # now convert the column back to numeric as it should be
       df[, (j) := as.numeric(df[[j]])][]
       }
+    }
+    # In web adminstration for a period of time there were no bounds checks on the age value
+    # some people used this to enter a date or to enter multiple ages ( eg 16171819 )
+    # Frauke decided that these should be coded to missing
+    # This is at odds with the previous decision to take the average when things 
+    # like 6-7 was entered ( see above ) and this discrepency has been discussed.
+    for (j in names(df)[grepl('_age', names(df))]) {
+      df[[(j)]][df[[(j)]] > 100]<-NA
     }
     derived_labels<-c('_valence','_age_mean', '_ever_meanfreq','_ever_freq')
   }
@@ -1914,6 +1945,58 @@ deriveSURPS <- function(df, requiresReverseCoding = FALSE) {
 }
 
 
+#' Generate summary for SRS questionnaire
+#'
+#' NB This does not select the appropriate attempt - this should be done by the calling function
+#'
+#' @param df data frame containing long form SRS data
+#'
+#' @return wide form of SRS data with summary vars
+#'
+#' @export
+deriveSRS <- function(df) {
+  
+  #Check we are using 0 based coding
+  selector01to65<-paste(
+    c(
+      paste("0", seq(1, 9), sep = ""),
+      seq(10, 65)),
+    collapse = "|")
+  if(max(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) ==4 &
+     min(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) ==1) {
+    message('recoding 1 based to 0 based response coding in SRS')
+    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==1]<-0
+    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==2]<-1
+    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==3]<-2
+    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==4]<-3
+  }
+  if(max(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) !=3 |
+    min(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) !=0) {
+    stop('Cannot confirm that coding of items in SRS is 0 based or can be converted to 0 based')
+  }
+  
+  #Rotate
+  df <- rotateQuestionnaire(df)
+  
+  # reverse code
+  reverseVariables <- c('03','07',11,12,15,17,21,22,26,32,38,40,43,48,52,55)
+  df<-recodeVariables(df, reverseVariables, fun= function(x) {3-x})
+  
+  #Summary
+  df$social_perception <-
+    rowSumsCustomMissing(df[, grepl("02|07|25|32|45|52|54|56", colnames(df))])
+  df$social_cognition <-
+    rowSumsCustomMissing(df[, grepl("05|10|15|17|30|40|42|44|48|58|59|62", colnames(df))])
+  df$social_communication <-
+    rowSumsCustomMissing(df[, grepl("11|12|16|18|19|21|22|26|33|35|36|37|38|41|46|47|51|53|55|57|61|62", colnames(df))])
+  df$social_motivation  <-
+    rowSumsCustomMissing(df[, grepl("1|3|6|9|11|23|27|34|43|64|65", colnames(df))])
+  df$autistic_behavior <-
+    rowSumsCustomMissing(df[, grepl("4|8|14|20|24|28|29|31|39|49|50|63", colnames(df))])
+  return(df)
+}
+
+
 #' Generate summary for basic questionnaire with summary total
 #' @param df data frame containing long form data
 #' @param Qname Name contained in all variables to be summed
@@ -1925,11 +2008,11 @@ deriveSURPS <- function(df, requiresReverseCoding = FALSE) {
 deriveSimpleSum <- function(df, Qname, recodeVariables = NULL, recodeFun=NULL) {
   #Rotate
   df <- rotateQuestionnaire(df)
-
+  
   if(!is.null(recodeVariables) & !is.null(recodeFun)){
     df<-recodeVariables(df, recodeVariables, recodeFun)
   }
-
+  
   #Summary
   df[,paste0(Qname,'_sum')]<-
     rowSumsCustomMissing(df[, grepl(Qname, colnames(df))])

@@ -78,7 +78,7 @@ deriveBnuSC <- function(df) {
   df <- rotateQuestionnaire(df)
 
   # reverse code
-  reverseVariables <- c('05','09',13,17,21,27,28,30,34,35)
+  reverseVariables <- c('01','03','05','09',13,17,21,22,27,28,30,34,35,38)
   df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
 
   #Summary
@@ -196,13 +196,13 @@ deriveBnuBISBAS <- function(df) {
   return(df)
 }
 
-#' Generate summary for BISBAS questionnaire
+#' Generate summary for OCD questionnaire
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
-#' @param df data frame containing long form BISBAS data
+#' @param df data frame containing long form OCD data
 #'
-#' @return wide form of BISBAS data with summary vars
+#' @return wide form of OCD data with summary vars
 #'
 #' @export
 deriveBnuOCD <- function(df) {
@@ -342,4 +342,33 @@ deriveBnuBG <- function(df) {
 
   return(df)
 }
+
+#' Generate summary for SPSRQ questionnaire
+#'
+#' NB This does not select the appropriate attempt - this should be done by the calling function
+#'
+#' @param df data frame containing long form SPSRQ data
+#'
+#' @return wide form of SPSRQ data with summary vars
+#'
+#' @export
+deriveBnuSPSRQ <- function(df) {
+  #Rotate
+  df <- rotateQuestionnaire(df)
+  
+  #Summary
+  df$Sensitivity_to_Punishment <-
+    rowSumsCustomMissing(df[, grepl("02|05|07|09|12|15|17|18|19|21|23|26|29|31|33", colnames(df))])
+  df$Impulsivity_Fun_Seeking <-
+    rowSumsCustomMissing(df[, grepl("11|14|20|22|24|25|32", colnames(df))])
+  df$Reward_Responsivity <-
+    rowSumsCustomMissing(df[, grepl("01|03|04|06|08|10|13", colnames(df))])
+  df$Drive_Scale <-
+    rowSumsCustomMissing(df[, grepl("16|27|28|30", colnames(df))])
+  df$Reward_Sensitivity <-
+    rowSumsCustomMissing(df[, grepl("Impulsivity_Fun_Seeking|Reward_Responsivity|Drive_Scale", colnames(df))])
+  df$Punishment_Sensitivity <- df$Sensitivity_to_Punishment
+  return(df)
+}
+
 
