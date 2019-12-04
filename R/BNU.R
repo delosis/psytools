@@ -78,7 +78,7 @@ deriveBnuSC <- function(df) {
   df <- rotateQuestionnaire(df)
 
   # reverse code
-  reverseVariables <- c('01','03','05','09',13,17,21,22,27,28,30,34,35,38)
+  reverseVariables <- c('05','09',13,17,21,22,27,28,30,34,35,38)
   df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
 
   #Summary
