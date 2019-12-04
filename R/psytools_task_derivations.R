@@ -2000,12 +2000,14 @@ deriveSRS <- function(df) {
 #' Generate summary for basic questionnaire with summary total
 #' @param df data frame containing long form data
 #' @param Qname Name contained in all variables to be summed
-#' @param recodeVariables list of grep terms to identify a list of variables which must be recoded prior to the sum
-#' @param recodeFun function that should be applied to the recoded variables prior to summing
+#' @param recodeVariables optional list of grep terms to identify a list of variables which must be recoded prior to the sum
+#' @param recodeFun optional function that should be applied to the recoded variables prior to summing
+#' @param includeVariables optional regex expression to refine the selection of variables for summation - if not provided Qname is used
+#' 
 #' @return wide form of data with sum in a new variable named paste0(Qname,'_sum')
 #'
 #' @export
-deriveSimpleSum <- function(df, Qname, recodeVariables = NULL, recodeFun=NULL) {
+deriveSimpleSum <- function(df, Qname, recodeVariables = NULL, recodeFun=NULL, includeVariables = Qname) {
   #Rotate
   df <- rotateQuestionnaire(df)
   
@@ -2015,6 +2017,6 @@ deriveSimpleSum <- function(df, Qname, recodeVariables = NULL, recodeFun=NULL) {
   
   #Summary
   df[,paste0(Qname,'_sum')]<-
-    rowSumsCustomMissing(df[, grepl(Qname, colnames(df))])
+    rowSumsCustomMissing(df[, grepl(includeVariables, colnames(df))])
   return(df)
 }
