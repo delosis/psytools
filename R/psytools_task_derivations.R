@@ -949,14 +949,14 @@ deriveKIRBY <- function(df) {
     )
 
   # Some task releases have the block names in lower case...
-  df$Block[substr(df$Block, 1, 5) == "kirby"] <-
-    toupper(df$Block[substr(df$Block, 1, 5) == "kirby"])
+  df$Block[grepl("kirby", df$Block)] <-
+    toupper(df$Block[grepl("kirby", df$Block)])
 
 
   #Select out the raw data to go in the same file - including the Number of responses var if available ( some digests )
   dfraw <- df
   if ("Number.of.Responses" %in% colnames(df)) {
-    dfraw <- dfraw[substr(dfraw$Block, 1, 5) == "KIRBY", ]
+    dfraw <- dfraw[grepl("KIRBY", dfraw$Block), ]
     dfraw$Trial <- paste(dfraw$Trial, "Nresponses", sep = "_")
     dfraw$Trial.result <- dfraw$Number.of.Responses
     dfraw <- rbind(df, dfraw)
@@ -991,62 +991,62 @@ deriveKIRBY <- function(df) {
   df <- setDT(df)
 
   # Add the computed Kind values
-  df$Kind[df$Block == 'KIRBY01'] <- 0.000158277936055715
-  df$Kind[df$Block == 'KIRBY02'] <- 0.00596125186289121
-  df$Kind[df$Block == 'KIRBY03'] <- 0.00595829195630586
-  df$Kind[df$Block == 'KIRBY04'] <- 0.248847926267281
-  df$Kind[df$Block == 'KIRBY05'] <- 0.0413533834586466
-  df$Kind[df$Block == 'KIRBY06'] <- 0.000398936170212766
-  df$Kind[df$Block == 'KIRBY07'] <- 0.102564102564103
-  df$Kind[df$Block == 'KIRBY08'] <- 0.1
-  df$Kind[df$Block == 'KIRBY09'] <- 0.000158277936055713
-  df$Kind[df$Block == 'KIRBY10'] <- 0.00604838709677419
-  df$Kind[df$Block == 'KIRBY11'] <- 0.246753246753247
-  df$Kind[df$Block == 'KIRBY12'] <- 0.00100338642919854
-  df$Kind[df$Block == 'KIRBY13'] <- 0.00595829195630586
-  df$Kind[df$Block == 'KIRBY14'] <- 0.0405643738977072
-  df$Kind[df$Block == 'KIRBY15'] <- 0.00254817646121994
-  df$Kind[df$Block == 'KIRBY16'] <- 0.00252235725750975
-  df$Kind[df$Block == 'KIRBY17'] <- 0.000398089171974522
-  df$Kind[df$Block == 'KIRBY18'] <- 0.0158045977011494
-  df$Kind[df$Block == 'KIRBY19'] <- 0.101731601731602
-  df$Kind[df$Block == 'KIRBY20'] <- 0.000399042298483639
-  df$Kind[df$Block == 'KIRBY21'] <- 0.0156862745098039
-  df$Kind[df$Block == 'KIRBY22'] <- 0.0025
-  df$Kind[df$Block == 'KIRBY23'] <- 0.0414634146341463
-  df$Kind[df$Block == 'KIRBY24'] <- 0.001001001001001
-  df$Kind[df$Block == 'KIRBY25'] <- 0.0160493827160494
-  df$Kind[df$Block == 'KIRBY26'] <- 0.00100267379679144
-  df$Kind[df$Block == 'KIRBY27'] <- 0.25
+  df$Kind[grepl('KIRBY01', df$Block)] <- 0.000158277936055715
+  df$Kind[grepl('KIRBY02', df$Block)] <- 0.00596125186289121
+  df$Kind[grepl('KIRBY03', df$Block)] <- 0.00595829195630586
+  df$Kind[grepl('KIRBY04', df$Block)] <- 0.248847926267281
+  df$Kind[grepl('KIRBY05', df$Block)] <- 0.0413533834586466
+  df$Kind[grepl('KIRBY06', df$Block)] <- 0.000398936170212766
+  df$Kind[grepl('KIRBY07', df$Block)] <- 0.102564102564103
+  df$Kind[grepl('KIRBY08', df$Block)] <- 0.1
+  df$Kind[grepl('KIRBY09', df$Block)] <- 0.000158277936055713
+  df$Kind[grepl('KIRBY10', df$Block)] <- 0.00604838709677419
+  df$Kind[grepl('KIRBY11', df$Block)] <- 0.246753246753247
+  df$Kind[grepl('KIRBY12', df$Block)] <- 0.00100338642919854
+  df$Kind[grepl('KIRBY13', df$Block)] <- 0.00595829195630586
+  df$Kind[grepl('KIRBY14', df$Block)] <- 0.0405643738977072
+  df$Kind[grepl('KIRBY15', df$Block)] <- 0.00254817646121994
+  df$Kind[grepl('KIRBY16', df$Block)] <- 0.00252235725750975
+  df$Kind[grepl('KIRBY17', df$Block)] <- 0.000398089171974522
+  df$Kind[grepl('KIRBY18', df$Block)] <- 0.0158045977011494
+  df$Kind[grepl('KIRBY19', df$Block)] <- 0.101731601731602
+  df$Kind[grepl('KIRBY20', df$Block)] <- 0.000399042298483639
+  df$Kind[grepl('KIRBY21', df$Block)] <- 0.0156862745098039
+  df$Kind[grepl('KIRBY22', df$Block)] <- 0.0025
+  df$Kind[grepl('KIRBY23', df$Block)] <- 0.0414634146341463
+  df$Kind[grepl('KIRBY24', df$Block)] <- 0.001001001001001
+  df$Kind[grepl('KIRBY25', df$Block)] <- 0.0160493827160494
+  df$Kind[grepl('KIRBY26', df$Block)] <- 0.00100267379679144
+  df$Kind[grepl('KIRBY27', df$Block)] <- 0.25
 
   # Add the LDR scale
-  df$LDRscale[df$Block == 'KIRBY01'] <- 2
-  df$LDRscale[df$Block == 'KIRBY02'] <- 3
-  df$LDRscale[df$Block == 'KIRBY03'] <- 1
-  df$LDRscale[df$Block == 'KIRBY04'] <- 3
-  df$LDRscale[df$Block == 'KIRBY05'] <- 1
-  df$LDRscale[df$Block == 'KIRBY06'] <- 2
-  df$LDRscale[df$Block == 'KIRBY07'] <- 1
-  df$LDRscale[df$Block == 'KIRBY08'] <- 2
-  df$LDRscale[df$Block == 'KIRBY09'] <- 3
-  df$LDRscale[df$Block == 'KIRBY10'] <- 2
-  df$LDRscale[df$Block == 'KIRBY11'] <- 1
-  df$LDRscale[df$Block == 'KIRBY12'] <- 3
-  df$LDRscale[df$Block == 'KIRBY13'] <- 1
-  df$LDRscale[df$Block == 'KIRBY14'] <- 2
-  df$LDRscale[df$Block == 'KIRBY15'] <- 3
-  df$LDRscale[df$Block == 'KIRBY16'] <- 2
-  df$LDRscale[df$Block == 'KIRBY17'] <- 3
-  df$LDRscale[df$Block == 'KIRBY18'] <- 1
-  df$LDRscale[df$Block == 'KIRBY19'] <- 3
-  df$LDRscale[df$Block == 'KIRBY20'] <- 1
-  df$LDRscale[df$Block == 'KIRBY21'] <- 2
-  df$LDRscale[df$Block == 'KIRBY22'] <- 1
-  df$LDRscale[df$Block == 'KIRBY23'] <- 3
-  df$LDRscale[df$Block == 'KIRBY24'] <- 2
-  df$LDRscale[df$Block == 'KIRBY25'] <- 3
-  df$LDRscale[df$Block == 'KIRBY26'] <- 1
-  df$LDRscale[df$Block == 'KIRBY27'] <- 2
+  df$LDRscale[grepl('KIRBY01', df$Block)] <- 2
+  df$LDRscale[grepl('KIRBY02', df$Block)] <- 3
+  df$LDRscale[grepl('KIRBY03', df$Block)] <- 1
+  df$LDRscale[grepl('KIRBY04', df$Block)] <- 3
+  df$LDRscale[grepl('KIRBY05', df$Block)] <- 1
+  df$LDRscale[grepl('KIRBY06', df$Block)] <- 2
+  df$LDRscale[grepl('KIRBY07', df$Block)] <- 1
+  df$LDRscale[grepl('KIRBY08', df$Block)] <- 2
+  df$LDRscale[grepl('KIRBY09', df$Block)] <- 3
+  df$LDRscale[grepl('KIRBY10', df$Block)] <- 2
+  df$LDRscale[grepl('KIRBY11', df$Block)] <- 1
+  df$LDRscale[grepl('KIRBY12', df$Block)] <- 3
+  df$LDRscale[grepl('KIRBY13', df$Block)] <- 1
+  df$LDRscale[grepl('KIRBY14', df$Block)] <- 2
+  df$LDRscale[grepl('KIRBY15', df$Block)] <- 3
+  df$LDRscale[grepl('KIRBY16', df$Block)] <- 2
+  df$LDRscale[grepl('KIRBY17', df$Block)] <- 3
+  df$LDRscale[grepl('KIRBY18', df$Block)] <- 1
+  df$LDRscale[grepl('KIRBY19', df$Block)] <- 3
+  df$LDRscale[grepl('KIRBY20', df$Block)] <- 1
+  df$LDRscale[grepl('KIRBY21', df$Block)] <- 2
+  df$LDRscale[grepl('KIRBY22', df$Block)] <- 1
+  df$LDRscale[grepl('KIRBY23', df$Block)] <- 3
+  df$LDRscale[grepl('KIRBY24', df$Block)] <- 2
+  df$LDRscale[grepl('KIRBY25', df$Block)] <- 3
+  df$LDRscale[grepl('KIRBY26', df$Block)] <- 1
+  df$LDRscale[grepl('KIRBY27', df$Block)] <- 2
 
   # This analysis only works for completed attempts - remove any early terminations
   setorder(df, User.code, Iteration, LDRscale, Kind)
