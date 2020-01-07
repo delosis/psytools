@@ -56,10 +56,10 @@ deriveBnuPDS <- function(df) {
   df$PDS_stage[df[,grepl('gender',names(df))]=='1' & df$PDS_sum >= 4 & df$PDS_sum <= 5]<-2
   df$PDS_stage[df[,grepl('gender',names(df))]=='1' & df$PDS_sum < 4]<-1
 
-  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C5==1 & df$PDS_sum>=8]<-5
-  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C5==1 & df$PDS_sum < 8]<-4
-  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C5==2 & df$PDS_sum > 3]<-3
-  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C5==2 & df$PDS_sum == 3]<-2
+  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C05==1 & df$PDS_sum>=8]<-5
+  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C05==1 & df$PDS_sum < 8]<-4
+  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C05==2 & df$PDS_sum > 3]<-3
+  df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$T1_PD_GIRL_C05==2 & df$PDS_sum == 3]<-2
   df$PDS_stage[df[,grepl('gender',names(df))]=='2' & df$PDS_sum < 3]<-1
   return(df)
 }
