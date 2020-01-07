@@ -1906,6 +1906,8 @@ deriveASSIST <- function(df) {
 #' Note that in the case of no alcohol consumption this returns 0 for the summaries
 #'   The original SPSS did not do this but it seems appropriate
 #'
+#' some studies use a 28 item version - others the 23 item version - this will work for either
+#'
 #' @param df data frame containing long form SURPS data
 #'
 #' @param requiresReverseCoding boolean is the source data already reverse coded?
@@ -1926,19 +1928,19 @@ deriveSURPS <- function(df, requiresReverseCoding = FALSE) {
 
   #Summaries
   df$h_mean <-
-    rowMeans(df[, grepl("[ACs]1R?$|[ACs]4R?$|[ACs]7R?$|[ACs]13R?$|[ACs]17|[ACs]20R?$|[ACs]23R?$", colnames(df))])
+    rowMeans(df[, grepl("[ACs]1R?$|[ACs]4R?$|[ACs]7R?$|[ACs]13R?$|[ACs]17|[ACs]20R?$|[ACs]23R?$|[ACs]27$", colnames(df))])
   df$as_mean <-
-    rowMeans(df[, grepl("[ACs]8|[ACs]10|[ACs]14|[ACs]18|[ACs]21", colnames(df))])
+    rowMeans(df[, grepl("[ACs]8|[ACs]10|[ACs]14|[ACs]18|[ACs]21|[ACs]24$|[ACs]25$", colnames(df))])
   df$imp_mean <-
-    rowMeans(df[, grepl("[ACs]2$|[ACs]5|[ACs]11|[ACs]15|[ACs]22", colnames(df))])
+    rowMeans(df[, grepl("[ACs]2$|[ACs]5|[ACs]11|[ACs]15|[ACs]22|[ACs]26$|[ACs]28$", colnames(df))])
   df$ss_mean <-
     rowMeans(df[, grepl("[ACs]3$|[ACs]6|[ACs]9|[ACs]12|[ACs]16|[ACs]19", colnames(df))])
   df$h_sum <-
-    rowSums(df[, grepl("[ACs]1$|[ACs]4|[ACs]7|[ACs]13|[ACs]17|[ACs]20|[ACs]23", colnames(df))])
+    rowSums(df[, grepl("[ACs]1R?$|[ACs]4R?$|[ACs]7R?$|[ACs]13R?$|[ACs]17|[ACs]20R?$|[ACs]23R?$|[ACs]27$", colnames(df))])
   df$as_sum <-
-    rowSums(df[, grepl("[ACs]8|[ACs]10|[ACs]14|[ACs]18|[ACs]21", colnames(df))])
+    rowSums(df[, grepl("[ACs]8|[ACs]10|[ACs]14|[ACs]18|[ACs]21|[ACs]24$|[ACs]25$", colnames(df))])
   df$imp_sum <-
-    rowSums(df[, grepl("[ACs]2$|[ACs]5|[ACs]11|[ACs]15|[ACs]22", colnames(df))])
+    rowSums(df[, grepl("[ACs]2$|[ACs]5|[ACs]11|[ACs]15|[ACs]22|[ACs]26$|[ACs]28$", colnames(df))])
   df$ss_sum <-
     rowSums(df[, grepl("[ACs]3$|[ACs]6|[ACs]9|[ACs]12|[ACs]16|[ACs]19", colnames(df))])
   return(df)

@@ -22,4 +22,6 @@ NB This does not select the appropriate attempt - this should be done by the cal
 \details{
 Note that in the case of no alcohol consumption this returns 0 for the summaries
   The original SPSS did not do this but it seems appropriate
+
+some studies use a 28 item version - others the 23 item version - this will work for either
 }
