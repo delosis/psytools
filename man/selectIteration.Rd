@@ -4,8 +4,7 @@
 \alias{selectIteration}
 \title{Select Iteration from dataset}
 \usage{
-selectIteration(df, iterationFunction = min, completed = TRUE,
-  valid = TRUE)
+selectIteration(df, iterationFunction = min, completed = TRUE, valid = TRUE)
 }
 \arguments{
 \item{df}{Data frame or table with simple questionnaire, read from CSV file exported from Delosis server.}

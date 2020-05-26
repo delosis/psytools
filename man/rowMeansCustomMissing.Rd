@@ -5,8 +5,12 @@
 \title{Utility function to calculate row means first stripping custom missings
 and then replacing missing results with a custom missing}
 \usage{
-rowMeansCustomMissing(df, customMissingCodes = c(-999, -888, -777, -666),
-  missingValue = -666, maxMissing = 0)
+rowMeansCustomMissing(
+  df,
+  customMissingCodes = c(-999, -888, -777, -666),
+  missingValue = -666,
+  maxMissing = 0
+)
 }
 \arguments{
 \item{df}{Data Frame/Table to perform rowSums upon}

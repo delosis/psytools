@@ -173,12 +173,21 @@ sanityCheck <-
 #' @param customCodes custom missing codes to code to NA
 #'
 #' @return recoded df/dt
+#' 
+
 stripCustomMissings <-
   function(df,
            customCodes = c(-999,-888,-777,-666)) {
-    for(x in customCodes) {
-      df[df==x]<-NA
+    # remove all labels in the passed data before recoding all custom missings as NA
+    attr <- names(attributes(df))
+    good <- c("names", "row.names", "class")
+    for(i in attr[!attr %in% good]){
+      attr(df, i) <- NULL
     }
+    df[] <- lapply(df, function(x) { attributes(x) <- NULL; x })
+    for(x in customCodes) {
+        df[df==x]<-NA
+      }
     return(df)
   }
 
@@ -305,7 +314,14 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
   retries<-0
   while(is.null(dt) && retries<3) {
     try(
-      dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8")
+      if(packageVersion('data.table')>=1.12) {
+        dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8")
+      } else {
+        dfFile<-tempfile()
+        download.file(URL, paste0(dfFile, '.csv.gz'))
+        R.utils::gunzip(paste0(dfFile, '.csv.gz'))
+        dt<-data.table::fread(paste0(dfFile, '.csv') ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8")
+      }
     )
     retries<-retries+1
     Sys.sleep(2)

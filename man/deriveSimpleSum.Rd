@@ -4,8 +4,13 @@
 \alias{deriveSimpleSum}
 \title{Generate summary for basic questionnaire with summary total}
 \usage{
-deriveSimpleSum(df, Qname, recodeVariables = NULL, recodeFun = NULL,
-  includeVariables = Qname)
+deriveSimpleSum(
+  df,
+  Qname,
+  recodeVariables = NULL,
+  recodeFun = NULL,
+  includeVariables = Qname
+)
 }
 \arguments{
 \item{df}{data frame containing long form data}

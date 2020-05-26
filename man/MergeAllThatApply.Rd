@@ -4,8 +4,12 @@
 \alias{MergeAllThatApply}
 \title{Convert new style AllThatApply (seperate binary sufixed columns) into old style (single column concatenated with pipe )}
 \usage{
-MergeAllThatApply(df, grepColumnCollection, finalColumn,
-  booleanIndicator = "Y")
+MergeAllThatApply(
+  df,
+  grepColumnCollection,
+  finalColumn,
+  booleanIndicator = "Y"
+)
 }
 \arguments{
 \item{df}{data table to work on}

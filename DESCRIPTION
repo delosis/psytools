@@ -16,7 +16,8 @@ Imports:
     haven,
     labelled,
     askpass,
-    data.table (>= 1.12.0),
+    data.table (>= 1.10),
     R.utils
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 LazyData: true
+Encoding: UTF-8

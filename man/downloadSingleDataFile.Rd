@@ -4,8 +4,13 @@
 \alias{downloadSingleDataFile}
 \title{Download Single Data File}
 \usage{
-downloadSingleDataFile(SMAusername, studyID, taskDigestID,
-  server = "www.delosis.com", sampleID = NULL)
+downloadSingleDataFile(
+  SMAusername,
+  studyID,
+  taskDigestID,
+  server = "www.delosis.com",
+  sampleID = NULL
+)
 }
 \arguments{
 \item{SMAusername}{username to login with}

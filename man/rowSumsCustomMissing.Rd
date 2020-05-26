@@ -5,8 +5,13 @@
 \title{Utility function to calculate row sums first stripping custom missings
 and then replacing missing results with a custom missing}
 \usage{
-rowSumsCustomMissing(df, customMissingCodes = c(-999, -888, -777, -666),
-  missingValue = -666, maxMissing = 0, proRateMissings = FALSE)
+rowSumsCustomMissing(
+  df,
+  customMissingCodes = c(-999, -888, -777, -666),
+  missingValue = -666,
+  maxMissing = 0,
+  proRateMissings = FALSE
+)
 }
 \arguments{
 \item{df}{Data Frame/Table to perform rowSums upon}

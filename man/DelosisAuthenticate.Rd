@@ -5,8 +5,12 @@
 \title{Authenticate
 local authentication cache prompts for login in shiny window and will cache details for a study and server over repeated calls.}
 \usage{
-DelosisAuthenticate(SMAusername, studyID, server = "www.delosis.com",
-  resetCache = FALSE)
+DelosisAuthenticate(
+  SMAusername,
+  studyID,
+  server = "www.delosis.com",
+  resetCache = FALSE
+)
 }
 \arguments{
 \item{SMAusername}{Username to access SMA}
