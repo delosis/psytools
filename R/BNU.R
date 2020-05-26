@@ -79,7 +79,7 @@ deriveBnuSC <- function(df) {
 
   # reverse code
   reverseVariables <- c('05','09',13,17,21,22,27,28,30,34,35,38)
-  df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
+  df<-recodeVariables(df, reverseVariables,  function(x) {5-x})
 
   #Summary
   df$order_and_discipline <-
@@ -181,7 +181,7 @@ deriveBnuBISBAS <- function(df) {
 
   # reverse code
   reverseVariables <- c('02','22')
-  df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
+  df<-recodeVariables(df, reverseVariables,  function(x) {5-x})
 
   #Summary
   df$BAS_Drive <-
@@ -211,7 +211,7 @@ deriveBnuOCD <- function(df) {
 
   # recode down by 1
   recodeVariables <- names(df)[grepl('OCD[^specify]*$', names(df))]
-  df<-recodeVariables(df, paste0(recodeVariables, '$'), fun= function(x) {x-1})
+  df<-recodeVariables(df, paste0(recodeVariables, '$'),  function(x) {x-1})
 
   #Summary
   df$OCD_sum <-
@@ -235,7 +235,7 @@ deriveBnuMW70 <- function(df) {
 
   # reverse code
   reverseVariables <- c('08', '10', 12, 46, 45, 62, 65, '[^MW]70', 63, 67, 68)
-  df<-recodeVariables(df, reverseVariables, fun= function(x) {6-x})
+  df<-recodeVariables(df, reverseVariables,  function(x) {6-x})
 
   #Summary
   df$Fear_of_fauilure <-
@@ -302,7 +302,7 @@ deriveBnuMS <- function(df) {
 
   # recode down by 1
   recodeVariables <- names(df)[grepl('MS', names(df))]
-  df<-recodeVariables(df, recodeVariables, fun= function(x) {x-1})
+  df<-recodeVariables(df, recodeVariables,  function(x) {x-1})
 
   #Summary
   df$T1_MS_Growth <-

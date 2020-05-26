@@ -1367,7 +1367,7 @@ derivePBI <- function(df, requiresReverseCoding = FALSE) {
     reverseVariables <-
       c('02','03','04','07',14,15,16,18,21,22,24,25)
     
-    df<-recodeVariables(df, reverseVariables, fun= function(x) {3-x})
+    df<-recodeVariables(df, reverseVariables,  function(x) {3-x})
   } else {
     names(df)[grepl(
       "(02|03|04|07|14|15|16|18|21|22|24|25)$",
@@ -1423,7 +1423,7 @@ deriveBIG5 <- function(df) {
   reverseVariables <-
     c('02', '06', '08', '09', 12, 18, 21, 23, 24, 27, 31, 34, 35, 37, 41, 43)
 
-  df<-recodeVariables(df, reverseVariables, fun= function(x) {6-x})
+  df<-recodeVariables(df, reverseVariables,  function(x) {6-x})
 
   #Summary
   df$extraversion <-
@@ -1466,7 +1466,7 @@ deriveIPIP20 <- function(df) {
   reverseVariables <-
     c('06', '07','08','09',10,15,16,17,18,19,20)
 
-  df<-recodeVariables(df, reverseVariables, fun= function(x) {6-x})
+  df<-recodeVariables(df, reverseVariables,  function(x) {6-x})
 
   #Summary
   df$extraversion <-
@@ -1601,7 +1601,7 @@ deriveAAQ <- function(df) {
   reverseVariables <-
     c('A_1', 'A_2', 'A_3', 'GCP_1','GCP_2','GCP_3' )
 
-  df<-recodeVariables(df, reverseVariables, fun= function(x) {4-x})
+  df<-recodeVariables(df, reverseVariables,function(x) {4 - x})
 
   #Summary
   df$ADsum <-
@@ -1682,7 +1682,7 @@ deriveSDQ <- function(df) {
 
   # reverse code
   reverseVariables <- c('07', '11', '14', '21', '25')
-  df<-recodeVariables(df, reverseVariables, fun= function(x) {2-x})
+  df<-recodeVariables(df, reverseVariables,  function(x) {2-x})
 
   # Summary
   df$SDQ_EMO_PROB<-rowSumsCustomMissing(
@@ -1735,7 +1735,7 @@ deriveSCQ <- function(df) {
 
   # reverse code
   reverseVariables <- c('05', '09', '13', '17')
-  df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
+  df<-recodeVariables(df, reverseVariables,  function(x) {5-x})
 
   # Summary
   df$SCQ_SAFETY_ORDER<-rowSumsCustomMissing(
@@ -1923,7 +1923,7 @@ deriveSURPS <- function(df, requiresReverseCoding = FALSE) {
   if(requiresReverseCoding) {
     # reverse code
     reverseVariables <- c('[ACs]1$', '[ACs]4$', '[ACs]7$', '[ACs]13$', '[ACs]20$','[ACs]23$')
-    df<-recodeVariables(df, reverseVariables, fun= function(x) {5-x})
+    df<-recodeVariables(df, reverseVariables,  function(x) {5-x})
   }
 
   #Summaries
@@ -1982,7 +1982,7 @@ deriveSRS <- function(df) {
   
   # reverse code
   reverseVariables <- c('03','07',11,12,15,17,21,22,26,32,38,40,43,48,52,55)
-  df<-recodeVariables(df, reverseVariables, fun= function(x) {3-x})
+  df<-recodeVariables(df, reverseVariables,  function(x) {3-x})
   
   #Summary
   df$social_perception <-

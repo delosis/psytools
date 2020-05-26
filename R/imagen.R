@@ -382,7 +382,7 @@ deriveImagenNEO <- function(df, requiresReverseCoding = FALSE) {
           "[^0-9_](1|3|8|9|12|14|15|16|18|23|24|27|29|30|31|33|38|39|42|44|45|46|48|54|55|57|59)$",
           names(df)
         )], "$"),
-        fun = function(x) {
+        function(x) {
           4 - x
         }
       )
@@ -436,7 +436,7 @@ deriveImagenTCI <- function(df, requiresReverseCoding=FALSE) {
           "(222|014|047|059|071|053|105|123|139|145|155|156|159|165|170|172|176|179|193|205|210|239)$",
           names(df)
         )], "$"),
-        fun = function(x) {
+        function(x) {
           6 - x
         }
       )
@@ -496,7 +496,7 @@ deriveImagenTCI3 <- function(df) {
   df <-
     recodeVariables(
       df,  paste0("[_]", c('96', '110','79'), "R?$"),
-      fun = function(x) {
+      function(x) {
         6 - x
       }
     )
@@ -518,7 +518,7 @@ deriveImagenTCI3 <- function(df) {
           c('108', '129', '8', '80', '123', '107', '114', '118', '128', '133'),
           "R?$"
         ),
-        fun = function(x) {
+        function(x) {
           6 - x
         }
       )
