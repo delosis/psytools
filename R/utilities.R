@@ -96,11 +96,15 @@ selectIteration <-
 recodeVariables <- function(df, varlist, fun) {
   for (i in varlist ){
     if(length(grep(i, names(df))) > 1){stop(paste('Reverse token', i, 'does not uniquely identify one variable in suplied df'))}
+    
+    #Force the column to be numeric - this should result in no coercion unless something wrong has happened earlier
+    df[,grep(i, names(df))]<- as.numeric(as.character(df[,grep(i, names(df))]))
+    
     if(exists("customMissingValues")){
       #If there are any NAs or Custom missings in the original data we should not touch them
       df[!(df[,grep(i, names(df))]  %in% customMissingValues) & !is.na(df[,grep(i, names(df))]),grep(i, names(df))]<- fun(na.omit(stripCustomMissings(df[,grep(i, names(df))])))
     } else {
-      df[,grep(i, names(df))]<- fun(df[,grep(i, names(df))])
+      df[!is.na(df[,grep(i, names(df))]),grep(i, names(df))]<- fun(df[,grep(i, names(df))])
     }
     names(df)[grep(i, names(df))]<- paste(names(df)[grep(i, names(df))], 'R', sep='')
   }
@@ -315,12 +319,20 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
   while(is.null(dt) && retries<3) {
     try(
       if(packageVersion('data.table')>=1.12) {
-        dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8")
+        dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",  COL_CLASSES = c(
+          "User.code"="character",
+          "Block"="character",
+          "Trial"="character",
+          "Response.time..ms."="numeric"))
       } else {
         dfFile<-tempfile()
         download.file(URL, paste0(dfFile, '.csv.gz'))
         R.utils::gunzip(paste0(dfFile, '.csv.gz'))
-        dt<-data.table::fread(paste0(dfFile, '.csv') ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8")
+        dt<-data.table::fread(paste0(dfFile, '.csv') ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",COL_CLASSES = c(
+          "User.code"="character",
+          "Block"="character",
+          "Trial"="character",
+          "Response.time..ms."="numeric"))
       }
     )
     retries<-retries+1
@@ -329,9 +341,9 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
 
   if (!is.null(dt)) {
     if(nrow(dt)>0) {
-    ##replace spaces and [] in column names to preserve compatibility with read.table
-    colnames(dt)<-gsub('[] []','.', colnames(dt))
-    return(dt)
+      ##replace spaces and [] in column names to preserve compatibility with read.table
+      colnames(dt)<-gsub('[] []','.', colnames(dt))
+      return(dt)
     } else {
       warning(paste(taskID, 'is empty - returning an empty dt'))
       return(dt)
