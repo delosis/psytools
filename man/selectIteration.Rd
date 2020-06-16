@@ -4,7 +4,14 @@
 \alias{selectIteration}
 \title{Select Iteration from dataset}
 \usage{
-selectIteration(df, iterationFunction = min, completed = TRUE, valid = TRUE)
+selectIteration(
+  df,
+  iterationFunction = min,
+  completed = TRUE,
+  valid = TRUE,
+  allowIncomplete = FALSE,
+  allowInvalid = TRUE
+)
 }
 \arguments{
 \item{df}{Data frame or table with simple questionnaire, read from CSV file exported from Delosis server.}
@@ -13,8 +20,11 @@ selectIteration(df, iterationFunction = min, completed = TRUE, valid = TRUE)
 
 \item{completed}{restrict to completed Iterations only - default TRUE}
 
-\item{valid}{restrict to Iterations marked as valid IF the user.code has any valid attempts - default TRUE
+\item{valid}{restrict to Iterations marked as valid IF the user.code has any valid attempts - default TRUE}
 
+\item{allowIncomplete}{allow incomplete if a user.code has only incomplete data - default FALSE}
+
+\item{allowInvalid}{allow invalid if a user.code has only invalid data - default TRUE
 It is not clear how the XNAT selection was achieved and the inclusion of invalids should be examined}
 }
 \value{

@@ -7,7 +7,7 @@
 stripHTML(htmlString)
 }
 \arguments{
-\item{htmlString}{String /  String Vector to process}
+\item{htmlString}{String /    String Vector to process}
 }
 \value{
 String / Vector with tags removed

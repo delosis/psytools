@@ -1,6 +1,6 @@
 # Additional utility functions for derivative generation
 #
-#  Copyright (C) 2017-2019 Delosis
+#    Copyright (C) 2017-2019 Delosis
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -9,11 +9,11 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.    If not, see <http://www.gnu.org/licenses/>.
 
 
 #' Select Iteration from dataset
@@ -28,58 +28,85 @@
 #' @param iterationFunction function to apply to Iteration - default min
 #' @param completed restrict to completed Iterations only - default TRUE
 #' @param valid restrict to Iterations marked as valid IF the user.code has any valid attempts - default TRUE
-#'
+#' @param allowIncomplete allow incomplete if a user.code has only incomplete data - default FALSE
+#' @param allowInvalid allow invalid if a user.code has only invalid data - default TRUE
+#                 
 #' It is not clear how the XNAT selection was achieved and the inclusion of invalids should be examined
 #'
 #' @return data frame complying with input params
 #'
 #' @export
 selectIteration <-
-  function(df,
-           iterationFunction = min,
-           completed = TRUE,
-           valid = TRUE) {
-    # remove the valid constraint if there is no Validity column in supplied DF
-    if (valid & !("Valid" %in% colnames(df))) {
-      warning("Validity selection requested but 'Valid' variable not supplied")
-      valid <- FALSE
+    function(df,
+             iterationFunction = min,
+             completed = TRUE,
+             valid = TRUE,
+             allowIncomplete = FALSE,
+             allowInvalid = TRUE) {
+      # remove the valid constraint if there is no Validity column in supplied DF
+        if (valid & !("Valid" %in% colnames(df))) {
+            warning("Validity selection requested but 'Valid' variable not supplied")
+            valid <- FALSE
+        }
+        # Add an index to preserve order after the aggregation
+        df$rowIndex <- seq_len(nrow(df))
+        
+        if (completed) {
+            if (allowIncomplete) {
+                # limit to Valid Iterations only if the User.code is ever valid
+                df <-
+                    merge (df,
+                             setNames(
+                                 aggregate(Completed ~ User.code,
+                                                     max,
+                                                     data = df),
+                                 c("User.code", "everCompleted")
+                             ),
+                             by = c("User.code"),
+                             sort = FALSE)
+                df <- df[df$Completed == 't' | df$everCompleted == 'f',]
+                df <- df[order(df$rowIndex),]
+                df$everComplete <- NULL
+            } else {
+                df <- df[df$Completed == 't',]
+            }
+        }
+        if (valid) {
+          if (allowInvalid) {
+              # limit to Valid Iterations only if the User.code is ever valid
+              df <-
+                  merge (df,
+                           setNames(
+                               aggregate(Valid ~ User.code,
+                                                   max,
+                                                   data = df),
+                               c("User.code", "everValid")
+                           ),
+                           by = c("User.code"),
+                           sort = FALSE)
+              df <- df[df$Valid == 't' | df$everValid == 'f',]
+              df <- df[order(df$rowIndex),]
+              df$everValid <- NULL
+          } else {
+              df <- df[df$Valid == 't',]
+          }
+        }
+        
+        df <-
+            merge (
+                df,
+                aggregate(Iteration ~ User.code,
+                                    iterationFunction,
+                                    data = df),
+                by = c("User.code", "Iteration"),
+                sort = FALSE
+            )
+        df <- df[order(df$rowIndex),]
+        df$rowIndex <- NULL
+        return(df)
     }
-    # Add an index to preserve order after the aggregation
-    df$rowIndex <- seq_len(nrow(df))
 
-    if (completed) {
-      df <- df[df$Completed == 't', ]
-    }
-    if (valid) {
-      # limit to Valid Iterations only if the User.code is ever valid
-      df <-
-        merge (df,
-               setNames(
-                 aggregate(Valid ~ User.code,
-                           max,
-                           data = df),
-                 c("User.code", "everValid")
-               ),
-               by = c("User.code"),
-               sort = FALSE)
-      df <- df[df$Valid == 't' | df$everValid == 'f', ]
-      df <- df[order(df$rowIndex), ]
-      df$everValid <- NULL
-    }
 
-    df <-
-      merge (
-        df,
-        aggregate(Iteration ~ User.code,
-                  iterationFunction,
-                  data = df),
-        by = c("User.code", "Iteration"),
-        sort = FALSE
-      )
-    df <- df[order(df$rowIndex), ]
-    df$rowIndex <- NULL
-    return(df)
-  }
 
 
 #' Recode select variables in supplied wide df adding "R" suffix to them
@@ -94,17 +121,17 @@ selectIteration <-
 #'
 #' @export
 recodeVariables <- function(df, varlist, fun) {
-  for (i in varlist ){
-    if(length(grep(i, names(df))) > 1){stop(paste('Reverse token', i, 'does not uniquely identify one variable in supplied df'))}
-    if(exists("customMissingValues")){
-      #If there are any NAs or Custom missings in the original data we should not touch them
-      df[!(df[,grep(i, names(df))]  %in% customMissingValues) & !is.na(df[,grep(i, names(df))]),grep(i, names(df))]<- fun(na.omit(stripCustomMissings(df[,grep(i, names(df))])))
-    } else {
-      df[,grep(i, names(df))]<- fun(df[,grep(i, names(df))])
+    for (i in varlist ){
+        if(length(grep(i, names(df))) > 1){stop(paste('Reverse token', i, 'does not uniquely identify one variable in supplied df'))}
+        if(exists("customMissingValues")){
+            #If there are any NAs or Custom missings in the original data we should not touch them
+            df[!(df[,grep(i, names(df))]    %in% customMissingValues) & !is.na(df[,grep(i, names(df))]),grep(i, names(df))]<- fun(na.omit(stripCustomMissings(df[,grep(i, names(df))])))
+        } else {
+            df[,grep(i, names(df))]<- fun(df[,grep(i, names(df))])
+        }
+        names(df)[grep(i, names(df))]<- paste(names(df)[grep(i, names(df))], 'R', sep='')
     }
-    names(df)[grep(i, names(df))]<- paste(names(df)[grep(i, names(df))], 'R', sep='')
-  }
-  return(df)
+    return(df)
 }
 
 
@@ -114,17 +141,17 @@ recodeVariables <- function(df, varlist, fun) {
 #'
 #' @return data frame with character encoded numeric variables coerced to numeric
 fixNumericVariables <- function(df) {
-  df[] <-
-    lapply(df, function(x) {
-      if (suppressWarnings(!any(is.na(as.numeric(
-        as.character(x)
-      )) - is.na((x))))) {
-        as.numeric(as.character(x))
-      }
-      else
-        x
-    })
-  return(df)
+    df[] <-
+        lapply(df, function(x) {
+            if (suppressWarnings(!any(is.na(as.numeric(
+                as.character(x)
+            )) - is.na((x))))) {
+                as.numeric(as.character(x))
+            }
+            else
+                x
+        })
+    return(df)
 }
 
 
@@ -137,34 +164,34 @@ fixNumericVariables <- function(df) {
 #'
 #' @return boolean
 sanityCheck <-
-  function(df,
-           additionalVars = c(),
-           nonRequiredVars = c()) {
-    reqVar = c(
-      "User.code",
-      "Iteration",
-      "Language",
-      "Completed",
-      "Completed.Timestamp",
-      "Processed.Timestamp",
-      "Block",
-      "Trial",
-      "Trial.result"
-    )
-    reqVar <- setdiff(c(reqVar, additionalVars), nonRequiredVars)
-    sane <- TRUE
-    # Currently just check the required variables are there and the df is not empty
-    # TODO allow more fine grained testing
-    if (min(reqVar %in% colnames(df)) == 0) {
-      sane <- FALSE
-      warning("Columns do not meet requirements")
+    function(df,
+                     additionalVars = c(),
+                     nonRequiredVars = c()) {
+        reqVar = c(
+            "User.code",
+            "Iteration",
+            "Language",
+            "Completed",
+            "Completed.Timestamp",
+            "Processed.Timestamp",
+            "Block",
+            "Trial",
+            "Trial.result"
+        )
+        reqVar <- setdiff(c(reqVar, additionalVars), nonRequiredVars)
+        sane <- TRUE
+        # Currently just check the required variables are there and the df is not empty
+        # TODO allow more fine grained testing
+        if (min(reqVar %in% colnames(df)) == 0) {
+            sane <- FALSE
+            warning("Columns do not meet requirements")
+        }
+        if (nrow(df) == 0) {
+            sane <- FALSE
+            warning("Data frame has no rows")
+        }
+        return(sane)
     }
-    if (nrow(df) == 0) {
-      sane <- FALSE
-      warning("Data frame has no rows")
-    }
-    return(sane)
-  }
 
 
 #' recode defined missing codes back to NA for Row summing purposes
@@ -178,16 +205,16 @@ sanityCheck <-
 
 
 stripCustomMissings <-
-  function(df,
-           customCodes = c(-999,-888,-777,-666)) {
-    #remove haven labels - both value labels and variable labels
-    df<-haven::zap_labels(df)
-    df<-haven::zap_label(df)
-    for(x in customCodes) {
-        df[df==x]<-NA
-      }
-    return(df)
-  }
+    function(df,
+                     customCodes = c(-999,-888,-777,-666)) {
+        #remove haven labels - both value labels and variable labels
+        df<-haven::zap_labels(df)
+        df<-haven::zap_label(df)
+        for(x in customCodes) {
+                df[df==x]<-NA
+            }
+        return(df)
+    }
 
 
 #' Utility function to calculate row sums first stripping custom missings
@@ -206,33 +233,33 @@ stripCustomMissings <-
 #' @return recoded df/dt
 
 rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0, proRateMissings = FALSE) {
-  # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created
-  if(ncol(df)==0 |nrow(df)==0) {
-    warning("No data to sum - will not create this variable")
-    return (NULL)
-  }
-  if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
-  na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
-  df<-stripCustomMissings(df, customMissingCodes)
-  if(proRateMissings) {
-    sums<-rowMeans(df, na.rm) * ncol(df)
-  } else {
-    sums<-rowSums(df, na.rm)
-  }
-  nas<-rowSums(is.na(df), na.rm=TRUE)
-  sums[nas > maxMissing * ncol(df) ] <- missingValue
-  Qlabel<-paste0("Sum of (", paste(names(df), collapse=','), ")")
-  if(exists("customMissingValues")){
-    sums <- labelled_spss(sums,
-                  unlist(setNames(
-                    customMissingValues, customMissingValueLabels
-                  )),
-                  label = Qlabel,
-                  na_range = c(-999, -666))
-  } else {
-    labelled::var_label(sums)<-Qlabel
-  }
-  return(sums)
+    # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created
+    if(ncol(df)==0 |nrow(df)==0) {
+        warning("No data to sum - will not create this variable")
+        return (NULL)
+    }
+    if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
+    na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
+    df<-stripCustomMissings(df, customMissingCodes)
+    if(proRateMissings) {
+        sums<-rowMeans(df, na.rm) * ncol(df)
+    } else {
+        sums<-rowSums(df, na.rm)
+    }
+    nas<-rowSums(is.na(df), na.rm=TRUE)
+    sums[nas > maxMissing * ncol(df) ] <- missingValue
+    Qlabel<-paste0("Sum of (", paste(names(df), collapse=','), ")")
+    if(exists("customMissingValues")){
+        sums <- labelled_spss(sums,
+                                    unlist(setNames(
+                                        customMissingValues, customMissingValueLabels
+                                    )),
+                                    label = Qlabel,
+                                    na_range = c(-999, -666))
+    } else {
+        labelled::var_label(sums)<-Qlabel
+    }
+    return(sums)
 }
 
 
@@ -249,38 +276,38 @@ rowSumsCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666),
 #'
 #' @return recoded df/dt
 rowMeansCustomMissing<- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0) {
-  # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created
-  if(ncol(df)==0 |nrow(df)==0) {
-    warning("No data to make means from - will not create this variable")
-    return (NULL)
-  }
-  if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
-  na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
-  df<-stripCustomMissings(df, customMissingCodes)
-  means<-rowMeans(df, na.rm)
-  nas<-rowSums(is.na(df), na.rm=TRUE)
-  means[nas > maxMissing * ncol(df) ] <- missingValue
-  Qlabel<-paste0("Mean of (", paste(names(df), collapse=','), ")")
-  if(exists("customMissingValues")){
-    means <- labelled_spss(means,
-                  unlist(setNames(
-                    customMissingValues, customMissingValueLabels
-                  )),
-                  label = Qlabel,
-                  na_range = c(-999, -666))
-  } else {
-    labelled::var_label(means)<-Qlabel
-  }
-  return(means)
+    # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created
+    if(ncol(df)==0 |nrow(df)==0) {
+        warning("No data to make means from - will not create this variable")
+        return (NULL)
+    }
+    if(maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
+    na.rm<-ifelse(maxMissing==0, FALSE, TRUE)
+    df<-stripCustomMissings(df, customMissingCodes)
+    means<-rowMeans(df, na.rm)
+    nas<-rowSums(is.na(df), na.rm=TRUE)
+    means[nas > maxMissing * ncol(df) ] <- missingValue
+    Qlabel<-paste0("Mean of (", paste(names(df), collapse=','), ")")
+    if(exists("customMissingValues")){
+        means <- labelled_spss(means,
+                                    unlist(setNames(
+                                        customMissingValues, customMissingValueLabels
+                                    )),
+                                    label = Qlabel,
+                                    na_range = c(-999, -666))
+    } else {
+        labelled::var_label(means)<-Qlabel
+    }
+    return(means)
 }
 
 
 
 #' Utility function to strip html tags from string or vector
-#' @param htmlString String /  String Vector to process
+#' @param htmlString String /    String Vector to process
 #' @return String / Vector with tags removed
 stripHTML <- function(htmlString) {
-  return(gsub("<.*?>", "", htmlString))
+    return(gsub("<.*?>", "", htmlString))
 }
 
 
@@ -300,56 +327,56 @@ stripHTML <- function(htmlString) {
 #'
 #' @export
 downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www.delosis.com", sampleID=NULL){
-  #prompt for password if we don't hold it in the current session
-  login <- DelosisAuthenticate(SMAusername, studyID, server)
-  if(is.null(login)) {stop("Authentication Cancelled")}
-  URL<-paste('https://', URLencode(login["username"], reserved=T), ':',URLencode(login["password"], reserved=T), '@', login["server"], '/psytools-server/dataservice/dataset/', sep='')
-  taskID<-paste(studyID,taskDigestID, sep='-')
-  if(!is.null(sampleID)) {taskID<-paste(taskID, sampleID, sep='-')}
-  URL<-URLencode(paste(URL, taskID, '.csv.gz', sep=''))
-
-  dt<-NULL
-  retries<-0
-  while(is.null(dt) && retries<3) {
-    try(
-      if(packageVersion('data.table')>=1.12) {
-        dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",  colClasses = c(
-          "User code"="character",
-          "Block"="character",
-          "Trial"="character",
-          "Response time [ms]"="numeric"))
-      } else {
-        dfFile<-tempfile()
-        download.file(URL, paste0(dfFile, '.csv.gz'))
-        R.utils::gunzip(paste0(dfFile, '.csv.gz'))
-        dt<-data.table::fread(paste0(dfFile, '.csv') ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",colClasses = c(
-          "User code"="character",
-          "Block"="character",
-          "Trial"="character",
-          "Response time [ms]"="numeric"))
-      }
-    )
-    retries<-retries+1
-    Sys.sleep(2)
-  }
-
-  if (!is.null(dt)) {
-    if(nrow(dt)>0) {
-    ##replace spaces and [] in column names to preserve compatibility with read.table
-    names(dt)<-gsub('[] []','.', names(dt))
-    return(dt)
-    } else {
-      warning(paste(taskID, 'is empty - returning an empty dt'))
-      return(dt)
-    }
-  }
-  else {
-    warning(paste("Could not download dataset", taskID, "from server", server, "using SMA username", login["username"]), call.=FALSE)
-    #try again perhaps the password was wrong
-    login <- DelosisAuthenticate(SMAusername, studyID, server, TRUE)
+    #prompt for password if we don't hold it in the current session
+    login <- DelosisAuthenticate(SMAusername, studyID, server)
     if(is.null(login)) {stop("Authentication Cancelled")}
-    return(downloadSingleDataFile(SMAusername, studyID, taskDigestID, server, sampleID))
-  }
+    URL<-paste('https://', URLencode(login["username"], reserved=T), ':',URLencode(login["password"], reserved=T), '@', login["server"], '/psytools-server/dataservice/dataset/', sep='')
+    taskID<-paste(studyID,taskDigestID, sep='-')
+    if(!is.null(sampleID)) {taskID<-paste(taskID, sampleID, sep='-')}
+    URL<-URLencode(paste(URL, taskID, '.csv.gz', sep=''))
+
+    dt<-NULL
+    retries<-0
+    while(is.null(dt) && retries<3) {
+        try(
+            if(packageVersion('data.table')>=1.12) {
+                dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",    colClasses = c(
+                    "User code"="character",
+                    "Block"="character",
+                    "Trial"="character",
+                    "Response time [ms]"="numeric"))
+            } else {
+                dfFile<-tempfile()
+                download.file(URL, paste0(dfFile, '.csv.gz'))
+                R.utils::gunzip(paste0(dfFile, '.csv.gz'))
+                dt<-data.table::fread(paste0(dfFile, '.csv') ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",colClasses = c(
+                    "User code"="character",
+                    "Block"="character",
+                    "Trial"="character",
+                    "Response time [ms]"="numeric"))
+            }
+        )
+        retries<-retries+1
+        Sys.sleep(2)
+    }
+
+    if (!is.null(dt)) {
+        if(nrow(dt)>0) {
+        ##replace spaces and [] in column names to preserve compatibility with read.table
+        names(dt)<-gsub('[] []','.', names(dt))
+        return(dt)
+        } else {
+            warning(paste(taskID, 'is empty - returning an empty dt'))
+            return(dt)
+        }
+    }
+    else {
+        warning(paste("Could not download dataset", taskID, "from server", server, "using SMA username", login["username"]), call.=FALSE)
+        #try again perhaps the password was wrong
+        login <- DelosisAuthenticate(SMAusername, studyID, server, TRUE)
+        if(is.null(login)) {stop("Authentication Cancelled")}
+        return(downloadSingleDataFile(SMAusername, studyID, taskDigestID, server, sampleID))
+    }
 }
 
 #' Authenticate
@@ -362,28 +389,28 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
 #' @importFrom askpass askpass
 #' @keywords authentication download dataset
 DelosisAuthenticate<-function(SMAusername, studyID, server="www.delosis.com", resetCache=FALSE) {
-  if (!resetCache &
-      !is.null(Sys.getenv("SMAusername")) &&
-      SMAusername == Sys.getenv("SMAusername") &&
-      !is.null(Sys.getenv("SMAstudyID")) &&
-      studyID == Sys.getenv("SMAstudyID") &&
-      !is.null(Sys.getenv("SMAserver")) &&
-      server == Sys.getenv("SMAserver") &&
-      !is.null(Sys.getenv("SMApassword"))) {
-    return(c(username=SMAusername,password=Sys.getenv("SMApassword"),server=server))
-  }
-  else {
-    PASSWORD<-askpass::askpass(paste("Delosis SMA password for", SMAusername, " on ", server))
-    if (!is.null(PASSWORD)){
-      login<-c(username=SMAusername,password=PASSWORD,server=server)
-      Sys.setenv("SMAusername"= SMAusername)
-      Sys.setenv("SMAserver" = server)
-      Sys.setenv("SMAstudyID" = studyID)
-      Sys.setenv("SMApassword" = PASSWORD)
-      return(login)
+    if (!resetCache &
+            !is.null(Sys.getenv("SMAusername")) &&
+            SMAusername == Sys.getenv("SMAusername") &&
+            !is.null(Sys.getenv("SMAstudyID")) &&
+            studyID == Sys.getenv("SMAstudyID") &&
+            !is.null(Sys.getenv("SMAserver")) &&
+            server == Sys.getenv("SMAserver") &&
+            !is.null(Sys.getenv("SMApassword"))) {
+        return(c(username=SMAusername,password=Sys.getenv("SMApassword"),server=server))
     }
-    else {return(NULL)}
-  }
+    else {
+        PASSWORD<-askpass::askpass(paste("Delosis SMA password for", SMAusername, " on ", server))
+        if (!is.null(PASSWORD)){
+            login<-c(username=SMAusername,password=PASSWORD,server=server)
+            Sys.setenv("SMAusername"= SMAusername)
+            Sys.setenv("SMAserver" = server)
+            Sys.setenv("SMAstudyID" = studyID)
+            Sys.setenv("SMApassword" = PASSWORD)
+            return(login)
+        }
+        else {return(NULL)}
+    }
 }
 
 #' Label Data Frame from Psytools (Desktop) Questionnaire Resources file
@@ -398,65 +425,65 @@ DelosisAuthenticate<-function(SMAusername, studyID, server="www.delosis.com", re
 #' @export
 #'
 labelData<-function(df, resources) {
-  # Don't even try if it doesn't look at least a bit like a questionnaire resources sheet
-  if(ncol(resources) <5 | length(resources[grepl('%%', resources)])==0){
-    return(df)
-  }
-  #remove any rows where there is nothing in the QCode column
-  resources<-resources[!is.na(resources[1]),]
-  # remove any rows where there are no responses specified as these will generate no data
-  resources<-resources[rowSums(!is.na(resources[5:ncol(resources)]))>1, ]
+    # Don't even try if it doesn't look at least a bit like a questionnaire resources sheet
+    if(ncol(resources) <5 | length(resources[grepl('%%', resources)])==0){
+        return(df)
+    }
+    #remove any rows where there is nothing in the QCode column
+    resources<-resources[!is.na(resources[1]),]
+    # remove any rows where there are no responses specified as these will generate no data
+    resources<-resources[rowSums(!is.na(resources[5:ncol(resources)]))>1, ]
 
-  #Create a single variable label from Title and Question
-  Rlabels<-list()
-  apply(resources, 1, function(x) {
-    Qcode <-as.character(x[1])
-    isAllThatApply <-
-      ifelse(grepl('allthatapply', x[5], ignore.case = TRUE), TRUE, FALSE)
-    if(!Qcode %in% names(df)) {
-      # Perhaps it was reversed in the derivations
-      if(paste0(Qcode, "R") %in% names(df)) {
-        Qcode<-paste0(Qcode, "R")
-      } else {
-        # - There are a lot of these! warning(paste0(Qcode, ' specified in resources but not in data'))
-        return()
-      }
-    }
-    Qlabel <- gsub("NA : | : NA", "", paste(stripHTML(x[4]), stripHTML(x[3]), sep=' : '))
-    Rlabels<<-list()
-    Rlabel<-strsplit(as.character(x[5:length(x)][grepl('%%', x[5:length(x)])]), "%%")
-    if(length(Rlabel)){
-        lapply(Rlabel, function(responseLabel) {
-          responseLabel[1]<-gsub('\\*\\*NA\\*\\*|other_specify', '', responseLabel[1])
-          responseLabel[2]<-stripHTML(responseLabel[2])
-          if(!is.na(responseLabel[1]) & responseLabel[1] != '') {
-            Rlabels<<-c(Rlabels, setNames(responseLabel[1], responseLabel[2]))
-          }
-        })
-    }
-    if(isAllThatApply==TRUE) {
-        lapply(Rlabels, function(responseLabel) {
-          subVariable<-paste0(Qcode, '_', responseLabel[1])
-          if(!subVariable %in% names(df)) {
-            if(paste0(subVariable, "R") %in% names(df)) {
-              subVariable<-paste0(subVariable, "R")
+    #Create a single variable label from Title and Question
+    Rlabels<-list()
+    apply(resources, 1, function(x) {
+        Qcode <-as.character(x[1])
+        isAllThatApply <-
+            ifelse(grepl('allthatapply', x[5], ignore.case = TRUE), TRUE, FALSE)
+        if(!Qcode %in% names(df)) {
+            # Perhaps it was reversed in the derivations
+            if(paste0(Qcode, "R") %in% names(df)) {
+                Qcode<-paste0(Qcode, "R")
             } else {
-              return()
+                # - There are a lot of these! warning(paste0(Qcode, ' specified in resources but not in data'))
+                return()
             }
-          }
-          subVariableLabel <-
-            paste0(names(Rlabels)[which(Rlabels == responseLabel)], ' : ', Qlabel)
-          df[,subVariable]<<-
-            labelVariable(df[,subVariable],
-                          as.list(setNames(c(0,1), c('No','Yes'))),
-                          subVariableLabel
-            )
-        })
-      }else{
-        df[,Qcode]<-labelVariable(df[,Qcode], Rlabels, Qlabel)
-      }
-    df<<-df})
-  return(df)
+        }
+        Qlabel <- gsub("NA : | : NA", "", paste(stripHTML(x[4]), stripHTML(x[3]), sep=' : '))
+        Rlabels<<-list()
+        Rlabel<-strsplit(as.character(x[5:length(x)][grepl('%%', x[5:length(x)])]), "%%")
+        if(length(Rlabel)){
+                lapply(Rlabel, function(responseLabel) {
+                    responseLabel[1]<-gsub('\\*\\*NA\\*\\*|other_specify', '', responseLabel[1])
+                    responseLabel[2]<-stripHTML(responseLabel[2])
+                    if(!is.na(responseLabel[1]) & responseLabel[1] != '') {
+                        Rlabels<<-c(Rlabels, setNames(responseLabel[1], responseLabel[2]))
+                    }
+                })
+        }
+        if(isAllThatApply==TRUE) {
+                lapply(Rlabels, function(responseLabel) {
+                    subVariable<-paste0(Qcode, '_', responseLabel[1])
+                    if(!subVariable %in% names(df)) {
+                        if(paste0(subVariable, "R") %in% names(df)) {
+                            subVariable<-paste0(subVariable, "R")
+                        } else {
+                            return()
+                        }
+                    }
+                    subVariableLabel <-
+                        paste0(names(Rlabels)[which(Rlabels == responseLabel)], ' : ', Qlabel)
+                    df[,subVariable]<<-
+                        labelVariable(df[,subVariable],
+                                                    as.list(setNames(c(0,1), c('No','Yes'))),
+                                                    subVariableLabel
+                        )
+                })
+            }else{
+                df[,Qcode]<-labelVariable(df[,Qcode], Rlabels, Qlabel)
+            }
+        df<<-df})
+    return(df)
 }
 
 #' Label individual row - split out as seperate function to simplify loops in labelData
@@ -467,43 +494,43 @@ labelData<-function(df, resources) {
 #' @importFrom labelled var_label
 #'
 labelVariable <- function (x, Rlabels, Qlabel) {
-  #strip out non numeric response labels from numeric variables - they will never be used and are not supported
-  if(("numeric" %in% class(x) | is.numeric(x)) & !is.null(Rlabels)){
-    suppressWarnings({
-      Rlabels<-Rlabels[!is.na(as.numeric(Rlabels))]
-      Rlabels<-setNames(as.numeric(Rlabels), names(Rlabels))
-    })
-  }
-  if(exists("customMissingValues") & !is.null(Rlabels)){
-    if("numeric" %in% class(x) | is.numeric(x)) {
-      missingLabels <-
-        as.list(setNames(customMissingValues,
-                         customMissingValueLabels))
-    } else {
-      missingLabels <-
-        as.list(setNames(as.character(customMissingValues),
-                         customMissingValueLabels))
+    #strip out non numeric response labels from numeric variables - they will never be used and are not supported
+    if(("numeric" %in% class(x) | is.numeric(x)) & !is.null(Rlabels)){
+        suppressWarnings({
+            Rlabels<-Rlabels[!is.na(as.numeric(Rlabels))]
+            Rlabels<-setNames(as.numeric(Rlabels), names(Rlabels))
+        })
     }
-    Rlabels<-c(Rlabels, missingLabels)
-  }
-  
-  # For the SDIM There is a duplicate response code (13 gradute and postgraduate )
-  # This must be coerced in the database but for now just assign the value 14 to it in the resources sheet
+    if(exists("customMissingValues") & !is.null(Rlabels)){
+        if("numeric" %in% class(x) | is.numeric(x)) {
+            missingLabels <-
+                as.list(setNames(customMissingValues,
+                                                 customMissingValueLabels))
+        } else {
+            missingLabels <-
+                as.list(setNames(as.character(customMissingValues),
+                                                 customMissingValueLabels))
+        }
+        Rlabels<-c(Rlabels, missingLabels)
+    }
+    
+    # For the SDIM There is a duplicate response code (13 gradute and postgraduate )
+    # This must be coerced in the database but for now just assign the value 14 to it in the resources sheet
 
-  if("numeric" %in% class(x) | is.numeric(x)){
+    if("numeric" %in% class(x) | is.numeric(x)){
+        x<-labelled_spss(x,
+                                         unlist(Rlabels),
+                                         label = Qlabel,
+                                         na_range = c(-999,-666) #SPSS only support 3 missing values for non numeric variables...
+        )
+    } else{
     x<-labelled_spss(x,
-                     unlist(Rlabels),
-                     label = Qlabel,
-                     na_range = c(-999,-666) #SPSS only support 3 missing values for non numeric variables...
+                                    unlist(Rlabels),
+                                    label = Qlabel,
+                                    na_values = c('-888', '-777', '-666')
     )
-  } else{
-  x<-labelled_spss(x,
-                  unlist(Rlabels),
-                  label = Qlabel,
-                  na_values = c('-888', '-777', '-666')
-  )
-  }
-  return(x)
+    }
+    return(x)
 }
 
 
@@ -515,23 +542,23 @@ labelVariable <- function (x, Rlabels, Qlabel) {
 #' @importFrom data.table setDT
 #' @importFrom data.table setDF
 MergeAllThatApply<- function (df, grepColumnCollection, finalColumn, booleanIndicator ="Y") {
-  setDT(df)
-  targetCols<-grep(grepColumnCollection, names(df))
+    setDT(df)
+    targetCols<-grep(grepColumnCollection, names(df))
 
-  # replace all "Y" with the column name suffix ( between the periods ( originally ))
-  for(col in targetCols) {
-      df[as.vector(df[, ..col] ==booleanIndicator),
-          (col) := (gsub("^[A-z0-9]+[\\.]|[\\.]$", "", names(df)[col]))
-         ]
-  }
-  # set the first column to be the allThatApply column and remove the rest
-  df[,(targetCols[1]) := apply(
-    df[, grepl(grepColumnCollection, names(df)), with = FALSE],
-    1,
-    function(x) paste(x[x!="" & !is.na(x)], collapse="|")
-  )]
-  names(df)[targetCols[1]]<-finalColumn
-  targetCols<-targetCols[2:length(targetCols)]
-  df<-df[,(targetCols) := NULL]
-  return(setDF(df))
+    # replace all "Y" with the column name suffix ( between the periods ( originally ))
+    for(col in targetCols) {
+            df[as.vector(df[, ..col] ==booleanIndicator),
+                    (col) := (gsub("^[A-z0-9]+[\\.]|[\\.]$", "", names(df)[col]))
+                 ]
+    }
+    # set the first column to be the allThatApply column and remove the rest
+    df[,(targetCols[1]) := apply(
+        df[, grepl(grepColumnCollection, names(df)), with = FALSE],
+        1,
+        function(x) paste(x[x!="" & !is.na(x)], collapse="|")
+    )]
+    names(df)[targetCols[1]]<-finalColumn
+    targetCols<-targetCols[2:length(targetCols)]
+    df<-df[,(targetCols) := NULL]
+    return(setDF(df))
 }
