@@ -24,12 +24,12 @@
 deriveBnuPDS <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # This does not work for the adult version - just return the rotated Q
   if ("T1_PD_BOY_A1" %in% names(df)) {
     return(df)
   }
-  
+
   # Summary Note allowing missings as there are seperate variables for boys and girls -
   # no prorating Boys is 2 4 and 6 summed
   df$PDS_sum[df[, grepl("gender", names(df))] == "1"] <-
@@ -41,8 +41,7 @@ deriveBnuPDS <- function(df) {
     rowSumsCustomMissing(df[df[,
                                grepl("gender", names(df))] == "2", grepl("2|4", colnames(df))], maxMissing = 1,
                          proRateMissings = FALSE)
-  
-  
+
   df$PDS_stage[df[, grepl("gender", names(df))] == "1" &
                  df$PDS_sum >= 12] <- 5
   df$PDS_stage[df[, grepl("gender", names(df))] == "1" &
@@ -56,7 +55,7 @@ deriveBnuPDS <- function(df) {
                  5] <- 2
   df$PDS_stage[df[, grepl("gender", names(df))] == "1" &
                  df$PDS_sum < 4] <- 1
-  
+
   df$PDS_stage[df[, grepl("gender", names(df))] == "2" &
                  df$T1_PD_GIRL_C05 == 1 & df$PDS_sum >=
                  8] <- 5
@@ -86,14 +85,14 @@ deriveBnuPDS <- function(df) {
 deriveBnuSC <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # reverse code
   reverseVariables <-
     c("05", "09", 13, 17, 21, 22, 27, 28, 30, 34, 35, 38)
   df <- recodeVariables(df, reverseVariables, function(x) {
     5 - x
   })
-  
+
   # Summary
   df$order_and_discipline <-
     rowMeansCustomMissing(df[, grepl("01|05|09|13|17|21|25|29|33",
@@ -109,7 +108,7 @@ deriveBnuSC <- function(df) {
                                      colnames(df))])
   df$school_beliefs <-
     rowMeansCustomMissing(df[, grepl("37|38|39|40", colnames(df))])
-  
+
   return(df)
 }
 
@@ -126,14 +125,14 @@ deriveBnuSC <- function(df) {
 deriveBnuCOPE <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # Summary
   df$Positive_coping <-
     rowMeansCustomMissing(df[, grepl("01|02|03|04|05|06|07|08|09|10|11|12",
                                      colnames(df))])
   df$Negative_coping <-
     rowMeansCustomMissing(df[, grepl("13|14|15|16|17|18|19|20", colnames(df))])
-  
+
   message("Specs ask for a norming score - do you want to use Z scores within each dataset here?")
   return(df)
 }
@@ -152,14 +151,14 @@ deriveBnuCOPE <- function(df) {
 deriveBnuCWB <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # Summary
   df$Emotional_index <-
     rowMeansCustomMissing(df[, grepl("1|2|3|4|5|6|7|8", colnames(df))])
   df$Life_satisfaction <- df[, grepl("9", colnames(df))]
   df$Student_happiness <-
     df$Emotional_index + 1.1 * df$Life_satisfaction
-  
+
   return(df)
 }
 
@@ -175,13 +174,13 @@ deriveBnuCWB <- function(df) {
 deriveBnuER <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # Summary
   df$Reappraisal <-
     rowSumsCustomMissing(df[, grepl("1$|3|5|7|8|10", colnames(df))])
   df$Suppression <-
     rowSumsCustomMissing(df[, grepl("2|4|6|9", colnames(df))])
-  
+
   return(df)
 }
 
@@ -197,13 +196,13 @@ deriveBnuER <- function(df) {
 deriveBnuBISBAS <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # reverse code
   reverseVariables <- c("02", "22")
   df <- recodeVariables(df, reverseVariables, function(x) {
     5 - x
   })
-  
+
   # Summary
   df$BAS_Drive <-
     rowSumsCustomMissing(df[, grepl("03|09|12|21", colnames(df))])
@@ -213,7 +212,7 @@ deriveBnuBISBAS <- function(df) {
     rowSumsCustomMissing(df[, grepl("04|07|14|18|23", colnames(df))])
   df$BIS <-
     rowSumsCustomMissing(df[, grepl("02R|08|13|16|19|22R|24", colnames(df))])
-  
+
   return(df)
 }
 
@@ -229,7 +228,7 @@ deriveBnuBISBAS <- function(df) {
 deriveBnuOCD <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # recode down by 1
   recodeVariables <-
     names(df)[grepl("OCD[^specify]*$", names(df))]
@@ -237,11 +236,11 @@ deriveBnuOCD <- function(df) {
     recodeVariables(df, paste0(recodeVariables, "$"), function(x) {
       x - 1
     })
-  
+
   # Summary
   df$OCD_sum <-
     rowSumsCustomMissing(df[, grepl("OCD[^specify]*$", names(df))])
-  
+
   return(df)
 }
 
@@ -257,14 +256,14 @@ deriveBnuOCD <- function(df) {
 deriveBnuMW70 <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # reverse code
   reverseVariables <-
     c("08", "10", 12, 46, 45, 62, 65, "[^MW]70", 63, 67, 68)
   df <- recodeVariables(df, reverseVariables, function(x) {
     6 - x
   })
-  
+
   # Summary
   df$Fear_of_fauilure <-
     rowMeansCustomMissing(df[, grepl("01|02|03", colnames(df))])
@@ -327,13 +326,13 @@ deriveBnuMW70 <- function(df) {
 deriveBnuMS <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # recode down by 1
   recodeVariables <- names(df)[grepl("MS", names(df))]
   df <- recodeVariables(df, recodeVariables, function(x) {
     x - 1
   })
-  
+
   # Summary
   df$T1_MS_Growth <-
     rowSumsCustomMissing(df[, grepl("02|03|05|06|09|10|13|15|18|19",
@@ -355,7 +354,7 @@ deriveBnuMS <- function(df) {
     )
   df$T1_MS_2 <-
     ifelse(df$T1_MS_Growth + 30 - df$T1_MS_Fixed < 34, 1, 2)
-  
+
   return(df)
 }
 
@@ -373,7 +372,7 @@ deriveBnuMS <- function(df) {
 deriveBnuBG <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # Compute Age ( in years ) for the child based on the DOB and Processed Timestamp
   if ("T1_BG_PC3" %in% names(df)) {
     df$Child_Age_Days <-
@@ -383,7 +382,7 @@ deriveBnuBG <- function(df) {
     df$Child_Age_Days <-
       floor(difftime(df$Processed.Timestamp, df$T1_BG_C2, "days"))
   }
-  
+
   return(df)
 }
 
@@ -399,7 +398,7 @@ deriveBnuBG <- function(df) {
 deriveBnuSPSRQ <- function(df) {
   # Rotate
   df <- rotateQuestionnaire(df)
-  
+
   # Summary
   df$Sensitivity_to_Punishment <-
     rowSumsCustomMissing(df[, grepl("02|05|07|09|12|15|17|18|19|21|23|26|29|31|33",

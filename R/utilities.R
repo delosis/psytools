@@ -30,7 +30,7 @@
 #' @param valid restrict to Iterations marked as valid IF the user.code has any valid attempts - default TRUE
 #' @param allowIncomplete allow incomplete if a user.code has only incomplete data - default FALSE
 #' @param allowInvalid allow invalid if a user.code has only invalid data - default TRUE
-#                 
+#'
 #' It is not clear how the XNAT selection was achieved and the inclusion of invalids should be examined
 #'
 #' @return data frame complying with input params
@@ -50,7 +50,7 @@ selectIteration <-
         }
         # Add an index to preserve order after the aggregation
         df$rowIndex <- seq_len(nrow(df))
-        
+
         if (completed) {
             if (allowIncomplete) {
                 # limit to Valid Iterations only if the User.code is ever valid
@@ -91,7 +91,7 @@ selectIteration <-
               df <- df[df$Valid == 't',]
           }
         }
-        
+
         df <-
             merge (
                 df,
@@ -200,7 +200,7 @@ sanityCheck <-
 #' @param customCodes custom missing codes to code to NA
 #'
 #' @return recoded df/dt
-#' 
+#'
 #' @importFrom haven zap_labels zap_label
 
 
@@ -513,7 +513,7 @@ labelVariable <- function (x, Rlabels, Qlabel) {
         }
         Rlabels<-c(Rlabels, missingLabels)
     }
-    
+
     # For the SDIM There is a duplicate response code (13 gradute and postgraduate )
     # This must be coerced in the database but for now just assign the value 14 to it in the resources sheet
 
