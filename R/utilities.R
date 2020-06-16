@@ -95,16 +95,12 @@ selectIteration <-
 #' @export
 recodeVariables <- function(df, varlist, fun) {
   for (i in varlist ){
-    if(length(grep(i, names(df))) > 1){stop(paste('Reverse token', i, 'does not uniquely identify one variable in suplied df'))}
-    
-    #Force the column to be numeric - this should result in no coercion unless something wrong has happened earlier
-    df[,grep(i, names(df))]<- as.numeric(as.character(df[,grep(i, names(df))]))
-    
+    if(length(grep(i, names(df))) > 1){stop(paste('Reverse token', i, 'does not uniquely identify one variable in supplied df'))}
     if(exists("customMissingValues")){
       #If there are any NAs or Custom missings in the original data we should not touch them
       df[!(df[,grep(i, names(df))]  %in% customMissingValues) & !is.na(df[,grep(i, names(df))]),grep(i, names(df))]<- fun(na.omit(stripCustomMissings(df[,grep(i, names(df))])))
     } else {
-      df[!is.na(df[,grep(i, names(df))]),grep(i, names(df))]<- fun(df[,grep(i, names(df))])
+      df[,grep(i, names(df))]<- fun(df[,grep(i, names(df))])
     }
     names(df)[grep(i, names(df))]<- paste(names(df)[grep(i, names(df))], 'R', sep='')
   }
@@ -178,17 +174,15 @@ sanityCheck <-
 #'
 #' @return recoded df/dt
 #' 
+#' @importFrom haven zap_labels zap_label
+
 
 stripCustomMissings <-
   function(df,
            customCodes = c(-999,-888,-777,-666)) {
-    # remove all labels in the passed data before recoding all custom missings as NA
-    attr <- names(attributes(df))
-    good <- c("names", "row.names", "class")
-    for(i in attr[!attr %in% good]){
-      attr(df, i) <- NULL
-    }
-    df[] <- lapply(df, function(x) { attributes(x) <- NULL; x })
+    #remove haven labels - both value labels and variable labels
+    df<-haven::zap_labels(df)
+    df<-haven::zap_label(df)
     for(x in customCodes) {
         df[df==x]<-NA
       }
@@ -319,20 +313,20 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
   while(is.null(dt) && retries<3) {
     try(
       if(packageVersion('data.table')>=1.12) {
-        dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",  COL_CLASSES = c(
-          "User.code"="character",
+        dt<-data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",  colClasses = c(
+          "User code"="character",
           "Block"="character",
           "Trial"="character",
-          "Response.time..ms."="numeric"))
+          "Response time [ms]"="numeric"))
       } else {
         dfFile<-tempfile()
         download.file(URL, paste0(dfFile, '.csv.gz'))
         R.utils::gunzip(paste0(dfFile, '.csv.gz'))
-        dt<-data.table::fread(paste0(dfFile, '.csv') ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",COL_CLASSES = c(
-          "User.code"="character",
+        dt<-data.table::fread(paste0(dfFile, '.csv') ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",colClasses = c(
+          "User code"="character",
           "Block"="character",
           "Trial"="character",
-          "Response.time..ms."="numeric"))
+          "Response time [ms]"="numeric"))
       }
     )
     retries<-retries+1
@@ -341,9 +335,9 @@ downloadSingleDataFile<-function(SMAusername, studyID, taskDigestID, server="www
 
   if (!is.null(dt)) {
     if(nrow(dt)>0) {
-      ##replace spaces and [] in column names to preserve compatibility with read.table
-      colnames(dt)<-gsub('[] []','.', colnames(dt))
-      return(dt)
+    ##replace spaces and [] in column names to preserve compatibility with read.table
+    names(dt)<-gsub('[] []','.', names(dt))
+    return(dt)
     } else {
       warning(paste(taskID, 'is empty - returning an empty dt'))
       return(dt)
@@ -492,6 +486,7 @@ labelVariable <- function (x, Rlabels, Qlabel) {
     }
     Rlabels<-c(Rlabels, missingLabels)
   }
+  
   # For the SDIM There is a duplicate response code (13 gradute and postgraduate )
   # This must be coerced in the database but for now just assign the value 14 to it in the resources sheet
 
@@ -499,8 +494,7 @@ labelVariable <- function (x, Rlabels, Qlabel) {
     x<-labelled_spss(x,
                      unlist(Rlabels),
                      label = Qlabel,
-                     #SPSS only support 3 missing values for non numeric variables...
-                     na_range = c(-999,-666)
+                     na_range = c(-999,-666) #SPSS only support 3 missing values for non numeric variables...
     )
   } else{
   x<-labelled_spss(x,
