@@ -55,13 +55,13 @@ deriveSST <- function(df) {
   }
 
   # Save task version info
-  settings<-rotateQuestionnaire(df[df$Block=='Settings',])
-  settings<-settings[,grepl('User.code|Iteration|TaskVersion', names(settings))]
+  settings <- rotateQuestionnaire(df[df$Block=='Settings',])
+  settings <- settings[,grepl('User.code|Iteration|TaskVersion', names(settings))]
 
 
   df <- subset(df, df$Block == 'SST_Main')
-  df<-merge(df, settings, by=c('User.code','Iteration'), all=T)
-  df$TaskVersion[is.na(df$TaskVersion)]<-'IMAGEN'
+  df <- merge(df, settings, by=c('User.code','Iteration'), all=T)
+  df$TaskVersion[is.na(df$TaskVersion)] <- 'IMAGEN'
 
 
   df <-
@@ -137,14 +137,14 @@ deriveMID <- function(df) {
   }
 
   # Save task version info
-  settings<-rotateQuestionnaire(df[df$Block=='Settings',])
-  settings<-settings[,grepl('User.code|Iteration|TargetDisplay', names(settings))]
+  settings <- rotateQuestionnaire(df[df$Block=='Settings',])
+  settings <- settings[,grepl('User.code|Iteration|TargetDisplay', names(settings))]
 
   df <-df[ df$Block == 'MID_MAIN', ]
-  df<-merge(df, settings, by=c('User.code','Iteration'), all=T)
-  df$InitialTargetDisplay[is.na(df$InitialTargetDisplay)]<-220
-  df$MaxTargetDisplay[is.na(df$MaxTargetDisplay)]<-350
-  df$TargetDisplayStep[is.na(df$TargetDisplayStep)]<-10
+  df <- merge(df, settings, by=c('User.code','Iteration'), all=T)
+  df$InitialTargetDisplay[is.na(df$InitialTargetDisplay)] <- 220
+  df$MaxTargetDisplay[is.na(df$MaxTargetDisplay)] <- 350
+  df$TargetDisplayStep[is.na(df$TargetDisplayStep)] <- 10
 
   df <-
     df[order(df$User.code, df$Iteration, df$rowIndex, df$Trial),]
@@ -529,15 +529,15 @@ deriveTMT <- function(df) {
   setDT(df)
 
   # Produce a table of Ppts who timeout and on what block, needed to code to unadministered
-  timeouts<-df[Trial.result=='TIMEOUT', c('User.code', 'Iteration', 'Block')]
+  timeouts <- df[Trial.result=='TIMEOUT', c('User.code', 'Iteration', 'Block')]
   # remove "practice" in the timeouts - if they timed out in the letters practice then we still want to code the letter block missing
-  timeouts$Block<-gsub('_Practice', '',timeouts$Block )
+  timeouts$Block <- gsub('_Practice', '',timeouts$Block )
 
   df <- subset(df, !grepl("Practice", Block, ignore.case = TRUE))
 
 
   # Remove error records - they are counted in the "Pass" record for the trial
-  df<-df[Trial.result!='error',]
+  df <- df[Trial.result!='error',]
 
 
   setnames(df, 'Response.time..ms.', 'RT')
@@ -555,15 +555,15 @@ deriveTMT <- function(df) {
     sep='.'
   )
 
-  dfsumsDT<-merge(dfsumsDT, timeouts, by=c('User.code', 'Iteration'), all=TRUE)
+  dfsumsDT <- merge(dfsumsDT, timeouts, by=c('User.code', 'Iteration'), all=TRUE)
 
   # Code blocks on which there was a timeout to be defaultUnadministeredValue it wasnt finished and so the data is without meaning
-  missingCode<-ifelse(exists('defaultUnadministeredValue'), defaultUnadministeredValue, NA)
+  missingCode <- ifelse(exists('defaultUnadministeredValue'), defaultUnadministeredValue, NA)
   set(dfsumsDT, which(dfsumsDT$timeoutBlock=='Flea'), names(dfsumsDT)[grepl('Flea|Letters', names(dfsumsDT))], missingCode )
   set(dfsumsDT, which(dfsumsDT$timeoutBlock=='Letters'), names(dfsumsDT)[grepl('Letters', names(dfsumsDT))], missingCode )
   set(dfsumsDT, which(dfsumsDT$timeoutBlock=='NumbersLetters'), names(dfsumsDT)[grepl('NumbersLetters', names(dfsumsDT))], missingCode )
   set(dfsumsDT, which(!is.na(dfsumsDT$timeoutBlock)), 'Completed', 'TimeOut' )
-  dfsumsDT$timeoutBlock<-NULL
+  dfsumsDT$timeoutBlock <- NULL
 
   return (setDF(dfsumsDT))
 }
@@ -1209,7 +1209,7 @@ rotateQuestionnaire <-
     if (BlockAsMeasureVar) {
       measureVar = c("Block", measureVar)
     } else {
-      nonRequiredVars<-c(nonRequiredVars, "Block")
+      nonRequiredVars <- c(nonRequiredVars, "Block")
     }
 
     if (sanityCheck(df, nonRequiredVars=nonRequiredVars) == FALSE) {
@@ -1368,7 +1368,7 @@ derivePBI <- function(df, requiresReverseCoding = FALSE) {
     reverseVariables <-
       c('02','03','04','07',14,15,16,18,21,22,24,25)
 
-    df<-recodeVariables(df, reverseVariables,  function(x) {3-x})
+    df <- recodeVariables(df, reverseVariables,  function(x) {3-x})
   } else {
     names(df)[grepl(
       "(02|03|04|07|14|15|16|18|21|22|24|25)$",
@@ -1381,21 +1381,21 @@ derivePBI <- function(df, requiresReverseCoding = FALSE) {
   }
 
   #Summary
-  calcCareOverprotection<-function (df, stub) {
-    care<-rowSumsCustomMissing(
+  calcCareOverprotection <- function (df, stub) {
+    care <- rowSumsCustomMissing(
           df[, grepl('01|02|04|05|06|11|12|14|16|17|18|24', names(df))]
         )
-    overprotection<-rowSumsCustomMissing(
+    overprotection <- rowSumsCustomMissing(
           df[, grepl('03|07|08|10|13|15|19|20|21|22|23|25', names(df))]
         )
     df <- data.frame(cbind(care,overprotection))
-    names(df)<-c(paste(stub, 'Care', sep = '_'),
-                 paste(stub, 'OverProtection', sep = '_'))
+    names(df) <- c(paste(stub, 'Care', sep = '_'),
+                   paste(stub, 'OverProtection', sep = '_'))
     return(df)
   }
-  df<-cbind(df,
-            calcCareOverprotection(df[,grepl('_F_', names(df))], 'F'),
-            calcCareOverprotection(df[,grepl('_M_', names(df))], 'M')
+  df <- cbind(df,
+              calcCareOverprotection(df[,grepl('_F_', names(df))], 'F'),
+              calcCareOverprotection(df[,grepl('_M_', names(df))], 'M')
   )
 
 
@@ -1424,7 +1424,7 @@ deriveBIG5 <- function(df) {
   reverseVariables <-
     c('02', '06', '08', '09', 12, 18, 21, 23, 24, 27, 31, 34, 35, 37, 41, 43)
 
-  df<-recodeVariables(df, reverseVariables,  function(x) {6-x})
+  df <- recodeVariables(df, reverseVariables,  function(x) {6-x})
 
   #Summary
   df$extraversion <-
@@ -1467,7 +1467,7 @@ deriveIPIP20 <- function(df) {
   reverseVariables <-
     c('06', '07','08','09',10,15,16,17,18,19,20)
 
-  df<-recodeVariables(df, reverseVariables,  function(x) {6-x})
+  df <- recodeVariables(df, reverseVariables,  function(x) {6-x})
 
   #Summary
   df$extraversion <-
@@ -1511,9 +1511,9 @@ deriveLEQ <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
 
-  derived_labels<-c('_valence','_year_meanfreq', '_ever_meanfreq','_year_freq','_ever_freq')
+  derived_labels <- c('_valence','_year_meanfreq', '_ever_meanfreq','_year_freq','_ever_freq')
 
-  subscales<-list(
+  subscales <- list(
     family=c('01','22','24','34','39'),
     accident=c('02','06','08','37'),
     sexuality=c('07','14','20','26','30','35','38'),
@@ -1528,7 +1528,7 @@ deriveLEQ <- function(df) {
   options(datatable.print.nrows = 0)
   if(max(suppressWarnings(as.numeric(unlist(df[,grepl('year', names(df)), with=FALSE]))) , na.rm=TRUE) > 1) {
     message('Assuming _year variables in LEQ refer to AGE as they are not binary')
-    names(df)<-gsub('_year', '_age', names(df))
+    names(df) <- gsub('_year', '_age', names(df))
     # Ranges ( eg 6-7 have occasionally been used to enter ages as "- is allowed in the number entry) recode them to the mid point to allow derivations
     for (j in names(df)[grepl('_age', names(df))]) {
       if(class(df[[(j)]])!='numeric'){
@@ -1547,17 +1547,17 @@ deriveLEQ <- function(df) {
     # This is at odds with the previous decision to take the average when things
     # like 6-7 was entered ( see above ) and this discrepency has been discussed.
     for (j in names(df)[grepl('_age', names(df))]) {
-      df[[(j)]][df[[(j)]] > 100]<-NA
+      df[[(j)]][df[[(j)]] > 100] <- NA
     }
-    derived_labels<-c('_valence','_age_mean', '_ever_meanfreq','_ever_freq')
+    derived_labels <- c('_valence','_age_mean', '_ever_meanfreq','_ever_freq')
   }
 
   for (label in derived_labels) {
-    FUN<-ifelse(length(grep("mean|valence", label)),
+    FUN <- ifelse(length(grep("mean|valence", label)),
       rowMeansCustomMissing,
       rowSumsCustomMissing
     )
-    if(label=='_valence') {grepLabel<-"_feelh?$"} else { grepLabel<- paste0(gsub('_meanfreq|_mean|_freq', '', label), "$")}
+    if(label=='_valence') {grepLabel <- "_feelh?$"} else { grepLabel <- paste0(gsub('_meanfreq|_mean|_freq', '', label), "$")}
 
     for(i in 1:length(subscales)) {
       df[, paste0(names(subscales[i]), label) := FUN(df[, grepl(
@@ -1602,7 +1602,7 @@ deriveAAQ <- function(df) {
   reverseVariables <-
     c('A_1', 'A_2', 'A_3', 'GCP_1','GCP_2','GCP_3' )
 
-  df<-recodeVariables(df, reverseVariables,function(x) {4 - x})
+  df <- recodeVariables(df, reverseVariables,function(x) {4 - x})
 
   #Summary
   df$ADsum <-
@@ -1659,7 +1659,7 @@ deriveIFVCS <- function(df) {
 #' @export
 deriveSDQ <- function(df) {
   #Convert 1 based to 0 based coding if needed
-  selector01to25<-paste(
+  selector01to25 <- paste(
     c(
       paste("0", seq(1, 9), sep = ""),
       seq(10, 25)),
@@ -1668,9 +1668,9 @@ deriveSDQ <- function(df) {
   if(max(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) ==3 &
      min(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) ==1) {
       message('recoding 1 based to 0 based response coding')
-      df$Trial.result[grepl(selector01to25,df$Trial) & df$Trial.result ==1]<-0
-      df$Trial.result[grepl(selector01to25,df$Trial) & df$Trial.result ==2]<-1
-      df$Trial.result[grepl(selector01to25,df$Trial) & df$Trial.result ==3]<-2
+      df$Trial.result[grepl(selector01to25,df$Trial) & df$Trial.result ==1] <- 0
+      df$Trial.result[grepl(selector01to25,df$Trial) & df$Trial.result ==2] <- 1
+      df$Trial.result[grepl(selector01to25,df$Trial) & df$Trial.result ==3] <- 2
   }
 
   if(max(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) !=2 |
@@ -1683,37 +1683,37 @@ deriveSDQ <- function(df) {
 
   # reverse code
   reverseVariables <- c('07', '11', '14', '21', '25')
-  df<-recodeVariables(df, reverseVariables,  function(x) {2-x})
+  df <- recodeVariables(df, reverseVariables,  function(x) {2-x})
 
   # Summary
-  df$SDQ_EMO_PROB<-rowSumsCustomMissing(
+  df$SDQ_EMO_PROB <- rowSumsCustomMissing(
       df[,grepl('03|08|13|16|24', names(df))],
       maxMissing=0.4, proRateMissings = TRUE
     )
 
-  df$SDQ_COND_PROB<-rowSumsCustomMissing(
+  df$SDQ_COND_PROB <- rowSumsCustomMissing(
     df[,grepl('05|07R|12|18|22', names(df))],
     maxMissing=0.4, proRateMissings = TRUE
   )
 
-  df$SDQ_HYPER<-rowSumsCustomMissing(
+  df$SDQ_HYPER <- rowSumsCustomMissing(
     df[,grepl('02|10|15|21R|25R', names(df))],
     maxMissing=0.4, proRateMissings = TRUE
   )
 
-  df$SDQ_PEER_PROB<-rowSumsCustomMissing(
+  df$SDQ_PEER_PROB <- rowSumsCustomMissing(
     df[,grepl('06|11R|14R|19|23', names(df))],
     maxMissing=0.4, proRateMissings = TRUE
   )
 
-  df$SDQ_PROSOCIAL<-rowSumsCustomMissing(
+  df$SDQ_PROSOCIAL <- rowSumsCustomMissing(
     df[,grepl('01|04|09|17|20', names(df))],
     maxMissing=0.4, proRateMissings = TRUE
   )
 
-  df$SDQ_EXTERNALIZING<-rowSumsCustomMissing(df[,grepl('COND_PROB|HYPER', names(df))])
-  df$SDQ_INTERNALIZING<-rowSumsCustomMissing(df[,grepl('PEER_PROB|EMO_PROB', names(df))])
-  df$SDQ_TOTAL_DIFFICULTIES<-rowSumsCustomMissing(df[,grepl('EXTERNALIZING|INTERNALIZING', names(df))])
+  df$SDQ_EXTERNALIZING <- rowSumsCustomMissing(df[,grepl('COND_PROB|HYPER', names(df))])
+  df$SDQ_INTERNALIZING <- rowSumsCustomMissing(df[,grepl('PEER_PROB|EMO_PROB', names(df))])
+  df$SDQ_TOTAL_DIFFICULTIES <- rowSumsCustomMissing(df[,grepl('EXTERNALIZING|INTERNALIZING', names(df))])
   return(df)
 }
 
@@ -1736,26 +1736,26 @@ deriveSCQ <- function(df) {
 
   # reverse code
   reverseVariables <- c('05', '09', '13', '17')
-  df<-recodeVariables(df, reverseVariables,  function(x) {5-x})
+  df <- recodeVariables(df, reverseVariables,  function(x) {5-x})
 
   # Summary
-  df$SCQ_SAFETY_ORDER<-rowSumsCustomMissing(
+  df$SCQ_SAFETY_ORDER <- rowSumsCustomMissing(
         df[,grepl('01|05R|09R|13R|17R', names(df))]
       )
 
-  df$SCQ_SAFETY_ORDER2<-rowSumsCustomMissing(
+  df$SCQ_SAFETY_ORDER2 <- rowSumsCustomMissing(
     df[,grepl('01|05R|09R|13R|17R', names(df))]
     )
 
-  df$SCQ_SUPPORT_ACCEPTANCE<-rowSumsCustomMissing(
+  df$SCQ_SUPPORT_ACCEPTANCE <- rowSumsCustomMissing(
         df[,grepl('02|06|10|14|18', names(df))]
     )
 
-  df$SCQ_EQUITY_FAIRNESS<-rowSumsCustomMissing(
+  df$SCQ_EQUITY_FAIRNESS <- rowSumsCustomMissing(
         df[,grepl('03|07|11|15|19', names(df))]
     )
 
-  df$SCQ_ENCOURAGING_AUTONOMY<-rowSumsCustomMissing(
+  df$SCQ_ENCOURAGING_AUTONOMY <- rowSumsCustomMissing(
         df[,grepl('04|08|12|16|20|21', names(df))]
       )
 
@@ -1924,7 +1924,7 @@ deriveSURPS <- function(df, requiresReverseCoding = FALSE) {
   if(requiresReverseCoding) {
     # reverse code
     reverseVariables <- c('[ACs]1$', '[ACs]4$', '[ACs]7$', '[ACs]13$', '[ACs]20$','[ACs]23$')
-    df<-recodeVariables(df, reverseVariables,  function(x) {5-x})
+    df <- recodeVariables(df, reverseVariables,  function(x) {5-x})
   }
 
   #Summaries
@@ -1960,7 +1960,7 @@ deriveSURPS <- function(df, requiresReverseCoding = FALSE) {
 deriveSRS <- function(df) {
 
   #Check we are using 0 based coding
-  selector01to65<-paste(
+  selector01to65 <- paste(
     c(
       paste("0", seq(1, 9), sep = ""),
       seq(10, 65)),
@@ -1968,10 +1968,10 @@ deriveSRS <- function(df) {
   if(max(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) ==4 &
      min(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) ==1) {
     message('recoding 1 based to 0 based response coding in SRS')
-    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==1]<-0
-    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==2]<-1
-    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==3]<-2
-    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==4]<-3
+    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==1] <- 0
+    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==2] <- 1
+    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==3] <- 2
+    df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==4] <- 3
   }
   if(max(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) !=3 |
     min(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) !=0) {
@@ -1983,7 +1983,7 @@ deriveSRS <- function(df) {
 
   # reverse code
   reverseVariables <- c('03','07',11,12,15,17,21,22,26,32,38,40,43,48,52,55)
-  df<-recodeVariables(df, reverseVariables,  function(x) {3-x})
+  df <- recodeVariables(df, reverseVariables,  function(x) {3-x})
 
   #Summary
   df$social_perception <-
@@ -2015,11 +2015,11 @@ deriveSimpleSum <- function(df, Qname, recodeVariables = NULL, recodeFun=NULL, i
   df <- rotateQuestionnaire(df)
 
   if(!is.null(recodeVariables) & !is.null(recodeFun)){
-    df<-recodeVariables(df, recodeVariables, recodeFun)
+    df <- recodeVariables(df, recodeVariables, recodeFun)
   }
 
   #Summary
-  df[,paste0(Qname,'_sum')]<-
+  df[,paste0(Qname,'_sum')] <-
     rowSumsCustomMissing(df[, grepl(includeVariables, colnames(df))])
   return(df)
 }

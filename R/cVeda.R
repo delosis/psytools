@@ -48,7 +48,7 @@ deriveCvedaACEIQ <- function(df) {
 
     # Summary
 
-  df$Adversity.Binary<-
+  df$Adversity.Binary <-
     ifelse(df$ACEIQ_A1>0|df$ACEIQ_A2>0, 1,0) +
     ifelse(df$ACEIQ_A3>0|df$ACEIQ_A4>0, 1,0) +
     ifelse(df$ACEIQ_A5>0|df$ACEIQ_A6>0|df$ACEIQ_A7>0|df$ACEIQ_A8>0, 1,0) +
@@ -63,7 +63,7 @@ deriveCvedaACEIQ <- function(df) {
     ifelse(df$ACEIQ_V4>0|df$ACEIQ_V5>0|df$ACEIQ_V6>0, 1,0) +
     ifelse(df$ACEIQ_V7>0|df$ACEIQ_V8>0|df$ACEIQ_V9>0|df$ACEIQ_V10>0, 1,0)
 
-  df$Adversity.Frequency<-
+  df$Adversity.Frequency <-
     ifelse(df$ACEIQ_A1==3|df$ACEIQ_A2==3, 1,0) +
     ifelse(df$ACEIQ_A3==3|df$ACEIQ_A4==3, 1,0) +
     ifelse(df$ACEIQ_A5>0|df$ACEIQ_A6>0|df$ACEIQ_A7>0|df$ACEIQ_A8>0, 1,0) +
@@ -78,25 +78,25 @@ deriveCvedaACEIQ <- function(df) {
     ifelse(df$ACEIQ_V4==3|df$ACEIQ_V5==3|df$ACEIQ_V6==3, 1,0) +
     ifelse(df$ACEIQ_V7>0|df$ACEIQ_V8>0|df$ACEIQ_V9>0|df$ACEIQ_V10>0, 1,0)
 
-  df$Addendum<-
+  df$Addendum <-
     rowSumsCustomMissing(df[, grepl("ACEIQ_Ad", colnames(df))])
 
-  df$CRIES.Abuse<-
+  df$CRIES.Abuse <-
     rowSumsCustomMissing(df[, grepl("CRIES_5", colnames(df))])
 
-  df$CRIES.Bullying<-
+  df$CRIES.Bullying <-
     rowSumsCustomMissing(df[, grepl("CRIES_6", colnames(df))])
 
-  df$CRIES.CollectiveViolence<-
+  df$CRIES.CollectiveViolence <-
     rowSumsCustomMissing(df[, grepl("CRIES_8", colnames(df))])
 
-  df$CRIES.CommunityViolence<-
+  df$CRIES.CommunityViolence <-
     rowSumsCustomMissing(df[, grepl("CRIES_7", colnames(df))])
 
-  df$CRIES.Family<-
+  df$CRIES.Family <-
     rowSumsCustomMissing(df[, grepl("CRIES_4", colnames(df))])
 
-  df$CRIES.Neglect<-
+  df$CRIES.Neglect <-
     rowSumsCustomMissing(df[, grepl("CRIES_3", colnames(df))])
 
   return(fixNumericVariables(df))

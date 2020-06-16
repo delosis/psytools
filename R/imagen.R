@@ -285,10 +285,10 @@ deriveImagenAUDIT <- function(df) {
   df <- rotateQuestionnaire(df)
 
   #Recode items 9 and 10 as per Frauke's comments
-  df$audit9[df$audit9==2]<-4
-  df$audit9[df$audit9==1]<-2
-  df$audit10[df$audit10==2]<-4
-  df$audit10[df$audit10==1]<-2
+  df$audit9[df$audit9==2] <- 4
+  df$audit9[df$audit9==1] <- 2
+  df$audit10[df$audit10==2] <- 4
+  df$audit10[df$audit10==1] <- 2
 
   #Summary Vars
   df$audit_freq <-
@@ -485,12 +485,12 @@ deriveImagenTCI3 <- function(df) {
   # Split out participants who have done the FU2 DE style list of questions as there is item number over lap
   # TODO it might be wise to homogneise the item numbers to whatever is "correct"
 
-  dfdefu2<- df[paste0(df$User.code,'-', df$Iteration) %in% do.call(paste, c(df[df$Trial=='TCI_4', 1:2], sep = "-")), ]
-  df<-df[!(paste0(df$User.code,'-', df$Iteration) %in% do.call(paste, c(df[df$Trial=='TCI_4', 1:2], sep = "-"))), ]
+  dfdefu2 <- df[paste0(df$User.code,'-', df$Iteration) %in% do.call(paste, c(df[df$Trial=='TCI_4', 1:2], sep = "-")), ]
+  df <- df[!(paste0(df$User.code,'-', df$Iteration) %in% do.call(paste, c(df[df$Trial=='TCI_4', 1:2], sep = "-"))), ]
 
   #Rotate
   df <- rotateQuestionnaire(df)
-  names(dfdefu2)[grepl('TCI', names(dfdefu2))]<-paste("DEFU2",names(dfdefu2)[grepl('TCI', names(dfdefu2))],  sep="_")
+  names(dfdefu2)[grepl('TCI', names(dfdefu2))] <- paste("DEFU2",names(dfdefu2)[grepl('TCI', names(dfdefu2))],  sep="_")
 
   # Recode
   df <-
@@ -863,56 +863,56 @@ deriveImagenDOTPROBE <- function(df) {
 #'
 #' @export
 #'
-convertFU3toFU2<- function(df) {
+convertFU3toFU2 <- function(df) {
   setDT(df)
-  fu3Names<-as.data.table(names(df))
-  names(fu3Names)<-"fu3Column"
-  nameMap<-merge(fu3Names,imagenFu2Fu3Map, by="fu3Column")
+  fu3Names <- as.data.table(names(df))
+  names(fu3Names) <- "fu3Column"
+  nameMap <- merge(fu3Names,imagenFu2Fu3Map, by="fu3Column")
 
   #Swap the FU3 names for FU2 names
   for(i in 1:nrow(nameMap)) {
     if(as.character(nameMap$fu2Column[i])=="DELETE"){
-      df[,as.character(nameMap$fu3Column[i])]<-NULL
+      df[,as.character(nameMap$fu3Column[i])] <- NULL
     } else {
-    names(df)[which(names(df) == as.character(nameMap$fu3Column[i]))]<- as.character(nameMap$fu2Column[i])
+    names(df)[which(names(df) == as.character(nameMap$fu3Column[i]))] <- as.character(nameMap$fu2Column[i])
     }
   }
-  nameMap<-nameMap[fu2Column!="DELETE",]
+  nameMap <- nameMap[fu2Column!="DELETE",]
 
   #collapse All That Applies into a single column as at FU2
-  allThatApplys<-imagenFu2Fu3Map[grepl('AllThatApply',imagenFu2Fu3Map$fu3Column),]
+  allThatApplys <- imagenFu2Fu3Map[grepl('AllThatApply',imagenFu2Fu3Map$fu3Column),]
   for(i in 1:nrow(allThatApplys)) {
-    grepColumnCollection<-gsub('.AllThatApply','',allThatApplys[i,1])
+    grepColumnCollection <- gsub('.AllThatApply','',allThatApplys[i,1])
     if(length(grep(grepColumnCollection, names(df)))){
-      df<-MergeAllThatApply(df,grepColumnCollection, as.character(allThatApplys[i,2]))
+      df <- MergeAllThatApply(df,grepColumnCollection, as.character(allThatApplys[i,2]))
     }
   }
 
-  Instruments<-unique(as.character(nameMap[,Instrument]))
-  Instruments<-Instruments[!Instruments %in% c("ALL", "NONE")]
+  Instruments <- unique(as.character(nameMap[,Instrument]))
+  Instruments <- Instruments[!Instruments %in% c("ALL", "NONE")]
 
-  splitDFs<- list()
+  splitDFs <- list()
   #Split and return list of DTs
   for(targetInstrument in Instruments){
      #print(targetInstrument)
-     targetVars<-as.character(nameMap[Instrument==targetInstrument | Instrument=="ALL", fu2Column])
-     targetDT<-as.data.table(df[, names(df) %in% targetVars])
-     targetDT$Completed<-getFU3Complete(targetInstrument,targetDT)
-     targetDT$Iteration<-1
-     targetDT$Processed.Timestamp<-targetDT$Completed.Timestamp
+     targetVars <- as.character(nameMap[Instrument==targetInstrument | Instrument=="ALL", fu2Column])
+     targetDT <- as.data.table(df[, names(df) %in% targetVars])
+     targetDT$Completed <- getFU3Complete(targetInstrument,targetDT)
+     targetDT$Iteration <- 1
+     targetDT$Processed.Timestamp <- targetDT$Completed.Timestamp
      setcolorder(targetDT, c("User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"))
      #Coerce all value columns and Trial to character to avoid warnings when melting
      for (col in names(targetDT)[(which(names(targetDT) == "Processed.Timestamp") + 1):length(names(targetDT))]) {
        set(targetDT, j=col, value=as.character(targetDT[[col]]))
      }
-     targetDT<-melt.data.table(targetDT,
+     targetDT < -melt.data.table(targetDT,
                     id.vars = names(targetDT)[1:which(names(targetDT)=="Processed.Timestamp")],
                     measure.vars = names(targetDT)[(which(names(targetDT)=="Processed.Timestamp") + 1):length(names(targetDT))],
                     variable.name = "Trial",
                     value.name = "Trial.result",
                     variable.factor = FALSE
                     )
-     targetDT$Block<-targetDT$Trial
+     targetDT$Block <- targetDT$Trial
      setcolorder(
        targetDT,
        c(
@@ -927,15 +927,15 @@ convertFU3toFU2<- function(df) {
        )
      )
      setorder(targetDT, User.code)
-     targetDT<-getFU3Recode(targetInstrument, targetDT)
-     splitDFs[[targetInstrument]]<-targetDT
+     targetDT <- getFU3Recode(targetInstrument, targetDT)
+     splitDFs[[targetInstrument]] <- targetDT
 
   }
 
   return(splitDFs)
 }
 
-getFU3Recode<-function(targetInstrument, targetDT){
+getFU3Recode <- function(targetInstrument, targetDT){
   # Convert Y/N to 1/0
   targetDT[grepl(
     "ts_2|leq_[0-9][0-9]_ever|HRQOL_ALM_1|^mast[0-9]+[ab]?$|SCAMP_01|SCAMP_06|SCAMP_07|EDEQ_31|EDEQ_33|^23$|^31|^SCID_A1AC_[135]_|SCID_A1B_[1345]_|SCID_A1D_[1346]_|SCID_A[23]_[135]_|SCID_A4ABCD_[135]_|SCID_D1AB_[13]_|SCID_D2A_1_|SCID_D2B_|SCID_D3AB_|SCID_D4AB_[13567]_|SCID_D5_[12]_|SCID_D6_|SCID_D7ABCD_[13456]_",
@@ -956,7 +956,7 @@ getFU3Recode<-function(targetInstrument, targetDT){
 }
 
 
-getFU3Complete<-function(targetInstrument, targetDT){
+getFU3Complete <- function(targetInstrument, targetDT){
   switch(
     targetInstrument,
     "IMGN_ANXDX_FU3" = ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):which(names(targetDT)=="ANXDX_17_EVER"), with=FALSE])), 'f','t'),
