@@ -1,6 +1,6 @@
 # Additional functions for the cVEDA study
 #
-#  Copyright (C) 2017-2019 Delosis
+#  Copyright (C) 2017-2020 Delosis
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ deriveCvedaACEIQ <- function(df) {
   df$CRIES.Neglect<-
     rowSumsCustomMissing(df[, grepl("CRIES_3", colnames(df))])
 
-    return(fixNumericVariables(df))
+  return(fixNumericVariables(df))
 }
 
 

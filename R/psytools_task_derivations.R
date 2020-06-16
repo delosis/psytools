@@ -1,6 +1,6 @@
 # Derive Psytools CSV files exported from the Delosis server
 #
-#  Copyright (C) 2017-2019 Delosis
+#  Copyright (C) 2017-2020 Delosis
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 
 #NB These functions expect rowIndex columns to be present in the supplied df
 ## The DFs supplied are expected to be as they come out of the csv PER TASK other than this I am not removing the extra columns (pause duration etc) which came from merging all tasks together into one DF
