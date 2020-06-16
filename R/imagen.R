@@ -374,7 +374,7 @@ deriveImagenNEO <- function(df, requiresReverseCoding = FALSE) {
   #Rotate
   df <- rotateQuestionnaire(df)
 
-  if(requiresReverseCoding) {
+  if (requiresReverseCoding) {
     df <-
       recodeVariables(
         df,
@@ -428,7 +428,7 @@ deriveImagenNEO <- function(df, requiresReverseCoding = FALSE) {
 deriveImagenTCI <- function(df, requiresReverseCoding=FALSE) {
   #Rotate
   df <- rotateQuestionnaire(df)
-  if(requiresReverseCoding) {
+  if (requiresReverseCoding) {
     df <-
       recodeVariables(
         df,
@@ -870,20 +870,20 @@ convertFU3toFU2 <- function(df) {
   nameMap <- merge(fu3Names,imagenFu2Fu3Map, by="fu3Column")
 
   #Swap the FU3 names for FU2 names
-  for(i in 1:nrow(nameMap)) {
-    if(as.character(nameMap$fu2Column[i])=="DELETE"){
+  for (i in 1:nrow(nameMap)) {
+    if (as.character(nameMap$fu2Column[i])=="DELETE") {
       df[,as.character(nameMap$fu3Column[i])] <- NULL
     } else {
-    names(df)[which(names(df) == as.character(nameMap$fu3Column[i]))] <- as.character(nameMap$fu2Column[i])
+      names(df)[which(names(df) == as.character(nameMap$fu3Column[i]))] <- as.character(nameMap$fu2Column[i])
     }
   }
   nameMap <- nameMap[fu2Column!="DELETE",]
 
   #collapse All That Applies into a single column as at FU2
   allThatApplys <- imagenFu2Fu3Map[grepl('AllThatApply',imagenFu2Fu3Map$fu3Column),]
-  for(i in 1:nrow(allThatApplys)) {
+  for (i in 1:nrow(allThatApplys)) {
     grepColumnCollection <- gsub('.AllThatApply','',allThatApplys[i,1])
-    if(length(grep(grepColumnCollection, names(df)))){
+    if (length(grep(grepColumnCollection, names(df)))) {
       df <- MergeAllThatApply(df,grepColumnCollection, as.character(allThatApplys[i,2]))
     }
   }
@@ -893,7 +893,7 @@ convertFU3toFU2 <- function(df) {
 
   splitDFs <- list()
   #Split and return list of DTs
-  for(targetInstrument in Instruments){
+  for (targetInstrument in Instruments) {
      #print(targetInstrument)
      targetVars <- as.character(nameMap[Instrument==targetInstrument | Instrument=="ALL", fu2Column])
      targetDT <- as.data.table(df[, names(df) %in% targetVars])
@@ -929,13 +929,12 @@ convertFU3toFU2 <- function(df) {
      setorder(targetDT, User.code)
      targetDT <- getFU3Recode(targetInstrument, targetDT)
      splitDFs[[targetInstrument]] <- targetDT
-
   }
 
   return(splitDFs)
 }
 
-getFU3Recode <- function(targetInstrument, targetDT){
+getFU3Recode <- function(targetInstrument, targetDT) {
   # Convert Y/N to 1/0
   targetDT[grepl(
     "ts_2|leq_[0-9][0-9]_ever|HRQOL_ALM_1|^mast[0-9]+[ab]?$|SCAMP_01|SCAMP_06|SCAMP_07|EDEQ_31|EDEQ_33|^23$|^31|^SCID_A1AC_[135]_|SCID_A1B_[1345]_|SCID_A1D_[1346]_|SCID_A[23]_[135]_|SCID_A4ABCD_[135]_|SCID_D1AB_[13]_|SCID_D2A_1_|SCID_D2B_|SCID_D3AB_|SCID_D4AB_[13567]_|SCID_D5_[12]_|SCID_D6_|SCID_D7ABCD_[13456]_",
@@ -956,7 +955,7 @@ getFU3Recode <- function(targetInstrument, targetDT){
 }
 
 
-getFU3Complete <- function(targetInstrument, targetDT){
+getFU3Complete <- function(targetInstrument, targetDT) {
   switch(
     targetInstrument,
     "IMGN_ANXDX_FU3" = ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):which(names(targetDT)=="ANXDX_17_EVER"), with=FALSE])), 'f','t'),

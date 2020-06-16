@@ -47,7 +47,7 @@
 #'
 #' @export
 deriveSST <- function(df) {
-  if(!"rowIndex" %in% names(df)){
+  if (!"rowIndex" %in% names(df)) {
     df$rowIndex <- seq_len(nrow(df))
   }
   if (sanityCheck(df, c("rowIndex")) == FALSE) {
@@ -129,7 +129,7 @@ deriveSST <- function(df) {
 #'
 #' @export
 deriveMID <- function(df) {
-  if(!"rowIndex" %in% names(df)){
+  if (!"rowIndex" %in% names(df)) {
     df$rowIndex <- seq_len(nrow(df))
   }
   if (sanityCheck(df, c("rowIndex")) == FALSE) {
@@ -227,7 +227,7 @@ deriveMID <- function(df) {
 #'
 #' @export
 deriveWCST <- function(df) {
-  if(!"rowIndex" %in% names(df)){
+  if (!"rowIndex" %in% names(df)) {
     df$rowIndex <- seq_len(nrow(df))
   }
 
@@ -907,8 +907,9 @@ deriveERT <- function(df) {
     )
 
   # Recode the NaNs in the case of their being no correct or incorrect RTs to take a mean of - > NA
-  for(col in grep('RT',names(dfsums))) set(dfsums, i=which(dfsums[[col]]=='NaN'), j=col, value=NA)
-
+  for (col in grep('RT',names(dfsums))) {
+    set(dfsums, i=which(dfsums[[col]]=='NaN'), j=col, value=NA)
+  }
 
   return (setDF(dfsums))
 }
@@ -1201,7 +1202,7 @@ rotateQuestionnaire <-
     )
 
     # replace the passed skippedValue with the session parameter if it exists
-    if(exists('defaultUnadministeredValue')) {
+    if (exists('defaultUnadministeredValue')) {
       skippedValue <- defaultUnadministeredValue
     }
 
@@ -1229,11 +1230,11 @@ rotateQuestionnaire <-
     # Remove the results generated when displaying the feedback from instruments such as the Mini
     # Also remove skip back flags
     # This only needs doing if there is a Response column - online questionnaires do not have this and cannot be skipped back
-    if("Response" %in% names(df)){
-    df <-
-      df[!grepl("FEEDBACK", df$Block, ignore.case = T) &
-           ( is.na(df$Response) | df$Response != 'skip_back') &
-           (is.na(df$Trial.result) | df$Trial.result != 'skip_back'), ]
+    if ("Response" %in% names(df)) {
+      df <-
+        df[!grepl("FEEDBACK", df$Block, ignore.case = T) &
+             ( is.na(df$Response) | df$Response != 'skip_back') &
+             (is.na(df$Trial.result) | df$Trial.result != 'skip_back'), ]
     }
 
     # Select only the last response for each question in cases of skipping back and revising.
@@ -1364,7 +1365,7 @@ derivePBI <- function(df, requiresReverseCoding = FALSE) {
   df <- rotateQuestionnaire(df)
 
   #Recode if the source is not already reverse coded
-  if(requiresReverseCoding) {
+  if (requiresReverseCoding) {
     reverseVariables <-
       c('02','03','04','07',14,15,16,18,21,22,24,25)
 
@@ -1526,13 +1527,13 @@ deriveLEQ <- function(df) {
 
   setDT(df)
   options(datatable.print.nrows = 0)
-  if(max(suppressWarnings(as.numeric(unlist(df[,grepl('year', names(df)), with=FALSE]))) , na.rm=TRUE) > 1) {
+  if (max(suppressWarnings(as.numeric(unlist(df[,grepl('year', names(df)), with=FALSE]))) , na.rm=TRUE) > 1) {
     message('Assuming _year variables in LEQ refer to AGE as they are not binary')
     names(df) <- gsub('_year', '_age', names(df))
     # Ranges ( eg 6-7 have occasionally been used to enter ages as "- is allowed in the number entry) recode them to the mid point to allow derivations
     for (j in names(df)[grepl('_age', names(df))]) {
-      if(class(df[[(j)]])!='numeric'){
-        for(i in 1:nrow(df)){
+      if (class(df[[(j)]])!='numeric') {
+        for (i in 1:nrow(df)) {
           if (!is.na(df[i,..j]) & length(grep('[0-9]+-+[0-9]+', df[i,..j]))) {
               set(df, i ,j, as.character(mean(as.numeric(unlist(strsplit(as.character(df[i,..j]), '-+'))))))
             }
@@ -1557,9 +1558,13 @@ deriveLEQ <- function(df) {
       rowMeansCustomMissing,
       rowSumsCustomMissing
     )
-    if(label=='_valence') {grepLabel <- "_feelh?$"} else { grepLabel <- paste0(gsub('_meanfreq|_mean|_freq', '', label), "$")}
+    if (label=='_valence') {
+        grepLabel <- "_feelh?$"
+    } else {
+        grepLabel <- paste0(gsub('_meanfreq|_mean|_freq', '', label), "$")
+    }
 
-    for(i in 1:length(subscales)) {
+    for (i in 1:length(subscales)) {
       df[, paste0(names(subscales[i]), label) := FUN(df[, grepl(
           paste0(
             paste0(unlist(unname(
@@ -1665,16 +1670,16 @@ deriveSDQ <- function(df) {
       seq(10, 25)),
     collapse = "|")
 
-  if(max(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) ==3 &
-     min(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) ==1) {
+  if (max(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) ==3 &
+      min(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) ==1) {
       message('recoding 1 based to 0 based response coding')
       df$Trial.result[grepl(selector01to25,df$Trial) & df$Trial.result ==1] <- 0
       df$Trial.result[grepl(selector01to25,df$Trial) & df$Trial.result ==2] <- 1
       df$Trial.result[grepl(selector01to25,df$Trial) & df$Trial.result ==3] <- 2
   }
 
-  if(max(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) !=2 |
-     min(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) !=0) {
+  if (max(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) !=2 |
+      min(stripCustomMissings(df$Trial.result[grepl(selector01to25,df$Trial)]), na.rm=TRUE) !=0) {
       warning('Cannot confirm that coding of items 1 to 25 is 0 based - please check')
   }
 
@@ -1921,7 +1926,7 @@ deriveSURPS <- function(df, requiresReverseCoding = FALSE) {
   #Rotate
   df <- rotateQuestionnaire(df)
 
-  if(requiresReverseCoding) {
+  if (requiresReverseCoding) {
     # reverse code
     reverseVariables <- c('[ACs]1$', '[ACs]4$', '[ACs]7$', '[ACs]13$', '[ACs]20$','[ACs]23$')
     df <- recodeVariables(df, reverseVariables,  function(x) {5-x})
@@ -1965,16 +1970,16 @@ deriveSRS <- function(df) {
       paste("0", seq(1, 9), sep = ""),
       seq(10, 65)),
     collapse = "|")
-  if(max(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) ==4 &
-     min(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) ==1) {
+  if (max(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) ==4 &
+      min(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) ==1) {
     message('recoding 1 based to 0 based response coding in SRS')
     df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==1] <- 0
     df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==2] <- 1
     df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==3] <- 2
     df$Trial.result[grepl(selector01to65,df$Trial) & df$Trial.result ==4] <- 3
   }
-  if(max(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) !=3 |
-    min(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) !=0) {
+  if (max(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) !=3 |
+      min(stripCustomMissings(df$Trial.result[grepl(selector01to65,df$Trial)]), na.rm=TRUE) !=0) {
     stop('Cannot confirm that coding of items in SRS is 0 based or can be converted to 0 based')
   }
 
@@ -2014,7 +2019,7 @@ deriveSimpleSum <- function(df, Qname, recodeVariables = NULL, recodeFun=NULL, i
   #Rotate
   df <- rotateQuestionnaire(df)
 
-  if(!is.null(recodeVariables) & !is.null(recodeFun)){
+  if (!is.null(recodeVariables) & !is.null(recodeFun)) {
     df <- recodeVariables(df, recodeVariables, recodeFun)
   }
 
