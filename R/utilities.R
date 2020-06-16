@@ -55,7 +55,7 @@ selectIteration <-
             if (allowIncomplete) {
                 # limit to Valid Iterations only if the User.code is ever valid
                 df <-
-                    merge (df,
+                    merge(df,
                              setNames(
                                  aggregate(Completed ~ User.code,
                                                      max,
@@ -126,8 +126,8 @@ recodeVariables <- function(df, varlist, fun) {
             stop(paste('Reverse token', i, 'does not uniquely identify one variable in supplied df'))
         }
         if (exists("customMissingValues")) {
-            #If there are any NAs or Custom missings in the original data we should not touch them
-            df[!(df[,grep(i, names(df))]    %in% customMissingValues) & !is.na(df[,grep(i, names(df))]),grep(i, names(df))] <- fun(na.omit(stripCustomMissings(df[,grep(i, names(df))])))
+            # If there are any NAs or Custom missings in the original data we should not touch them
+            df[!(df[,grep(i, names(df))] %in% customMissingValues) & !is.na(df[,grep(i, names(df))]),grep(i, names(df))] <- fun(na.omit(stripCustomMissings(df[,grep(i, names(df))])))
         } else {
             df[,grep(i, names(df))] <- fun(df[,grep(i, names(df))])
         }
@@ -149,9 +149,9 @@ fixNumericVariables <- function(df) {
                 as.character(x)
             )) - is.na((x))))) {
                 as.numeric(as.character(x))
-            }
-            else
+            } else {
                 x
+            }
         })
     return(df)
 }
@@ -209,7 +209,7 @@ sanityCheck <-
 stripCustomMissings <-
     function(df,
                      customCodes = c(-999,-888,-777,-666)) {
-        #remove haven labels - both value labels and variable labels
+        # remove haven labels - both value labels and variable labels
         df <- haven::zap_labels(df)
         df <- haven::zap_label(df)
         for (x in customCodes) {
@@ -238,7 +238,7 @@ rowSumsCustomMissing <- function(df, customMissingCodes = c(-999,-888,-777,-666)
     # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created
     if (ncol(df)==0 |nrow(df)==0) {
         warning("No data to sum - will not create this variable")
-        return (NULL)
+        return(NULL)
     }
     if (maxMissing >1 | maxMissing <0) { stop('Max missing is a proportion ( between 0 and 1 )') }
     na.rm <- ifelse(maxMissing==0, FALSE, TRUE)
@@ -281,7 +281,7 @@ rowMeansCustomMissing <- function(df, customMissingCodes = c(-999,-888,-777,-666
     # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created
     if (ncol(df)==0 |nrow(df)==0) {
         warning("No data to make means from - will not create this variable")
-        return (NULL)
+        return(NULL)
     }
     if (maxMissing >1 | maxMissing <0) {
         stop('Max missing is a proportion ( between 0 and 1 )')
@@ -370,15 +370,14 @@ downloadSingleDataFile <- function(SMAusername, studyID, taskDigestID, server="w
 
     if (!is.null(dt)) {
         if (nrow(dt)>0) {
-        ##replace spaces and [] in column names to preserve compatibility with read.table
+        ## replace spaces and [] in column names to preserve compatibility with read.table
         names(dt) <- gsub('[] []','.', names(dt))
         return(dt)
         } else {
             warning(paste(taskID, 'is empty - returning an empty dt'))
             return(dt)
         }
-    }
-    else {
+    } else {
         warning(paste("Could not download dataset", taskID, "from server", server, "using SMA username", login["username"]), call.=FALSE)
         #try again perhaps the password was wrong
         login <- DelosisAuthenticate(SMAusername, studyID, server, TRUE)
@@ -408,8 +407,7 @@ DelosisAuthenticate <- function(SMAusername, studyID, server="www.delosis.com", 
             server == Sys.getenv("SMAserver") &&
             !is.null(Sys.getenv("SMApassword"))) {
         return(c(username=SMAusername,password=Sys.getenv("SMApassword"),server=server))
-    }
-    else {
+    } else {
         PASSWORD <- askpass::askpass(paste("Delosis SMA password for", SMAusername, " on ", server))
         if (!is.null(PASSWORD)) {
             login <- c(username=SMAusername,password=PASSWORD,server=server)
@@ -418,8 +416,9 @@ DelosisAuthenticate <- function(SMAusername, studyID, server="www.delosis.com", 
             Sys.setenv("SMAstudyID" = studyID)
             Sys.setenv("SMApassword" = PASSWORD)
             return(login)
+        } else {
+            return(NULL)
         }
-        else {return(NULL)}
     }
 }
 
@@ -503,8 +502,8 @@ labelData <- function(df, resources) {
 #' @importFrom haven labelled_spss
 #' @importFrom labelled var_label
 #'
-labelVariable <- function (x, Rlabels, Qlabel) {
-    #strip out non numeric response labels from numeric variables - they will never be used and are not supported
+labelVariable <- function(x, Rlabels, Qlabel) {
+    # strip out non numeric response labels from numeric variables - they will never be used and are not supported
     if (("numeric" %in% class(x) | is.numeric(x)) & !is.null(Rlabels)) {
         suppressWarnings({
             Rlabels <- Rlabels[!is.na(as.numeric(Rlabels))]
@@ -551,7 +550,7 @@ labelVariable <- function (x, Rlabels, Qlabel) {
 #' @param booleanIndicator - defaults to "Y"
 #' @importFrom data.table setDT
 #' @importFrom data.table setDF
-MergeAllThatApply <- function (df, grepColumnCollection, finalColumn, booleanIndicator ="Y") {
+MergeAllThatApply <- function(df, grepColumnCollection, finalColumn, booleanIndicator ="Y") {
     setDT(df)
     targetCols <- grep(grepColumnCollection, names(df))
 

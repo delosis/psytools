@@ -113,7 +113,7 @@ deriveSST <- function(df) {
           ),
           by = c("User.code", "Iteration"))
 
-  return (dfsums)
+  return(dfsums)
 }
 
 
@@ -211,7 +211,7 @@ deriveMID <- function(df) {
           ),
           by = c("User.code", "Iteration"))
 
-  return (dfsums)
+  return(dfsums)
 }
 
 
@@ -275,7 +275,7 @@ deriveWCST <- function(df) {
           ),
           by = c("User.code", "Iteration"))
 
-  return (dfsums)
+  return(dfsums)
 }
 
 
@@ -377,7 +377,7 @@ deriveDS <- function(df) {
   if ('Corrects.B_10' %in% names(df)) {
     df[Corrects.B_10 > 1, SpanB := 10]
   }
-  return (setDF(df))
+  return(setDF(df))
 }
 
 
@@ -485,7 +485,7 @@ deriveCORSI <- function(df) {
   if ('Corrects.B10' %in% names(df)) {
     df[Corrects.B10 > 0, SpanB := 10]
   }
-  return (setDF(df))
+  return(setDF(df))
 }
 
 
@@ -565,7 +565,7 @@ deriveTMT <- function(df) {
   set(dfsumsDT, which(!is.na(dfsumsDT$timeoutBlock)), 'Completed', 'TimeOut' )
   dfsumsDT$timeoutBlock <- NULL
 
-  return (setDF(dfsumsDT))
+  return(setDF(dfsumsDT))
 }
 
 
@@ -639,7 +639,7 @@ deriveSOCRATIS <- function(df) {
   df$SOCRATIS_FAUS_PAS_INDEX <-
     as.numeric(df$SOCRATIS_FAUS_PAS_INDEX)
 
-  return (setDF(df))
+  return(setDF(df))
 }
 
 
@@ -695,7 +695,7 @@ deriveBART <- function(df) {
   #Rename the Numpopped.POPPED to remove the popped factor to maintain compatibility with previous version of the function
   names(df) <- gsub('NumPopped.POPPED', 'NumPopped', names(df))
 
-  return (setDF(df))
+  return(setDF(df))
 }
 
 
@@ -815,7 +815,7 @@ derivePALP <- function(df) {
 
   #Data.table aggregation introduces NaN's instead of NA if there is nothing to compute - revert these to NA
   dfsums[dfsums == "NaN"] <- NA
-  return (setDF(dfsums))
+  return(setDF(dfsums))
 }
 
 
@@ -911,7 +911,7 @@ deriveERT <- function(df) {
     set(dfsums, i=which(dfsums[[col]]=='NaN'), j=col, value=NA)
   }
 
-  return (setDF(dfsums))
+  return(setDF(dfsums))
 }
 
 
@@ -1150,7 +1150,7 @@ deriveKIRBY <- function(df) {
       sort = FALSE,
       all.x = TRUE
     )
-  return (setDF(dfsums))
+  return(setDF(dfsums))
 }
 
 #' Rotate simple questionnaires from long to wide format.
@@ -1215,7 +1215,7 @@ rotateQuestionnaire <-
 
     if (sanityCheck(df, nonRequiredVars=nonRequiredVars) == FALSE) {
       warning("df does not meet requirements as passed")
-      return (NULL)
+      return(NULL)
     }
 
     #Keep in the Valid column if it exists
@@ -1260,7 +1260,7 @@ rotateQuestionnaire <-
             fill = skippedValue,
             value.var = "Trial.result")
 
-    return (setDF(fixNumericVariables(df)))
+    return(setDF(fixNumericVariables(df)))
   }
 
 
@@ -1278,7 +1278,7 @@ rotateQuestionnaire <-
 #'
 #' @export
 rotateQuestionnairePreserveBlock <- function(df, skippedValue=NA) {
-  return (rotateQuestionnaire(df, TRUE, skippedValue))
+  return(rotateQuestionnaire(df, TRUE, skippedValue))
 }
 
 

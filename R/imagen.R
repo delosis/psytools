@@ -766,7 +766,7 @@ deriveImagenIDENT <- function(df) {
         all.x = TRUE
       )
   }
-  return (dfsums)
+  return(dfsums)
 }
 
 
@@ -846,7 +846,7 @@ deriveImagenDOTPROBE <- function(df) {
         all.x = TRUE
       )
   }
-  return (dfsums)
+  return(dfsums)
 }
 
 

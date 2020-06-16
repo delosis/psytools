@@ -49,34 +49,34 @@ deriveCvedaACEIQ <- function(df) {
     # Summary
 
   df$Adversity.Binary <-
-    ifelse(df$ACEIQ_A1>0|df$ACEIQ_A2>0, 1,0) +
-    ifelse(df$ACEIQ_A3>0|df$ACEIQ_A4>0, 1,0) +
-    ifelse(df$ACEIQ_A5>0|df$ACEIQ_A6>0|df$ACEIQ_A7>0|df$ACEIQ_A8>0, 1,0) +
-    ifelse(df$ACEIQ_F6>0|df$ACEIQ_F7>0|df$ACEIQ_F8>0, 1,0) +
-    ifelse(df$ACEIQ_F1>0, 1,0) +
-    ifelse(df$ACEIQ_F2>0, 1,0) +
-    ifelse(df$ACEIQ_F3>0, 1,0) +
-    ifelse(df$ACEIQ_F4>0|df$ACEIQ_F5>0, 1,0) +
+    ifelse(df$ACEIQ_A1>0|df$ACEIQ_A2>0, 1, 0) +
+    ifelse(df$ACEIQ_A3>0|df$ACEIQ_A4>0, 1, 0) +
+    ifelse(df$ACEIQ_A5>0|df$ACEIQ_A6>0|df$ACEIQ_A7>0|df$ACEIQ_A8>0, 1, 0) +
+    ifelse(df$ACEIQ_F6>0|df$ACEIQ_F7>0|df$ACEIQ_F8>0, 1, 0) +
+    ifelse(df$ACEIQ_F1>0, 1, 0) +
+    ifelse(df$ACEIQ_F2>0, 1, 0) +
+    ifelse(df$ACEIQ_F3>0, 1, 0) +
+    ifelse(df$ACEIQ_F4>0|df$ACEIQ_F5>0, 1, 0) +
     ifelse(df$ACEIQ_P1==0|df$ACEIQ_P2==0, 1,0) +
-    ifelse(df$ACEIQ_P3>0|df$ACEIQ_P4>0|df$ACEIQ_P5>0, 1,0) +
-    ifelse(df$ACEIQ_V1>0, 1,0) +
-    ifelse(df$ACEIQ_V4>0|df$ACEIQ_V5>0|df$ACEIQ_V6>0, 1,0) +
-    ifelse(df$ACEIQ_V7>0|df$ACEIQ_V8>0|df$ACEIQ_V9>0|df$ACEIQ_V10>0, 1,0)
+    ifelse(df$ACEIQ_P3>0|df$ACEIQ_P4>0|df$ACEIQ_P5>0, 1, 0) +
+    ifelse(df$ACEIQ_V1>0, 1, 0) +
+    ifelse(df$ACEIQ_V4>0|df$ACEIQ_V5>0|df$ACEIQ_V6>0, 1, 0) +
+    ifelse(df$ACEIQ_V7>0|df$ACEIQ_V8>0|df$ACEIQ_V9>0|df$ACEIQ_V10>0, 1, 0)
 
   df$Adversity.Frequency <-
-    ifelse(df$ACEIQ_A1==3|df$ACEIQ_A2==3, 1,0) +
-    ifelse(df$ACEIQ_A3==3|df$ACEIQ_A4==3, 1,0) +
-    ifelse(df$ACEIQ_A5>0|df$ACEIQ_A6>0|df$ACEIQ_A7>0|df$ACEIQ_A8>0, 1,0) +
-    ifelse(df$ACEIQ_F6==3|df$ACEIQ_F7>1|df$ACEIQ_F8>1, 1,0) +
-    ifelse(df$ACEIQ_F1>0, 1,0) +
-    ifelse(df$ACEIQ_F2>0, 1,0) +
-    ifelse(df$ACEIQ_F3>0, 1,0) +
-    ifelse(df$ACEIQ_F4>0|df$ACEIQ_F5>0, 1,0) +
-    ifelse(df$ACEIQ_P1==0|df$ACEIQ_P2==0|df$ACEIQ_P1==1|df$ACEIQ_P2==1, 1,0) +
-    ifelse(df$ACEIQ_P3==3|df$ACEIQ_P4==3|df$ACEIQ_P5==3, 1,0) +
-    ifelse(df$ACEIQ_V1==3, 1,0) +
-    ifelse(df$ACEIQ_V4==3|df$ACEIQ_V5==3|df$ACEIQ_V6==3, 1,0) +
-    ifelse(df$ACEIQ_V7>0|df$ACEIQ_V8>0|df$ACEIQ_V9>0|df$ACEIQ_V10>0, 1,0)
+    ifelse(df$ACEIQ_A1==3|df$ACEIQ_A2==3, 1, 0) +
+    ifelse(df$ACEIQ_A3==3|df$ACEIQ_A4==3, 1, 0) +
+    ifelse(df$ACEIQ_A5>0|df$ACEIQ_A6>0|df$ACEIQ_A7>0|df$ACEIQ_A8>0, 1, 0) +
+    ifelse(df$ACEIQ_F6==3|df$ACEIQ_F7>1|df$ACEIQ_F8>1, 1, 0) +
+    ifelse(df$ACEIQ_F1>0, 1, 0) +
+    ifelse(df$ACEIQ_F2>0, 1, 0) +
+    ifelse(df$ACEIQ_F3>0, 1, 0) +
+    ifelse(df$ACEIQ_F4>0|df$ACEIQ_F5>0, 1, 0) +
+    ifelse(df$ACEIQ_P1==0|df$ACEIQ_P2==0|df$ACEIQ_P1==1|df$ACEIQ_P2==1, 1, 0) +
+    ifelse(df$ACEIQ_P3==3|df$ACEIQ_P4==3|df$ACEIQ_P5==3, 1, 0) +
+    ifelse(df$ACEIQ_V1==3, 1, 0) +
+    ifelse(df$ACEIQ_V4==3|df$ACEIQ_V5==3|df$ACEIQ_V6==3, 1, 0) +
+    ifelse(df$ACEIQ_V7>0|df$ACEIQ_V8>0|df$ACEIQ_V9>0|df$ACEIQ_V10>0, 1, 0)
 
   df$Addendum <-
     rowSumsCustomMissing(df[, grepl("ACEIQ_Ad", colnames(df))])
