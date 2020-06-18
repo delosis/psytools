@@ -66,7 +66,7 @@ selectIteration <-
                              sort = FALSE)
                 df <- df[df$Completed == 't' | df$everCompleted == 'f',]
                 df <- df[order(df$rowIndex),]
-                df$everComplete <- NULL
+                df$everCompleted <- NULL
             } else {
                 df <- df[df$Completed == 't',]
             }
