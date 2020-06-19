@@ -905,7 +905,7 @@ convertFU3toFU2 <- function(df) {
      for (col in names(targetDT)[(which(names(targetDT) == "Processed.Timestamp") + 1):length(names(targetDT))]) {
        set(targetDT, j=col, value=as.character(targetDT[[col]]))
      }
-     targetDT < -melt.data.table(targetDT,
+     targetDT <- melt.data.table(targetDT,
                     id.vars = names(targetDT)[1:which(names(targetDT)=="Processed.Timestamp")],
                     measure.vars = names(targetDT)[(which(names(targetDT)=="Processed.Timestamp") + 1):length(names(targetDT))],
                     variable.name = "Trial",
