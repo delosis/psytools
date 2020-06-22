@@ -867,7 +867,18 @@ convertFU3toFU2 <- function(df) {
   setDT(df)
   fu3Names <- as.data.table(names(df))
   names(fu3Names) <- "fu3Column"
-  nameMap <- merge(fu3Names,imagenFu2Fu3Map, by="fu3Column")
+  nameMap <- merge(fu3Names,imagenFu2Fu3Map, by="fu3Column", all.x = TRUE)
+  
+  # If there is data in the df which does not have any defined instrument to belong to then create a pseudo instrument "EXTRA"
+  nameMap[is.na(nameMap$fu2Column)]$Instrument <- "EXTRA"
+  nameMap[is.na(nameMap$fu2Column)]$fu2Column <- nameMap[is.na(nameMap$fu2Column)]$fu3Column
+  
+  # but strip out the token submitdate and startdate variables 
+  nameMap<-nameMap[nameMap$fu2Column != 'token' & 
+                     nameMap$fu2Column != 'startdate' & 
+                     nameMap$fu2Column != 'submitdate' & 
+                     nameMap$fu2Column != 'lastpage', ]
+  
 
   #Swap the FU3 names for FU2 names
   for (i in 1:nrow(nameMap)) {
@@ -890,15 +901,23 @@ convertFU3toFU2 <- function(df) {
 
   Instruments <- unique(as.character(nameMap[,Instrument]))
   Instruments <- Instruments[!Instruments %in% c("ALL", "NONE")]
-
+  Instruments <- Instruments[!is.na(Instruments)]
+  
   splitDFs <- list()
   #Split and return list of DTs
   for (targetInstrument in Instruments) {
      #print(targetInstrument)
      targetVars <- as.character(nameMap[Instrument==targetInstrument | Instrument=="ALL", fu2Column])
-     targetDT <- as.data.table(df[, names(df) %in% targetVars])
-     targetDT$Completed <- getFU3Complete(targetInstrument,targetDT)
-     targetDT$Iteration <- 1
+     targetDT <- as.data.table(df[, names(df) %in% targetVars, with=FALSE])
+     #Update the completed flag
+     # set to complete if they completed the whole bundle
+     targetDT$Completed[!is.na(targetDT$Completed)] <- 't'
+     # else use the instrument specific logic
+     targetDT$Completed[targetDT$Completed != 't'] <- getFU3Complete(targetInstrument,targetDT[targetDT$Completed != 't',])
+     #If there is no iteration provided then create one based on completion time
+     if(is.null(targetDT$Iteration)) {
+       targetDT[, Iteration := seq(.N), by = c("User.code", "Completed.Timestamp")]
+     }
      targetDT$Processed.Timestamp <- targetDT$Completed.Timestamp
      setcolorder(targetDT, c("User.code", "Iteration", "Language", "Completed", "Completed.Timestamp", "Processed.Timestamp"))
      #Coerce all value columns and Trial to character to avoid warnings when melting
@@ -956,20 +975,22 @@ getFU3Recode <- function(targetInstrument, targetDT) {
 
 
 getFU3Complete <- function(targetInstrument, targetDT) {
-  switch(
-    targetInstrument,
-    "IMGN_ANXDX_FU3" = ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):which(names(targetDT)=="ANXDX_17_EVER"), with=FALSE])), 'f','t'),
-    "IMGN_BSI_FU3" = ifelse(targetDT$BSICheck.change.=="N" & targetDT$BSICheck.truth.=="Y", 't','f'),
-    "IMGN_CAPE_FU3" = ifelse(targetDT$CAPECheck.change.=="N" & targetDT$CAPECheck.truth.=="Y", 't','f'),
-    "IMGN_ESPAD_FU3" = ifelse(targetDT$EspadCheck.change.=="N" & targetDT$EspadCheck.truth.=="Y", 't','f'),
-    "IMGN_SURPS_FU3" = ifelse(targetDT$surpsCheck.change.=="N" & targetDT$surpsCheck.truth.=="Y", 't','f'),
-    "IMGN_AUDIT_FU3" = ifelse(targetDT$audit1==0 | !rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])), 't','f'),
-    "IMGN_EDEQ_FU3" = ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])) >5 , 'f','t'),
-    "IMGN_HRQOL_FU3" = ifelse(!is.na(targetDT$HRQOL_HDSM_5), 't','f'), # TODO Could be improved
-    "IMGN_K6PLUS_FU3" = ifelse(rowSums(targetDT[,grepl('K6PLUS_1', names(targetDT)), with=FALSE], na.rm=TRUE) ==30 | !is.na(targetDT$K6PLUS_6), 't','f'),
-    "IMGN_LEQ_FU3" = ifelse(rowSums(is.na(targetDT[,grepl("_ever", names(targetDT)), with=FALSE])), 'f','t'),
-    "IMGN_VIDGAME_FU3" = ifelse(targetDT$VideoGame_1==0 | rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE]))<7, 't','f'), # TODO could be improved
-    # check if there are any NAs in all columns beyond ts_4 - suitable for all compulsory instruments
-    ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])), 'f','t')
-  )
+  ifelse(is.na(targetDT$submitdate),
+    switch(
+      targetInstrument,
+      "IMGN_ANXDX_FU3" = ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):which(names(targetDT)=="ANXDX_17_EVER"), with=FALSE])), 'f','t'),
+      "IMGN_BSI_FU3" = ifelse(targetDT$BSICheck.change.=="N" & targetDT$BSICheck.truth.=="Y", 't','f'),
+      "IMGN_CAPE_FU3" = ifelse(targetDT$CAPECheck.change.=="N" & targetDT$CAPECheck.truth.=="Y", 't','f'),
+      "IMGN_ESPAD_FU3" = ifelse(targetDT$EspadCheck.change.=="N" & targetDT$EspadCheck.truth.=="Y", 't','f'),
+      "IMGN_SURPS_FU3" = ifelse(targetDT$surpsCheck.change.=="N" & targetDT$surpsCheck.truth.=="Y", 't','f'),
+      "IMGN_AUDIT_FU3" = ifelse(targetDT$audit1==0 | !rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])), 't','f'),
+      "IMGN_EDEQ_FU3" = ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])) >5 , 'f','t'),
+      "IMGN_HRQOL_FU3" = ifelse(!is.na(targetDT$HRQOL_HDSM_5), 't','f'), # TODO Could be improved
+      "IMGN_K6PLUS_FU3" = ifelse(rowSums(targetDT[,grepl('K6PLUS_1', names(targetDT)), with=FALSE], na.rm=TRUE) ==30 | !is.na(targetDT$K6PLUS_6), 't','f'),
+      "IMGN_LEQ_FU3" = ifelse(rowSums(is.na(targetDT[,grepl("_ever", names(targetDT)), with=FALSE])), 'f','t'),
+      "IMGN_VIDGAME_FU3" = ifelse(targetDT$VideoGame_1==0 | rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE]))<7, 't','f'), # TODO could be improved
+      # check if there are any NAs in all columns beyond ts_4 - suitable for all compulsory instruments
+      ifelse(rowSums(is.na(targetDT[,(which(names(targetDT)=="ts_4")+ 1):ncol(targetDT), with=FALSE])), 'f','t')
+    )
+  ,'t')
 }

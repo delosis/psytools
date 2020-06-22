@@ -1,6 +1,7 @@
 fu3Column	fu2Column	Instrument	fu3Core
 id	User.code	ALL	ALL
 datestamp	Completed.Timestamp	ALL	ALL
+submitdate	Completed	ALL	ALL
 startlanguage	Language	ALL	ALL
 IdCheckGender	id_check_gender	ALL	ALL
 IdCheckDob	id_check_dob	ALL	ALL
