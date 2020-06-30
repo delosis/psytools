@@ -569,5 +569,5 @@ MergeAllThatApply <- function(df, grepColumnCollection, finalColumn, booleanIndi
     names(df)[targetCols[1]] <- finalColumn
     targetCols <- targetCols[2:length(targetCols)]
     df <- df[,(targetCols) := NULL]
-    return(setDF(df))
+    return(df)
 }

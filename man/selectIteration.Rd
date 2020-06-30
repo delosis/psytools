@@ -25,6 +25,7 @@ selectIteration(
 \item{allowIncomplete}{allow incomplete if a user.code has only incomplete data - default FALSE}
 
 \item{allowInvalid}{allow invalid if a user.code has only invalid data - default TRUE
+
 It is not clear how the XNAT selection was achieved and the inclusion of invalids should be examined}
 }
 \value{

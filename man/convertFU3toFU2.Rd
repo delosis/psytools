@@ -4,7 +4,7 @@
 \alias{convertFU3toFU2}
 \title{Convert FU3 to FU2 data format}
 \usage{
-convertFU3toFU2(df)
+convertFU3toFU2(df, subInstrumentSuffix = "FU3", retainAdditionalData = TRUE)
 }
 \arguments{
 \item{df}{Data frame with FU3 data for an instrument or instruments represented by a single task at FU2}
