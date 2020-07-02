@@ -867,17 +867,17 @@ convertFU3toFU2 <- function(df, subInstrumentSuffix = "FU3", retainAdditionalDat
   setDT(df)
   fu3Names <- as.data.table(names(df))
   names(fu3Names) <- "fu3Column"
-  
+
   if(retainAdditionalData){
     nameMap <- merge(fu3Names,imagenFu2Fu3Map, by="fu3Column", all.x = TRUE)
-    # If there is data in the df which does not have any defined instrument to belong to then create a pseudo instrument 
+    # If there is data in the df which does not have any defined instrument to belong to then create a pseudo instrument
     nameMap[is.na(nameMap$fu2Column)]$Instrument <- 'EXTRA'
     nameMap[is.na(nameMap$fu2Column)]$fu2Column <- nameMap[is.na(nameMap$fu2Column)]$fu3Column
-    
-    # but strip out the token submitdate and startdate variables 
-    nameMap<-nameMap[nameMap$fu2Column != 'token' & 
-                       nameMap$fu2Column != 'startdate' & 
-                       nameMap$fu2Column != 'submitdate' & 
+
+    # but strip out the token submitdate and startdate variables
+    nameMap<-nameMap[nameMap$fu2Column != 'token' &
+                       nameMap$fu2Column != 'startdate' &
+                       nameMap$fu2Column != 'submitdate' &
                        nameMap$fu2Column != 'lastpage', ]
   } else {
     nameMap <- merge(fu3Names,imagenFu2Fu3Map, by="fu3Column")
@@ -905,7 +905,7 @@ convertFU3toFU2 <- function(df, subInstrumentSuffix = "FU3", retainAdditionalDat
   Instruments <- unique(as.character(nameMap[,Instrument]))
   Instruments <- Instruments[!Instruments %in% c("ALL", "NONE")]
   Instruments <- Instruments[!is.na(Instruments)]
-  
+
   splitDFs <- list()
   #Split and return list of DTs
   for (targetInstrument in Instruments) {
@@ -927,12 +927,12 @@ convertFU3toFU2 <- function(df, subInstrumentSuffix = "FU3", retainAdditionalDat
      for (col in names(targetDT)[(which(names(targetDT) == "Processed.Timestamp") + 1):length(names(targetDT))]) {
        set(targetDT, j=col, value=as.character(targetDT[[col]]))
      }
-     
+
      if(targetInstrument == "EXTRA") {
        #Apply default LS -> Psytools naming conversion
        names(targetDT) <- convertLSNames(names(targetDT))
      }
-     
+
      targetDT <- melt.data.table(targetDT,
                     id.vars = names(targetDT)[1:which(names(targetDT)=="Processed.Timestamp")],
                     measure.vars = names(targetDT)[(which(names(targetDT)=="Processed.Timestamp") + 1):length(names(targetDT))],
@@ -956,9 +956,9 @@ convertFU3toFU2 <- function(df, subInstrumentSuffix = "FU3", retainAdditionalDat
      )
      setorder(targetDT, User.code)
      targetDT <- getFU3Recode(targetInstrument, targetDT)
-     
+
      'Apply the supplied suffix to the instrument names'
-     
+
      targetInstrument<- paste(targetInstrument, subInstrumentSuffix, sep="_")
      splitDFs[[targetInstrument]] <- targetDT
   }
