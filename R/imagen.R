@@ -868,14 +868,14 @@ convertFU3toFU2 <- function(df, subInstrumentSuffix = "FU3", retainAdditionalDat
   fu3Names <- as.data.table(names(df))
   names(fu3Names) <- "fu3Column"
 
-  if(retainAdditionalData){
+  if (retainAdditionalData) {
     nameMap <- merge(fu3Names,imagenFu2Fu3Map, by="fu3Column", all.x = TRUE)
     # If there is data in the df which does not have any defined instrument to belong to then create a pseudo instrument
     nameMap[is.na(nameMap$fu2Column)]$Instrument <- 'EXTRA'
     nameMap[is.na(nameMap$fu2Column)]$fu2Column <- nameMap[is.na(nameMap$fu2Column)]$fu3Column
 
     # but strip out the token submitdate and startdate variables
-    nameMap<-nameMap[nameMap$fu2Column != 'token' &
+    nameMap <- nameMap[nameMap$fu2Column != 'token' &
                        nameMap$fu2Column != 'startdate' &
                        nameMap$fu2Column != 'submitdate' &
                        nameMap$fu2Column != 'lastpage', ]
@@ -918,7 +918,7 @@ convertFU3toFU2 <- function(df, subInstrumentSuffix = "FU3", retainAdditionalDat
      # else use the instrument specific logic
      targetDT$Completed[targetDT$Completed != 't'] <- getFU3Complete(targetInstrument,targetDT[targetDT$Completed != 't',])
      #If there is no iteration provided then create one based on completion time
-     if(is.null(targetDT$Iteration)) {
+     if (is.null(targetDT$Iteration)) {
        targetDT[, Iteration := seq(.N), by = c("User.code", "Completed.Timestamp")]
      }
      targetDT$Processed.Timestamp <- targetDT$Completed.Timestamp
@@ -928,7 +928,7 @@ convertFU3toFU2 <- function(df, subInstrumentSuffix = "FU3", retainAdditionalDat
        set(targetDT, j=col, value=as.character(targetDT[[col]]))
      }
 
-     if(targetInstrument == "EXTRA") {
+     if (targetInstrument == "EXTRA") {
        #Apply default LS -> Psytools naming conversion
        names(targetDT) <- convertLSNames(names(targetDT))
      }
@@ -959,7 +959,9 @@ convertFU3toFU2 <- function(df, subInstrumentSuffix = "FU3", retainAdditionalDat
 
      'Apply the supplied suffix to the instrument names'
 
-     targetInstrument<- paste(targetInstrument, subInstrumentSuffix, sep="_")
+     if (!is.null(subInstrumentSuffix)) {
+       targetInstrument <- paste(targetInstrument, subInstrumentSuffix, sep="_")
+     }
      splitDFs[[targetInstrument]] <- targetDT
   }
 
@@ -968,9 +970,9 @@ convertFU3toFU2 <- function(df, subInstrumentSuffix = "FU3", retainAdditionalDat
 
 convertLSNames <- function(names) {
   for (i in 7:length(names)) {
-    names[i]<-gsub("[. ]", '_', names[i])
-    names[i]<-gsub("_$", '', names[i])
-    names[i]<-gsub("^_", '', names[i])
+    names[i] <- gsub("[. ]", '_', names[i])
+    names[i] <- gsub("_$", '', names[i])
+    names[i] <- gsub("^_", '', names[i])
   }
   return(names)
 }
