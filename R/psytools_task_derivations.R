@@ -1998,9 +1998,9 @@ deriveSRS <- function(df) {
   df$social_communication <-
     rowSumsCustomMissing(df[, grepl("11|12|16|18|19|21|22|26|33|35|36|37|38|41|46|47|51|53|55|57|61|62", colnames(df))])
   df$social_motivation  <-
-    rowSumsCustomMissing(df[, grepl("1|3|6|9|11|23|27|34|43|64|65", colnames(df))])
+    rowSumsCustomMissing(df[, grepl("01|03|06|09|11|23|27|34|43|64|65", colnames(df))])
   df$autistic_behavior <-
-    rowSumsCustomMissing(df[, grepl("4|8|14|20|24|28|29|31|39|49|50|63", colnames(df))])
+    rowSumsCustomMissing(df[, grepl("04|08|14|20|24|28|29|31|39|49|50|63", colnames(df))])
   return(df)
 }
 

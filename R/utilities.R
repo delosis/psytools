@@ -234,7 +234,11 @@ stripCustomMissings <-
 #'
 #' @return recoded df/dt
 
-rowSumsCustomMissing <- function(df, customMissingCodes = c(-999,-888,-777,-666), missingValue = -666, maxMissing = 0, proRateMissings = FALSE) {
+rowSumsCustomMissing <- function(df,
+                                 customMissingCodes = c(-999,-888,-777,-666),
+                                 missingValue = -666,
+                                 maxMissing = 0,
+                                 proRateMissings = FALSE) {
     # if the supplied DF is empty then we should return NULL so variables created using this function are not actually created
     if (ncol(df)==0 |nrow(df)==0) {
         warning("No data to sum - will not create this variable")
@@ -464,7 +468,7 @@ labelData <- function(df, resources) {
         if (length(Rlabel)) {
                 lapply(Rlabel, function(responseLabel) {
                     responseLabel[1] <- gsub('\\*\\*NA\\*\\*|other_specify', '', responseLabel[1])
-                    responseLabel[2] <- stripHTML(responseLabel[2])
+                    responseLabel[2] <- paste(responseLabel[1], stripHTML(responseLabel[2]), sep=": ")
                     if (!is.na(responseLabel[1]) & responseLabel[1] != '') {
                         Rlabels <<- c(Rlabels, setNames(responseLabel[1], responseLabel[2]))
                     }

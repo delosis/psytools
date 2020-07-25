@@ -18,6 +18,6 @@ Imports:
     askpass,
     data.table (>= 1.10),
     R.utils
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 LazyData: true
 Encoding: UTF-8
