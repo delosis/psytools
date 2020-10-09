@@ -909,7 +909,7 @@ convertFU3toFU2 <- function(df, subInstrumentSuffix = "FU3", retainAdditionalDat
   splitDFs <- list()
   #Split and return list of DTs
   for (targetInstrument in Instruments) {
-     print(targetInstrument)
+     message(targetInstrument)
      targetVars <- as.character(nameMap[Instrument==targetInstrument | Instrument=="ALL", fu2Column])
      targetDT <- as.data.table(df[, names(df) %in% targetVars, with=FALSE])
      #Update the completed flag
