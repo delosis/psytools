@@ -274,6 +274,8 @@ deriveImagenPDS <- function(df) {
 #'
 #' Note that in the case of no alcohol consumption this returns 0 for the summaries
 #'   The original SPSS did not do this but it seems appropriate
+#'   
+#' 22.04.2021 - allowed calculation of just freq subscale if administered alone (imacov followup)
 #'
 #' @param df data frame containing long form AUDIT data
 #'
@@ -284,23 +286,28 @@ deriveImagenAUDIT <- function(df) {
   #Rotate
   df <- rotateQuestionnaire(df)
 
-  #Recode items 9 and 10 as per Frauke's comments
-  df$audit9[df$audit9==2] <- 4
-  df$audit9[df$audit9==1] <- 2
-  df$audit10[df$audit10==2] <- 4
-  df$audit10[df$audit10==1] <- 2
-
-  #Summary Vars
-  df$audit_freq <-
-    rowSums(cbind(df$audit1, df$audit2, df$audit3), na.rm = TRUE)
-  df$audit_symp <-
-    rowSums(cbind(df$audit4, df$audit6, df$audit8), na.rm = TRUE)
-  df$audit_prob <-
-    rowSums(cbind(df$audit5, df$audit7, df$audit9, df$audit10), na.rm = TRUE)
-  df$audit_total <-
-    rowSums(cbind(df$audit_freq, df$audit_symp, df$audit_prob), na.rm = TRUE)
-  #Added abuse flag as per Frauke's comments
-  df$audit_abuse_flag <- ifelse(df$audit_total>7,1,0)
+  if('audit10' %in% names(df)) {
+    #Recode items 9 and 10 as per Frauke's comments
+    df$audit9[df$audit9==2] <- 4
+    df$audit9[df$audit9==1] <- 2
+    df$audit10[df$audit10==2] <- 4
+    df$audit10[df$audit10==1] <- 2
+  
+    #Summary Vars
+    df$audit_freq <-
+      rowSums(cbind(df$audit1, df$audit2, df$audit3), na.rm = TRUE)
+    df$audit_symp <-
+      rowSums(cbind(df$audit4, df$audit6, df$audit8), na.rm = TRUE)
+    df$audit_prob <-
+      rowSums(cbind(df$audit5, df$audit7, df$audit9, df$audit10), na.rm = TRUE)
+    df$audit_total <-
+      rowSums(cbind(df$audit_freq, df$audit_symp, df$audit_prob), na.rm = TRUE)
+    #Added abuse flag as per Frauke's comments
+    df$audit_abuse_flag <- ifelse(df$audit_total>7,1,0)
+  }  else {
+    df$audit_freq <-
+      rowSums(cbind(df$audit1, df$audit2, df$audit3), na.rm = TRUE)
+  }
   return(df)
 }
 

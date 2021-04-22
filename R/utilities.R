@@ -208,7 +208,7 @@ sanityCheck <-
 
 stripCustomMissings <-
     function(df,
-                     customCodes = c(-999,-888,-777,-666)) {
+        customCodes = c(-999,-888,-777,-666)) {
         # remove haven labels - both value labels and variable labels
         df <- haven::zap_labels(df)
         df <- haven::zap_label(df)
