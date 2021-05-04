@@ -13,7 +13,7 @@ Maintainer: John Rogers <github@delosis.com>
 URL: https://github.com/delosis/psytools
 License: GPL-3
 Imports:
-    haven,
+    haven (>= 2.3.0),
     labelled,
     askpass,
     data.table (>= 1.10),
