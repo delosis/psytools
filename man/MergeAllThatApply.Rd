@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{MergeAllThatApply}
 \alias{MergeAllThatApply}
-\title{Convert new style AllThatApply (seperate binary sufixed columns) into old style (single column concatenated with pipe )}
+\title{Convert new style AllThatApply (separate binary sufixed columns) into old style (single column concatenated with pipe )}
 \usage{
 MergeAllThatApply(
   df,
@@ -21,5 +21,5 @@ MergeAllThatApply(
 \item{booleanIndicator}{- defaults to "Y"}
 }
 \description{
-Convert new style AllThatApply (seperate binary sufixed columns) into old style (single column concatenated with pipe )
+Convert new style AllThatApply (separate binary sufixed columns) into old style (single column concatenated with pipe )
 }

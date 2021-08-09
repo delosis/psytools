@@ -13,6 +13,6 @@ convertFU3toFU2(df, subInstrumentSuffix = "FU3", retainAdditionalData = TRUE)
 named list of Data Frames in FU2 format representing the component FU2 instruments contained in the FU3
 }
 \description{
-Convert FU3 variable names and any Value recodes neccessary
+Convert FU3 variable names and any Value recodes necessary
 to return to the format expected from Imagen FU2
 }

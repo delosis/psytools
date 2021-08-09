@@ -18,7 +18,7 @@
 
 #' Generate summary for PDS questionnaire as administered to children in BNU
 #'
-#' NB - it is NOT suitable for the Adult version as that asks completely differnt questions - no derivation has been defined for that
+#' NB - it is NOT suitable for the Adult version as that asks completely different questions - no derivation has been defined for that
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
 #'
@@ -36,7 +36,7 @@ deriveBnuPDS <- function(df) {
     return(df)
   }
 
-  # Summary Note allowing missings as there are seperate variables for boys and girls -
+  # Summary Note allowing missings as there are separate variables for boys and girls -
   # no prorating Boys is 2 4 and 6 summed
   df$PDS_sum[df[, grepl("gender", names(df))] == "1"] <-
     rowSumsCustomMissing(df[df[,

@@ -13,7 +13,7 @@ deriveBnuPDS(df)
 wide form of PDS data with summary vars
 }
 \description{
-NB - it is NOT suitable for the Adult version as that asks completely differnt questions - no derivation has been defined for that
+NB - it is NOT suitable for the Adult version as that asks completely different questions - no derivation has been defined for that
 }
 \details{
 NB This does not select the appropriate attempt - this should be done by the calling function

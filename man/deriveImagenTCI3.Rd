@@ -20,5 +20,5 @@ The TCI3 had different items in the German FU2 version - for FU3 the German was 
 It seems from discussions with Frauke that actually the German version was the originally intended one and has the most subscales derivable from it
 all are merged together for return
 
-The derived varaibles produces depend on which
+The derived variables produces depend on which
 }

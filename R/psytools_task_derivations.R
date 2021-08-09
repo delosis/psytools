@@ -26,7 +26,7 @@
 ##
 ##        repeat for each task separately
 
-## rowIndex can be suplied indicating original row ordering -
+## rowIndex can be supplied indicating original row ordering -
 ## this will be created if needed but it is important the df is supplied in the original row order in that case
 
 
@@ -557,7 +557,7 @@ deriveTMT <- function(df) {
 
   dfsumsDT <- merge(dfsumsDT, timeouts, by=c('User.code', 'Iteration'), all=TRUE)
 
-  # Code blocks on which there was a timeout to be defaultUnadministeredValue it wasnt finished and so the data is without meaning
+  # Code blocks on which there was a timeout to be defaultUnadministeredValue it wasn't finished and so the data is without meaning
   missingCode <- ifelse(exists('defaultUnadministeredValue'), defaultUnadministeredValue, NA)
   set(dfsumsDT, which(dfsumsDT$timeoutBlock=='Flea'), names(dfsumsDT)[grepl('Flea|Letters', names(dfsumsDT))], missingCode )
   set(dfsumsDT, which(dfsumsDT$timeoutBlock=='Letters'), names(dfsumsDT)[grepl('Letters', names(dfsumsDT))], missingCode )
@@ -1542,7 +1542,7 @@ deriveLEQ <- function(df) {
       df[, (j) := as.numeric(df[[j]])][]
       }
     }
-    # In web adminstration for a period of time there were no bounds checks on the age value
+    # In web administration for a period of time there were no bounds checks on the age value
     # some people used this to enter a date or to enter multiple ages ( eg 16171819 )
     # Frauke decided that these should be coded to missing
     # This is at odds with the previous decision to take the average when things
