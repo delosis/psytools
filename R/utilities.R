@@ -91,17 +91,19 @@ selectIteration <-
               df <- df[df$Valid == 't',]
           }
         }
-
-        df <-
-            merge (
-                df,
-                aggregate(Iteration ~ User.code,
-                                    iterationFunction,
-                                    data = df),
-                by = c("User.code", "Iteration"),
-                sort = FALSE
-            )
-        df <- df[order(df$rowIndex),]
+        
+        if(nrow(df)>0){
+          df <-
+              merge (
+                  df,
+                  aggregate(Iteration ~ User.code,
+                                      iterationFunction,
+                                      data = df),
+                  by = c("User.code", "Iteration"),
+                  sort = FALSE
+              )
+          df <- df[order(df$rowIndex),]
+        }
         df$rowIndex <- NULL
         return(df)
     }
