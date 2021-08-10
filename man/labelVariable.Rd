@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{labelVariable}
 \alias{labelVariable}
-\title{Label individual row - split out as seperate function to simplify loops in labelData}
+\title{Label individual row - split out as separate function to simplify loops in labelData}
 \usage{
 labelVariable(x, Rlabels, Qlabel)
 }
@@ -14,5 +14,5 @@ labelVariable(x, Rlabels, Qlabel)
 \item{Qlabel}{String to apply as question label}
 }
 \description{
-Label individual row - split out as seperate function to simplify loops in labelData
+Label individual row - split out as separate function to simplify loops in labelData
 }

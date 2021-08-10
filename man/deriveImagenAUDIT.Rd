@@ -18,4 +18,6 @@ NB This does not select the appropriate attempt - this should be done by the cal
 \details{
 Note that in the case of no alcohol consumption this returns 0 for the summaries
   The original SPSS did not do this but it seems appropriate
+  
+22.04.2021 - allowed calculation of just freq subscale if administered alone (imacov followup)
 }

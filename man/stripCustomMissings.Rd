@@ -7,7 +7,7 @@
 stripCustomMissings(df, customCodes = c(-999, -888, -777, -666))
 }
 \arguments{
-\item{df}{Data Frame/Table containg custom missing codes}
+\item{df}{Data Frame/Table containing custom missing codes}
 
 \item{customCodes}{custom missing codes to code to NA}
 }

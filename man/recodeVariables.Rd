@@ -11,7 +11,7 @@ recodeVariables(df, varlist, fun)
 
 \item{varlist}{list of greppable tokens in the df colnames - each must uniquely identify 1 col}
 
-\item{fun}{funtion to apply}
+\item{fun}{function to apply}
 }
 \value{
 modified df

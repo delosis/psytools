@@ -479,7 +479,7 @@ deriveImagenTCI <- function(df, requiresReverseCoding=FALSE) {
 #' It seems from discussions with Frauke that actually the German version was the originally intended one and has the most subscales derivable from it
 #' all are merged together for return
 #'
-#' The derived varaibles produces depend on which
+#' The derived variables produces depend on which
 #'
 #' @param df data frame containing long form TCI3 data
 #'
@@ -514,7 +514,7 @@ deriveImagenTCI3 <- function(df) {
   df$tci_i_ambition <-
     rowSums(df[, grepl("[_](60|117|37|126|62)R?$", colnames(df))])
 
-  # If there are any DEFU2 rows then treat them seperately
+  # If there are any DEFU2 rows then treat them separately
   if (nrow(dfdefu2)) {
     dfdefu2 <- rotateQuestionnaire(dfdefu2)
     dfdefu2 <-
@@ -859,7 +859,7 @@ deriveImagenDOTPROBE <- function(df) {
 
 #' Convert FU3 to FU2 data format
 #'
-#' Convert FU3 variable names and any Value recodes neccessary
+#' Convert FU3 variable names and any Value recodes necessary
 #' to return to the format expected from Imagen FU2
 #'
 #' @param df Data frame with FU3 data for an instrument or instruments represented by a single task at FU2

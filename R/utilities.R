@@ -117,7 +117,7 @@ selectIteration <-
 #'
 #' @param varlist list of greppable tokens in the df colnames - each must uniquely identify 1 col
 #'
-#' @param fun funtion to apply
+#' @param fun function to apply
 #'
 #' @return modified df
 #'
@@ -199,7 +199,7 @@ sanityCheck <-
 
 
 #' recode defined missing codes back to NA for Row summing purposes
-#' @param df Data Frame/Table containg custom missing codes
+#' @param df Data Frame/Table containing custom missing codes
 #'
 #' @param customCodes custom missing codes to code to NA
 #'
@@ -501,7 +501,7 @@ labelData <- function(df, resources) {
     return(df)
 }
 
-#' Label individual row - split out as seperate function to simplify loops in labelData
+#' Label individual row - split out as separate function to simplify loops in labelData
 #' @param x vector to label
 #' @param Rlabels named list to apply to response labels
 #' @param Qlabel String to apply as question label
@@ -549,7 +549,7 @@ labelVariable <- function(x, Rlabels, Qlabel) {
 }
 
 
-#' Convert new style AllThatApply (seperate binary sufixed columns) into old style (single column concatenated with pipe )
+#' Convert new style AllThatApply (separate binary sufixed columns) into old style (single column concatenated with pipe )
 #' @param df data table to work on
 #' @param grepColumnCollection a grepable term to grab all columns that should be merged
 #' @param finalColumn the new column name to contain the merged data

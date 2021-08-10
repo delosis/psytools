@@ -179,7 +179,7 @@ deriveCvedaPDS <- function(df) {
 deriveCvedaAnthropometry <- function(df) {
     # deal with hand entered units such as inch / cm .. and - have occasionally been used
     # as decimal delimiters might be worth checking the - was meant to be a decimal - it
-    # makes no sense as a minus?  was 110001840790-C3 for Weight - certainly didnt mean
+    # makes no sense as a minus?  was 110001840790-C3 for Weight - certainly didn't mean
     # pounds and ounces
     df$Trial.result[grepl("\\.\\.|-", df$Trial.result)] <- gsub("\\.\\.|-", ".", df$Trial.result[grepl("\\.\\.|-",
         df$Trial.result)])
