@@ -297,9 +297,9 @@ deriveImagenAUDIT <- function(df) {
     df$audit_freq <-
       rowSums(cbind(df$audit1, df$audit2, df$audit3), na.rm = TRUE)
     df$audit_symp <-
-      rowSums(cbind(df$audit4, df$audit6, df$audit8), na.rm = TRUE)
+      rowSums(cbind(df$audit4, df$audit6, df$audit5), na.rm = TRUE)
     df$audit_prob <-
-      rowSums(cbind(df$audit5, df$audit7, df$audit9, df$audit10), na.rm = TRUE)
+      rowSums(cbind(df$audit8, df$audit7, df$audit9, df$audit10), na.rm = TRUE)
     df$audit_total <-
       rowSums(cbind(df$audit_freq, df$audit_symp, df$audit_prob), na.rm = TRUE)
     #Added abuse flag as per Frauke's comments

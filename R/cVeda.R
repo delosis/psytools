@@ -136,6 +136,28 @@ deriveCvedaSDIM <- function(df) {
     return(fixNumericVariables(df))
 }
 
+#' Generate summary for EATQ
+#'
+#' NB This does not select the appropriate attempt - this should be done by the calling function
+#'
+#' The summary scores are already generated at run time
+#' However EATQr_SELF_NEGAFFECT_1 was incorrectly specified
+#' to include EATQr_35 instead of EATQr_25
+#' 
+#'
+#' @param df data frame containing long form EATQ data
+#'
+#' @return wide form of EATQ data with EATQr_SELF_NEGAFFECT_1 corrected
+#'
+#' @export
+deriveCvedaEATQr<- function(df) {
+  df <- rotateQuestionnaire(df)
+  df$EATQr_SELF_NEGAFFECT_1 <- 
+    (df$EATQr_SELF_NEGAFFECT_1 * 7 - df$EATQr_SELF_35 + df$EATQr_SELF_25) /7
+  return(fixNumericVariables(df))
+}
+
+
 #' Generate summary for PDS questionnaire
 #'
 #' NB This does not select the appropriate attempt - this should be done by the calling function
