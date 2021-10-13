@@ -1428,7 +1428,7 @@ deriveBIG5 <- function(df) {
   df <- recodeVariables(df, reverseVariables,  function(x) {6-x})
 
   #Summary
-  df$extraversion <-
+  df$extroversion <-
     rowSumsCustomMissing(df[, grepl("01|06R|11|16|21R|26|31R|36", colnames(df))])
 
   df$agreeableness <-
@@ -1471,7 +1471,7 @@ deriveIPIP20 <- function(df) {
   df <- recodeVariables(df, reverseVariables,  function(x) {6-x})
 
   #Summary
-  df$extraversion <-
+  df$extroversion <-
     rowSumsCustomMissing(df[, grepl("01|06R|11|16R", colnames(df))])
 
   df$agreeableness <-
@@ -1546,7 +1546,7 @@ deriveLEQ <- function(df) {
     # some people used this to enter a date or to enter multiple ages ( eg 16171819 )
     # Frauke decided that these should be coded to missing
     # This is at odds with the previous decision to take the average when things
-    # like 6-7 was entered ( see above ) and this discrepency has been discussed.
+    # like 6-7 was entered ( see above ) and this discrepancy has been discussed.
     for (j in names(df)[grepl('_age', names(df))]) {
       df[[(j)]][df[[(j)]] > 100] <- NA
     }

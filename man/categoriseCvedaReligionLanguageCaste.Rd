@@ -17,7 +17,7 @@ language_specify religion Other Specify Response
 caste_specify caste Other Specify Responses}
 }
 \value{
-df with categories replaced and uncategorised resposnes shifted to other specify
+df with categories replaced and uncategorised responses shifted to other specify
 }
 \description{
 Convert the opentext Language Religion Caste variables found in SDIM and ACEIQ
