@@ -27,4 +27,4 @@ data from more complex questionnaires such as:
 
 Developer's notes
 -----------------
-After adding or modifying a function, remember to regenerate the documentation and NAMESPACE with `devtools::document()`.
+After adding or modifying a function, regenerate the documentation and NAMESPACE with **`devtools::document()`**.
