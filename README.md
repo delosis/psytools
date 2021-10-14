@@ -25,6 +25,6 @@ data from more complex questionnaires such as:
 - TMT (Trail Making Test)
 - WCST (Wisconsin Card Sorting Test)
 
-Developer's notes
+Developers' notes
 -----------------
 After adding or modifying a function, regenerate the documentation and NAMESPACE with **`devtools::document()`**.
