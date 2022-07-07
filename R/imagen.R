@@ -497,8 +497,7 @@ deriveImagenTCI3 <- function(df) {
 
   #Rotate
   df <- rotateQuestionnaire(df)
-  names(dfdefu2)[grepl('TCI', names(dfdefu2))] <- paste("DEFU2",names(dfdefu2)[grepl('TCI', names(dfdefu2))],  sep="_")
-
+  
   # Recode
   df <-
     recodeVariables(
@@ -517,6 +516,7 @@ deriveImagenTCI3 <- function(df) {
   # If there are any DEFU2 rows then treat them separately
   if (nrow(dfdefu2)) {
     dfdefu2 <- rotateQuestionnaire(dfdefu2)
+    names(dfdefu2)[grepl('TCI', names(dfdefu2))] <- paste("DEFU2",names(dfdefu2)[grepl('TCI', names(dfdefu2))],  sep="_")
     dfdefu2 <-
       recodeVariables(
         dfdefu2,
