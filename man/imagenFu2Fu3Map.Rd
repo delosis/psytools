@@ -13,7 +13,7 @@
   \describe{
     \item{\code{fu3Column}}{fu3 Variable Name }
     \item{\code{fu2Column}}{fu2 Variable Name where there is a match, or an fu2 format variable name to use if this is a new variable }
-    \item{\code{Instrument}}{fake taskID to allow FU3 data to be stored in seperate task files }
+    \item{\code{Instrument}}{fake taskID to allow FU3 data to be stored in separate task files }
     \item{\code{fu3Core}}{indicating in which FU3 core the variables is found}
   }
 }

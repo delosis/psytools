@@ -331,7 +331,7 @@ applyCvedaCustomMissings <- function(df) {
 #' language_specify religion Other Specify Response
 #' caste_specify caste Other Specify Responses
 #'
-#' @return df with categories replaced and uncategorised resposnes shifted to other specify
+#' @return df with categories replaced and uncategorised responses shifted to other specify
 #'
 #' @export
 categoriseCvedaReligionLanguageCaste <- function(df) {
@@ -397,7 +397,7 @@ categoriseCvedaReligionLanguageCaste <- function(df) {
         "VOKKALIGA", "vokkaliga gowda", "vokkaliga gowdas", "vyasha", "Vysyas", "Wodeyar",
         "YADAV", "Yadava", "yadavas"))] <- "GEN"
     df$caste[agrep("other back", df$caste, ignore.case = TRUE)] <- "OBC"
-    df$caste[trimws(tolower(df$caste)) %in% tolower(c("0ther bakward classes", "0BC", "backward class",
+    df$caste[trimws(tolower(df$caste)) %in% tolower(c("0ther backward classes", "0BC", "backward class",
         "bc", "BCD", "bcma", "obc", "oc"))] <- "OBC"
     df$caste[trimws(tolower(df$caste)) %in% tolower(c("sc", "SCC", "schedule caste", "SCHEDULED",
         "scheduled caste", "secheduled caste"))] <- "SC"

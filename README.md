@@ -24,3 +24,7 @@ data from more complex questionnaires such as:
 - TCI (Temperament and Character Inventory)
 - TMT (Trail Making Test)
 - WCST (Wisconsin Card Sorting Test)
+
+Developers' notes
+-----------------
+After adding or modifying a function, regenerate the documentation and NAMESPACE with **`devtools::document()`**.
