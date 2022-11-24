@@ -17,7 +17,9 @@ Imports:
     labelled,
     askpass,
     data.table (>= 1.10),
+    httr,
+    jsonlite,
     R.utils
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.2
 LazyData: true
 Encoding: UTF-8

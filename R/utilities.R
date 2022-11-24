@@ -350,48 +350,55 @@ downloadSingleDataFile <- function(SMAusername, studyID, taskDigestID, server="w
     URL <- URLencode(paste(URL, taskID, '.csv.gz', sep=''))
 
     dt <- NULL
-    retries <- 0
-    while (is.null(dt) && retries<3) {
-        try(
-            if (packageVersion('data.table')>=1.12) {
-                dt <- data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",    colClasses = c(
-                    "User code"="character",
-                    "Block"="character",
-                    "Trial"="character",
-                    "Response time [ms]"="numeric"))
-            } else {
-                dfFile <- tempfile()
-                download.file(URL, paste0(dfFile, '.csv.gz'))
-                R.utils::gunzip(paste0(dfFile, '.csv.gz'))
-                dt <- data.table::fread(paste0(dfFile, '.csv') ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",colClasses = c(
-                    "User code"="character",
-                    "Block"="character",
-                    "Trial"="character",
-                    "Response time [ms]"="numeric"))
-            }
-        )
-        retries <- retries+1
-        Sys.sleep(2)
-    }
-
-    if (!is.null(dt)) {
-        if (nrow(dt)>0) {
-        ## replace spaces and [] in column names to preserve compatibility with read.table
-        names(dt) <- gsub('[] []','.', names(dt))
-        return(dt)
+    tryCatch({
+        if (packageVersion('data.table')>=1.12) {
+            dt <- data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",    colClasses = c(
+                "User code"="character",
+                "Block"="character",
+                "Trial"="character",
+                "Response time [ms]"="numeric"))
         } else {
+            dfFile <- tempfile()
+            download.file(URL, paste0(dfFile, '.csv.gz'))
+            R.utils::gunzip(paste0(dfFile, '.csv.gz'))
+            dt <- data.table::fread(paste0(dfFile, '.csv') ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",colClasses = c(
+                "User code"="character",
+                "Block"="character",
+                "Trial"="character",
+                "Response time [ms]"="numeric"))
+        }
+        if (!is.null(dt)) {
+          if (nrow(dt)>0) {
+            ## replace spaces and [] in column names to preserve compatibility with read.table
+            names(dt) <- gsub('[] []','.', names(dt))
+            return(dt)
+          } else {
             warning(paste(taskID, 'is empty - returning an empty dt'))
             return(dt)
+          }
+        } else {
+          warning(paste("Could not download dataset", taskID, "from server", server, "using SMA username", login["username"]), call.=FALSE)
+          return (NULL)      
         }
-    } else {
-        warning(paste("Could not download dataset", taskID, "from server", server, "using SMA username", login["username"]), call.=FALSE)
-        #try again perhaps the password was wrong
-        login <- DelosisAuthenticate(SMAusername, studyID, server, TRUE)
-        if (is.null(login)) {
+    }, 
+      error=function(cond) {
+        if(conditionMessage(cond)=='HTTP error 400.') {
+          # Requested file does not exist
+          warning(paste(taskID, 'Requested file does not exist'))
+          return(dt)
+        } else if(conditionMessage(cond)=='HTTP error 403.'){
+          # not authorized
+          warning(paste(taskID, 'You do not have Permission to download this file'))
+          login <- DelosisAuthenticate(SMAusername, studyID, server, TRUE)
+          retries<-99
+          if (is.null(login)) {
             stop("Authentication Cancelled")
+          }
+          return(downloadSingleDataFile(SMAusername, studyID, taskDigestID, server, sampleID))
+        } else {
+          stop(cond)
         }
-        return(downloadSingleDataFile(SMAusername, studyID, taskDigestID, server, sampleID))
-    }
+      })
 }
 
 #' Authenticate
@@ -577,3 +584,70 @@ MergeAllThatApply <- function(df, grepColumnCollection, finalColumn, booleanIndi
     df <- df[,(targetCols) := NULL]
     return(df)
 }
+
+
+#' @import httr
+#' @import jsonlite
+get_session_key <- function(SMAusername=NULL, SMAstudy=NULL, SMAserver="https://www.delosis.com") {
+  require(httr)
+  require(jsonlite)
+  
+  if(!is.null(SMAusername)) {
+    login <- DelosisAuthenticate(SMAusername, SMAstudy, SMAserver);
+  }
+  
+  body.json = list(method = "get_session_key",
+                   id = " ",
+                   params = list(admin = Sys.getenv("SMAusername"),
+                                 password = Sys.getenv("SMApassword")))
+  r <- POST(paste0("https://", Sys.getenv("SMAserver"), '/qs/admin/remotecontrol'), content_type_json(),
+            body = jsonlite::toJSON(body.json, auto_unbox = TRUE))
+
+  session_key <- as.character(jsonlite::fromJSON(content(r, encoding="utf-8"))$result)
+
+  message(session_key)
+  if(is.null(session_key) || session_key=='Invalid user name or password') {
+    if(!is.null(SMAusername)) {
+      login <- DelosisAuthenticate(SMAusername, SMAstudy, SMAserver);
+      return (get_session_key())
+    } else {
+      stop("You must get_session_key first")
+    }
+  }
+  return (session_key)
+}
+
+#' @import base64enc
+base64_to_df <- function(x) {
+  raw_csv <- rawToChar(base64enc::base64decode(x))
+  return(read.csv(textConnection(raw_csv), stringsAsFactors = FALSE, sep = ","))
+}
+
+#' @import httr
+#' @import jsonlite
+#' @export
+
+downloadSurveyData<-function(surveyID, sDocumentType = "csv", sLanguageCode = 'en',
+                             sCompletionStatus = "all", sHeadingType = "code",
+                             sResponseType = "short") {
+  if(is.null(Sys.getenv("SMAusername")) || Sys.getenv("SMAusername") =="" ||
+     is.null(Sys.getenv("SMApassword")) || Sys.getenv("SMApassword") =="" ||
+     is.null(Sys.getenv("SMAserver")) || Sys.getenv("SMAserver") =="") {
+    stop("You must get_session_key first" )
+  }
+  
+  params <- as.list(environment())
+  params.full <- append(get_session_key(), params)
+  
+  
+  body.json <- list(method = 'export_responses',
+                    id = " ",
+                    params = params.full)
+  
+  r <- httr::POST(paste0("https://", Sys.getenv("SMAserver"), '/qs/admin/remotecontrol') , httr::content_type_json(),
+                  body = jsonlite::toJSON(body.json, auto_unbox = TRUE))
+  
+  results <- jsonlite::fromJSON(httr::content(r, as='text', encoding="utf-8"))$result
+  return(base64_to_df(unlist(results)))
+}
+
