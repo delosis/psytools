@@ -37,9 +37,10 @@ deriveBnuPDS <- function(df) {
   }
 
   # derive a Gender variable based on the questions they have completed if there is no gender variable
-  df$gender[!is.na(df[, grepl("\\BOY.+1", names(df))])]<-1
-  df$gender[!is.na(df[, grepl("\\GIRL.+1", names(df))])]<-2
-  
+  if(!(grep("gender", names(df)) >0)) {
+    df$gender[!is.na(df[, grepl("\\BOY.+1", names(df))])]<-1
+    df$gender[!is.na(df[, grepl("\\GIRL.+1", names(df))])]<-2
+  }
   
   # Summary Note allowing missings as there are separate variables for boys and girls -
   # no prorating Boys is 2 4 and 6 summed
