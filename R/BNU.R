@@ -37,7 +37,7 @@ deriveBnuPDS <- function(df) {
   }
 
   # derive a Gender variable based on the questions they have completed if there is no gender variable
-  if(!(grep("gender", names(df)) >0)) {
+  if(length(grep("gender", names(df))) == 0) {
     df$gender[!is.na(df[, grepl("\\BOY.+1", names(df))])]<-1
     df$gender[!is.na(df[, grepl("\\GIRL.+1", names(df))])]<-2
   }
