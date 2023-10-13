@@ -15,6 +15,6 @@ Derived data frame with summaries.
 \description{
 Applies to the
 \href{http://digitool.library.mcgill.ca/R/?func=dbin-jump-full&object_id=93903}{CORSI block-tapping test}
-(part of the \href{https://dx.doi.org/10.1016/j.jneumeth.2013.10.024}{PEBL} battery))
+(part of the \href{https://doi.org/10.1016/j.jneumeth.2013.10.024}{PEBL} battery))
 implemented in Psytools.
 }

@@ -14,7 +14,7 @@ Data frame with summaries.
 }
 \description{
 Applies to the
-\href{http://dx.doi.org/10.1037/0033-295X.91.3.295}{Stop Signal Task}
+\href{https://doi.org/10.1037/0033-295X.91.3.295}{Stop Signal Task}
 task implemented in Psytools.
 }
 \details{
