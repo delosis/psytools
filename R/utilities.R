@@ -333,7 +333,6 @@ stripHTML <- function(htmlString) {
 #' @param sampleID sampleID defaults to NULL
 #' @keywords download dataset
 #' @importFrom data.table fread
-#' @import R.utils
 #'
 #' @export
 downloadSingleDataFile <- function(SMAusername, studyID, taskDigestID, server="www.delosis.com", sampleID=NULL) {
@@ -351,22 +350,11 @@ downloadSingleDataFile <- function(SMAusername, studyID, taskDigestID, server="w
 
     dt <- NULL
     tryCatch({
-        if (packageVersion('data.table')>=1.12) {
-            dt <- data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",    colClasses = c(
-                "User code"="character",
-                "Block"="character",
-                "Trial"="character",
-                "Response time [ms]"="numeric"))
-        } else {
-            dfFile <- tempfile()
-            download.file(URL, paste0(dfFile, '.csv.gz'))
-            R.utils::gunzip(paste0(dfFile, '.csv.gz'))
-            dt <- data.table::fread(paste0(dfFile, '.csv') ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",colClasses = c(
-                "User code"="character",
-                "Block"="character",
-                "Trial"="character",
-                "Response time [ms]"="numeric"))
-        }
+          dt <- data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",    colClasses = c(
+              "User code"="character",
+              "Block"="character",
+              "Trial"="character",
+              "Response time [ms]"="numeric"))
         if (!is.null(dt)) {
           if (nrow(dt)>0) {
             ## replace spaces and [] in column names to preserve compatibility with read.table
@@ -586,12 +574,11 @@ MergeAllThatApply <- function(df, grepColumnCollection, finalColumn, booleanIndi
 }
 
 
-#' @import httr
-#' @import jsonlite
+#' @importFrom httr POST
+#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite fromJSON
 get_session_key <- function(SMAusername=NULL, SMAstudy=NULL, SMAserver="https://www.delosis.com") {
-  require(httr)
-  require(jsonlite)
-  
+
   if(!is.null(SMAusername)) {
     login <- DelosisAuthenticate(SMAusername, SMAstudy, SMAserver);
   }
@@ -600,7 +587,7 @@ get_session_key <- function(SMAusername=NULL, SMAstudy=NULL, SMAserver="https://
                    id = " ",
                    params = list(admin = Sys.getenv("SMAusername"),
                                  password = Sys.getenv("SMApassword")))
-  r <- POST(paste0("https://", Sys.getenv("SMAserver"), '/qs/admin/remotecontrol'), content_type_json(),
+  r <- httr::POST(paste0("https://", Sys.getenv("SMAserver"), '/qs/admin/remotecontrol'), content_type_json(),
             body = jsonlite::toJSON(body.json, auto_unbox = TRUE))
 
   session_key <- as.character(jsonlite::fromJSON(content(r, encoding="utf-8"))$result)
@@ -617,14 +604,16 @@ get_session_key <- function(SMAusername=NULL, SMAstudy=NULL, SMAserver="https://
   return (session_key)
 }
 
-#' @import base64enc
+#' @importFrom base64enc base64decode
 base64_to_df <- function(x) {
   raw_csv <- rawToChar(base64enc::base64decode(x))
   return(read.csv(textConnection(raw_csv), stringsAsFactors = FALSE, sep = ","))
 }
 
-#' @import httr
-#' @import jsonlite
+#' @importFrom httr POST
+#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite fromJSON
+#' 
 #' @export
 
 downloadSurveyData<-function(surveyID, sDocumentType = "csv", sLanguageCode = 'en',
