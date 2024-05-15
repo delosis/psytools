@@ -863,6 +863,8 @@ deriveImagenDOTPROBE <- function(df) {
 #' to return to the format expected from Imagen FU2
 #'
 #' @param df Data frame with FU3 data for an instrument or instruments represented by a single task at FU2
+#' @param subInstrumentSuffix suffix to donate sub instruments (default FU3)
+#' @param retainAdditionalData whether to retain data outside of subinstruments (default TRUE)
 #'
 #' @return named list of Data Frames in FU2 format representing the component FU2 instruments contained in the FU3
 #'

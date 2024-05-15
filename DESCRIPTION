@@ -1,6 +1,6 @@
 Package: Psytools
 Type: Package
-Version: 0.2
+Version: 0.3
 Title: Derive Psytools task data
 Description: Derive Psytools task data in CSV files
     exported from the Delosis server.
@@ -19,7 +19,7 @@ Imports:
     data.table (>= 1.12),
     httr,
     jsonlite,
-    base64enc
-RoxygenNote: 7.2.3
-LazyData: true
+    R.utils
+RoxygenNote: 7.3.1
+LazyData: false
 Encoding: UTF-8

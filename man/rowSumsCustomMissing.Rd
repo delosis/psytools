@@ -16,11 +16,13 @@ rowSumsCustomMissing(
 \arguments{
 \item{df}{Data Frame/Table to perform rowSums upon}
 
+\item{customMissingCodes}{list of values to be treated as if they are missing  defaults to c(-999, -888, -777, -666)}
+
 \item{missingValue}{custom missing code to apply to missing results}
 
-\item{maxMissing}{(0 to 1) return a raw or prorated sum if the number of missings are under this threshold}
+\item{maxMissing}{(0 to 1) return a raw or prorated sum if the proportion of missings are under this threshold}
 
-\item{proRateMissing}{optionally prorate missings to produce a comparable sum if missings are allowed}
+\item{proRateMissings}{optionally prorate missings to produce a comparable sum if missings are allowed}
 }
 \value{
 recoded df/dt

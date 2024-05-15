@@ -9,6 +9,8 @@ rotateQuestionnairePreserveBlock(df, skippedValue = NA)
 }
 \arguments{
 \item{df}{Data frame with simple questionnaire, read from CSV file exported from Delosis server.}
+
+\item{skippedValue}{Default NA - value to apply to omitted questions when rotating}
 }
 \value{
 Rotated data frame.

@@ -226,10 +226,9 @@ stripCustomMissings <-
 #' @param df Data Frame/Table to perform rowSums upon
 #'
 #' @param missingValue custom missing code to apply to missing results
-#'
-#' @param maxMissing (0 to 1) return a raw or prorated sum if the number of missings are under this threshold
-#'
-#' @param proRateMissing optionally prorate missings to produce a comparable sum if missings are allowed
+#' @param maxMissing (0 to 1) return a raw or prorated sum if the proportion of missings are under this threshold
+#' @param customMissingCodes list of values to be treated as if they are missing  defaults to c(-999, -888, -777, -666)
+#' @param proRateMissings optionally prorate missings to produce a comparable sum if missings are allowed
 #'
 #' @importFrom haven labelled_spss
 #' @importFrom labelled var_label
@@ -274,10 +273,9 @@ rowSumsCustomMissing <- function(df,
 #' Utility function to calculate row means first stripping custom missings
 #' and then replacing missing results with a custom missing
 #' @param df Data Frame/Table to perform rowSums upon
-#'
+#' @param customMissingCodes list of values to be treated as if they are missing  defaults to c(-999, -888, -777, -666)
 #' @param missingValue custom missing code to apply to missing results
-#'
-#' @param maxMissing (0 to 1) return a prorated sum if the number of missings are under this threshold
+#' @param maxMissing (0 to 1) return a prorated sum if the proportion of missings are under this threshold defaults to 0
 #'
 #' @importFrom haven labelled_spss
 #' @importFrom labelled var_label
@@ -333,7 +331,7 @@ stripHTML <- function(htmlString) {
 #' @param sampleID sampleID defaults to NULL
 #' @keywords download dataset
 #' @importFrom data.table fread
-#'
+#' @import R.utils
 #' @export
 downloadSingleDataFile <- function(SMAusername, studyID, taskDigestID, server="www.delosis.com", sampleID=NULL) {
     #prompt for password if we don't hold it in the current session
@@ -587,7 +585,7 @@ get_session_key <- function(SMAusername=NULL, SMAstudy=NULL, SMAserver="https://
                    id = " ",
                    params = list(admin = Sys.getenv("SMAusername"),
                                  password = Sys.getenv("SMApassword")))
-  r <- httr::POST(paste0("https://", Sys.getenv("SMAserver"), '/qs/admin/remotecontrol'), content_type_json(),
+  r <- httr::POST(paste0("https://", Sys.getenv("SMAserver"), '/qs/admin/remotecontrol'), httr::content_type_json(),
             body = jsonlite::toJSON(body.json, auto_unbox = TRUE))
 
   session_key <- as.character(jsonlite::fromJSON(content(r, encoding="utf-8"))$result)
@@ -604,16 +602,28 @@ get_session_key <- function(SMAusername=NULL, SMAstudy=NULL, SMAserver="https://
   return (session_key)
 }
 
-#' @importFrom base64enc base64decode
+
 base64_to_df <- function(x) {
-  raw_csv <- rawToChar(base64enc::base64decode(x))
+  raw_csv <- rawToChar(decode_base64(x))
   return(read.csv(textConnection(raw_csv), stringsAsFactors = FALSE, sep = ","))
 }
 
+
+#' Download Dataset from Delosis Limesurvey server
+#'
+#' @param surveyID ID of survey
+#' @param sDocumentType document type default:csv
+#' @param sLanguageCode language default:en
+#' @param sCompletionStatus completionStatus default:all
+#' @param sHeadingType heading type default:code
+#' @param sResponseType response type default:short
+
+#' 
 #' @importFrom httr POST
+#' @importFrom httr content_type_json
 #' @importFrom jsonlite toJSON
 #' @importFrom jsonlite fromJSON
-#' 
+
 #' @export
 
 downloadSurveyData<-function(surveyID, sDocumentType = "csv", sLanguageCode = 'en',
@@ -638,5 +648,74 @@ downloadSurveyData<-function(surveyID, sDocumentType = "csv", sLanguageCode = 'e
   
   results <- jsonlite::fromJSON(httr::content(r, as='text', encoding="utf-8"))$result
   return(base64_to_df(unlist(results)))
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create lookup table to convert characters to their 6-bit-integer values
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+char_to_int <- function(vec) {
+  unname(vapply(as.character(vec), utf8ToInt, integer(1)))
+}
+
+
+lookup_names <- c(LETTERS, letters, 0:9, '+', '/', '=')
+lookup_values <- c(
+  char_to_int(LETTERS) - char_to_int('A'),
+  char_to_int(letters) - char_to_int('a') + 26L,
+  char_to_int(0:9)     - char_to_int('0') + 52L,
+  62L,
+  63L,
+  0L
+)
+
+lookup <- setNames(lookup_values, lookup_names)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#' Decode a base64 string to a vector of raw bytes
+#'
+#' @param b64 Single character string containing base64 encoded values
+#'
+#' @return raw vector
+#'
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+decode_base64 <- function(b64) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Get a, integer 6-bit value for each of the characters in the string
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  chars    <- strsplit(b64, '')[[1]]
+  six_bits <- lookup[chars]
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Explode these integers into their individual bit values (32 bits per int)
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  bits <- intToBits(six_bits)
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Convert to 32 row matrix
+  # Truncate to 6-row matrix (ignoring bits 7-32).
+  # Then reshape to 8-row matrix.
+  # Note that 'intToBits()' output is little-endian, so switch it here to
+  # big endian for easier logic
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  mat <- matrix(as.integer(bits), nrow = 32)[6:1,]
+  N <- length(mat)
+  stopifnot(N %% 8 == 0)
+  dim(mat) <- c(8, N/8)
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Convert bits to bytes by multiplying out rows by 2^N and summing
+  # along columns (i.e. each column is a bit-pattern for an 8-bit number)
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  raw_vec <- as.raw(colSums(mat * c(128L, 64L, 32L, 16L, 8L, 4L, 2L, 1L)))
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Trim padded characters
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  if (endsWith(b64, "==")) {
+    length(raw_vec) <- length(raw_vec) - 2L
+  } else if (endsWith(b64, "=")) {
+    length(raw_vec) <- length(raw_vec) - 1L
+  }
+  
+  raw_vec
 }
 

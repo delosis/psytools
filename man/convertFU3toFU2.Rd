@@ -8,6 +8,10 @@ convertFU3toFU2(df, subInstrumentSuffix = "FU3", retainAdditionalData = TRUE)
 }
 \arguments{
 \item{df}{Data frame with FU3 data for an instrument or instruments represented by a single task at FU2}
+
+\item{subInstrumentSuffix}{suffix to donate sub instruments (default FU3)}
+
+\item{retainAdditionalData}{whether to retain data outside of subinstruments (default TRUE)}
 }
 \value{
 named list of Data Frames in FU2 format representing the component FU2 instruments contained in the FU3

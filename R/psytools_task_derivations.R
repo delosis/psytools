@@ -1273,6 +1273,7 @@ rotateQuestionnaire <-
 #' Should work for any questionnaire to rotate into a wide format, but may want some additional honing!
 #'
 #' @param df Data frame with simple questionnaire, read from CSV file exported from Delosis server.
+#' @param skippedValue Default NA - value to apply to omitted questions when rotating
 #'
 #' @return Rotated data frame.
 #'
