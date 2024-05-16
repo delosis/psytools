@@ -588,7 +588,7 @@ get_session_key <- function(SMAusername=NULL, SMAstudy=NULL, SMAserver="https://
   r <- httr::POST(paste0("https://", Sys.getenv("SMAserver"), '/qs/admin/remotecontrol'), httr::content_type_json(),
             body = jsonlite::toJSON(body.json, auto_unbox = TRUE))
 
-  session_key <- as.character(jsonlite::fromJSON(content(r, encoding="utf-8"))$result)
+  session_key <- as.character(jsonlite::fromJSON(httr::content(r, encoding="utf-8"))$result)
 
   message(session_key)
   if(is.null(session_key) || session_key=='Invalid user name or password') {
@@ -621,6 +621,7 @@ base64_to_df <- function(x) {
 #' 
 #' @importFrom httr POST
 #' @importFrom httr content_type_json
+#' #' @importFrom httr content
 #' @importFrom jsonlite toJSON
 #' @importFrom jsonlite fromJSON
 
