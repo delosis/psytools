@@ -347,44 +347,48 @@ downloadSingleDataFile <- function(SMAusername, studyID, taskDigestID, server="w
     URL <- URLencode(paste(URL, taskID, '.csv.gz', sep=''))
 
     dt <- NULL
+    print(paste("Downloading", taskID))
+    warns<-""
     tryCatch({
-          dt <- data.table::fread(URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",    colClasses = c(
+          dt <- data.table::fread(showProgress=F, input=URL ,stringsAsFactors=FALSE, blank.lines.skip=TRUE, encoding="UTF-8",    colClasses = c(
               "User code"="character",
               "Block"="character",
               "Trial"="character",
               "Response time [ms]"="numeric"))
-        if (!is.null(dt)) {
-          if (nrow(dt)>0) {
-            ## replace spaces and [] in column names to preserve compatibility with read.table
-            names(dt) <- gsub('[] []','.', names(dt))
-            return(dt)
-          } else {
-            warning(paste(taskID, 'is empty - returning an empty dt'))
-            return(dt)
-          }
-        } else {
-          warning(paste("Could not download dataset", taskID, "from server", server, "using SMA username", login["username"]), call.=FALSE)
-          return (NULL)      
-        }
     }, 
-      error=function(cond) {
-        if(conditionMessage(cond)=='HTTP error 400.') {
-          # Requested file does not exist
-          warning(paste(taskID, 'Requested file does not exist'))
-          return(dt)
-        } else if(conditionMessage(cond)=='HTTP error 403.'){
-          # not authorized
-          warning(paste(taskID, 'You do not have Permission to download this file'))
-          login <- DelosisAuthenticate(SMAusername, studyID, server, TRUE)
-          retries<-99
-          if (is.null(login)) {
-            stop("Authentication Cancelled")
-          }
-          return(downloadSingleDataFile(SMAusername, studyID, taskDigestID, server, sampleID))
-        } else {
-          stop(cond)
+    error=function(cond){warns<-paste(warns, conditionMessage(cond))},
+    warning=function(cond){warns<-paste(warns, conditionMessage(cond))}
+    )
+    print(warns)
+
+      if(grepl("HTTP.+400", warns)) {
+        # Requested file does not exist
+        warning(paste(taskID, 'Requested file does not exist'))
+        return(NULL)
+      } else if(grepl("HTTP.+403", warns)) {
+        # not authorized
+        warning(paste(taskID, 'You do not have Permission to download this file'))
+        login <- DelosisAuthenticate(SMAusername, studyID, server, TRUE)
+        retries<-99
+        if (is.null(login)) {
+          stop("Authentication Cancelled")
         }
-      })
+        return(downloadSingleDataFile(SMAusername, studyID, taskDigestID, server, sampleID))
+      } 
+      if (!is.null(dt)) {
+        if (nrow(dt)>0) {
+          ## replace spaces and [] in column names to preserve compatibility with read.table
+          names(dt) <- gsub('[] []','.', names(dt))
+          return(dt)
+        } else {
+          warning(paste(taskID, 'is empty - returning an empty dt'))
+          return(dt)
+        }
+      } else {
+        warning(paste("Could not download dataset", taskID, "from server", server, "using SMA username", login["username"]), call.=FALSE)
+        return (NULL)      
+      }
+      
 }
 
 #' Authenticate
